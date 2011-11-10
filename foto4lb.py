@@ -3,7 +3,7 @@
 # Shrink fotos to a size suitable for use in my logbook and other documents.
 #
 # Copyright © 2011 R.F. Smith <rsmith@xs4all.nl>. All rights reserved.
-# Time-stamp: <2011-11-07 21:39:03 rsmith>
+# Time-stamp: <2011-11-10 23:45:21 rsmith>
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -34,16 +34,16 @@ from time import mktime
 from datetime import datetime
 
 def getexifdict(name):
-    ds = "exiftool -CreateDate -Comment -Copyright -ImageWidth -ImageHeight {}"
+    ds = "exiftool -CreateDate -Comment -Copyright {}"
     args = shlex.split(ds.format(name))
     data = subprocess.check_output(args)
     lines = data.splitlines()
     ld = {}
     for l in lines:
         key, val = l.split(':',1)
-        key = key.strip()
+        key = key.replace(' ', '')
         val = val.strip()
-        if key == 'Create Date':
+        if key == 'CreateDate':
             val = val.replace(' ',':')
         ld[key] = val
     return ld
@@ -51,50 +51,56 @@ def getexifdict(name):
 def processfile(name):
     try:
         ed = getexifdict(name)
-        fields = ed['Create Date'].split(':')
+        fields = ed['CreateDate'].split(':')
         dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]), 
                       int(fields[3]), int(fields[4]), int(fields[5]))
     except:
         ed = {}
         cds = '{}:{}:{} {}:{}:{}'
         dt = datetime.today()
-        ed['Create Date'] = cds.format(dt.year, dt.month, dt.day, 
+        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, 
                                       dt.hour, dt.minute, dt.second)
     cmd = 'mogrify -strip -resize 886 -units PixelsPerInch -density 300'
     cmd += ' -quality 90 {}'.format(name)
     args = shlex.split(cmd)
     rv = subprocess.call(args)
+    errstr = "Error when processing file '{}'"
     if rv != 0:
         globallock.acquire()
-        print "Error when processing file '{}'".format(name)
+        print errstr.format(name)
         globallock.release()
         return
     cmd = "exiftool"
-    for k in iterkeys(ed):
+    for k in ed.iterkeys():
         cmd += ' -{}="{}"'.format(k, ed[k]) 
-    cmd += ' -q {}'.format(name)
+    cmd += ' -q -overwrite_original {}'.format(name)
     args = shlex.split(cmd)
     rv = subprocess.call(args)
     if rv == 0:
-        modtime = mktime(dt.year, dt.month, dt.day, dt.hour, 
-                         dt.minute, dt.second, 0,0,-1)
+        modtime = mktime((dt.year, dt.month, dt.day, dt.hour, 
+                         dt.minute, dt.second, 0,0,-1))
         utime(name, (modtime, modtime))
         globallock.acquire()
         print "File '{}' processed".format(name)
         globallock.release()        
     else:
         globallock.acquire()
-        print "Error when processing file '{}'".format(name)
+        print errstr.format(name)
         globallock.release()
+
+def checkfor(cmd):
+    args = shlex.split(cmd)
+    try:
+        subprocess.check_output(args, stderr=subprocess.STDOUT)
+    except CalledProcessError:
+        print "Required program '{}' not found! exiting.".format(progname)
+        exit(1)
 
 if __name__ == '__main__':
     files = sys.argv[1:]
-    try:
-        subprocess.check_output(['exiftool', '-ver'], stderr=subprocess.STDOUT)
-        subprocess.check_output(['mogrify', '-ver'], stderr=subprocess.STDOUT)
-    except CalledProcessError:
-        print "Exiftool or mogrify not found! exiting."
-        exit(1)
+    checkfor('exiftool -ver')
+    checkfor('mogrify')
     globallock = Lock()
     p = Pool()
     p.map(processfile, files)
+    p.close()
