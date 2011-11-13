@@ -3,7 +3,7 @@
 # Adds my copyright notice to photos.
 #
 # Copyright © 2011 R.F. Smith <rsmith@xs4all.nl>. All rights reserved.
-# Time-stamp: <2011-11-06 20:19:28 rsmith>
+# Time-stamp: <2011-11-13 22:18:13 rsmith>
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -63,3 +63,4 @@ if __name__ == '__main__':
     globallock = Lock()
     p = Pool()
     p.map(processfile, files)
+    p.close()
