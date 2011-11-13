@@ -3,7 +3,7 @@
 # Adds my copyright notice to photos.
 #
 # Copyright © 2011 R.F. Smith <rsmith@xs4all.nl>. All rights reserved.
-# Time-stamp: <2011-11-13 22:18:13 rsmith>
+# Time-stamp: <2011-11-13 22:29:56 rsmith>
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -30,6 +30,7 @@ import sys
 import shlex, subprocess
 from multiprocessing import Pool, Lock
 from os import utime
+import os.path
 from time import mktime
 
 def processfile(name):
@@ -55,6 +56,10 @@ def processfile(name):
 
 if __name__ == '__main__':
     files = sys.argv[1:]
+    if len(files) == 0:
+        path, binary = os.path.split(sys.argv[0])
+        print "Usage: {} [file ...]".format(binary)
+        exit(0)
     try:
         subprocess.check_output(['exiftool', '-ver'], stderr=subprocess.STDOUT)
     except CalledProcessError:
