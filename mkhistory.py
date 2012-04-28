@@ -1,4 +1,13 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# Adds my copyright notice to photos.
+#
+# Author: R.F. Smith <rsmith@xs4all.nl>
+# Time-stamp: <2012-04-28 11:17:09 rsmith>
+# 
+# To the extent possible under law, Roland Smith has waived all copyright and
+# related or neighboring rights to mkhistory.py. This work is published from
+# the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 'Script to format a Git log for LaTeX'
 
