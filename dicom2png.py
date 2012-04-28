@@ -1,37 +1,24 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright © 2012 R.F. Smith <rsmith@xs4all.nl>. All rights reserved.
-# Time-stamp: <2012-04-11 19:37:50 rsmith>
-# 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-# 1. Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright
-#    notice, this list of conditions and the following disclaimer in the
-#    documentation and/or other materials provided with the distribution.
-# 
-# THIS SOFTWARE IS PROVIDED BY AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED.  IN NO EVENT SHALL AUTHOR OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-# SUCH DAMAGE.
+#
+# Author: R.F. Smith <rsmith@xs4all.nl>
+# Time-stamp: <2012-04-28 11:14:03 rsmith>
+#
+# To the extent possible under law, Roland Smith has waived all copyright and
+# related or neighboring rights to dicom2png.py. This work is published from
+# the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"Convert DICOM files to PNG format, remove blank areas."
+'''Convert DICOM files to PNG format, remove blank areas. The blank erea
+   removal is based on the image size of a Philips flat detector. The image
+   goes from 2048x2048 pixels to 1574x2048 pixels.'''
 
 import os
-import sys # voor argv.
+import sys
 import subprocess
 from multiprocessing import Pool, Lock
 
 def checkfor(args):
+    '''Make sure that a program necessary for using this script is available.'''
     try:
         subprocess.check_output(args, stderr=subprocess.STDOUT)
     except CalledProcessError:
@@ -39,6 +26,8 @@ def checkfor(args):
         sys.exit(1)
 
 def processfile(fname):
+    '''Use the convert(1) program from the ImageMagick suite to convert the
+       image and crop it.'''
     size = '1574x2048'
     args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300', 
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
