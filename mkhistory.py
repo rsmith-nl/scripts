@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Time-stamp: <2012-04-28 11:17:09 rsmith>
-# 
+#
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
@@ -34,13 +34,13 @@ def genrecords(lol):
             rv = '\\begin{tabular}{p{0.07\\textwidth}p{0.87\\textwidth}}\n'
             words = ln.split(' ', 1)
             ln = ln.replace(' ', ' & ', 1)
-            rv += '  ' + words[0] + ' & ' + '\\texttt{' 
+            rv += '  ' + words[0] + ' & ' + '\\texttt{'
             rv += words[1] + '}\\\\\n'
         elif ln.startswith('Merge:'):
             words = ln.split(':', 1)
-            rv += '  ' + words[0] + ': & ' + '\\texttt{' 
+            rv += '  ' + words[0] + ': & ' + '\\texttt{'
             rv += words[1].lstrip(None) + '}\\\\\n'
-        elif (ln.startswith('Author:') or 
+        elif (ln.startswith('Author:') or
               ln.startswith('Date:')) :
             ln = ln.replace(': ', ': & ')
             rv += '  ' + ln + '\\\\\n'
