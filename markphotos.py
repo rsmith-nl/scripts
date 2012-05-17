@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Time-stamp: <2012-04-28 11:42:44 rsmith>
-# 
+#
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
@@ -22,12 +22,12 @@ def processfile(name):
     fields = createdate.split(":")
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
-    cmt = "Copyright © {} {}".format(year, cr) 
-    args = ['exiftool', '-Copyright="Copyright (C) {} {}"'.format(year, cr), 
+    cmt = "Copyright © {} {}".format(year, cr)
+    args = ['exiftool', '-Copyright="Copyright (C) {} {}"'.format(year, cr),
             '-Comment="{}"'.format(cmt), '-overwrite_original', '-q', name]
     rv = subprocess.call(args)
-    modtime = int(mktime((year, int(fields[2]), int(fields[3][:2]), 
-                          int(fields[3][3:]), int(fields[4]), int(fields[5]), 
+    modtime = int(mktime((year, int(fields[2]), int(fields[3][:2]),
+                          int(fields[3][3:]), int(fields[4]), int(fields[5]),
                           0,0,-1)))
     utime(name, (modtime, modtime))
     globallock.acquire()
