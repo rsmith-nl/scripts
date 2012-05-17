@@ -36,15 +36,15 @@ def processfile(name):
     try:
         ed = getexifdict(name)
         fields = ed['CreateDate'].split(':')
-        dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]), 
+        dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]),
                       int(fields[3]), int(fields[4]), int(fields[5]))
     except:
         ed = {}
         cds = '{}:{}:{} {}:{}:{}'
         dt = datetime.today()
-        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, 
+        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
                                       dt.hour, dt.minute, dt.second)
-    args = ['mogrify', '-strip', '-resize', '886', '-units', 'PixelsPerInch', 
+    args = ['mogrify', '-strip', '-resize', '886', '-units', 'PixelsPerInch',
             '-density', '300', '-quality', '90', name]
     rv = subprocess.call(args)
     errstr = "Error when processing file '{}'"
@@ -58,12 +58,12 @@ def processfile(name):
     args += ['-q', '-overwrite_original', name]
     rv = subprocess.call(args)
     if rv == 0:
-        modtime = mktime((dt.year, dt.month, dt.day, dt.hour, 
+        modtime = mktime((dt.year, dt.month, dt.day, dt.hour,
                          dt.minute, dt.second, 0,0,-1))
         utime(name, (modtime, modtime))
         globallock.acquire()
         print "File '{}' processed".format(name)
-        globallock.release()        
+        globallock.release()
     else:
         globallock.acquire()
         print errstr.format(name)
