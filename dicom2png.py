@@ -29,7 +29,7 @@ def processfile(fname):
     '''Use the convert(1) program from the ImageMagick suite to convert the
        image and crop it.'''
     size = '1574x2048'
-    args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300', 
+    args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300',
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
     rv = subprocess.call(args)
     globallock.acquire()
