@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# 2012-06-29
+# Time-stamp: <2012-06-29 23:23:24 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to NAME. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# related or neighboring rights to tiff2pdf.py. This work is published from
+# the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-'''Description.'''
+"""Convert TIFF files to PDF format using the libtiff package."""
 
 import os
 import sys
@@ -18,7 +18,10 @@ from multiprocessing import Pool, Lock
 globallock = Lock()
 
 def checkfor(args):
-    """Make sure that a program necessary for using this script is available."""
+    """Make sure that a program necessary for using this script is
+    available."""
+    if isinstance(args, str):
+        args = args.split()
     try:
         f = open('/dev/null')
         subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
@@ -63,8 +66,8 @@ if __name__ == '__main__':
         path, binary = os.path.split(sys.argv[0])
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
-    checkfor(['tiffinfo'])
-    checkfor(['tiff2pdf'])
+    checkfor('tiffinfo')
+    checkfor('tiff2pdf')
     p = Pool()
     p.map(process, sys.argv[1:])
     p.close()
