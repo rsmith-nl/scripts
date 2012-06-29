@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-04-28 11:31:29 rsmith>
+# Time-stamp: <2012-06-29 23:29:38 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-'Shrink fotos to a size suitable for use in my logbook and other documents.'
+"""Shrink fotos to a size suitable for use in my logbook and other
+   documents."""
 
 import sys
 import subprocess
@@ -24,11 +25,11 @@ def getexifdict(name):
     lines = data.splitlines()
     ld = {}
     for l in lines:
-        key, val = l.split(':',1)
+        key, val = l.split(':', 1)
         key = key.replace(' ', '')
         val = val.strip()
         if key == 'CreateDate':
-            val = val.replace(' ',':')
+            val = val.replace(' ', ':')
         ld[key] = val
     return ld
 
@@ -70,11 +71,16 @@ def processfile(name):
         globallock.release()
 
 def checkfor(args):
-    '''Make sure that a program necessary for using this script is available.'''
+    """Make sure that a program necessary for using this script is
+    available."""
+    if isinstance(args, str):
+        args = args.split()
     try:
-        subprocess.check_output(args, stderr=subprocess.STDOUT)
-    except CalledProcessError:
-        print "Required program '{}' not found! exiting.".format(progname)
+        f = open('/dev/null')
+        subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
+        f.close()
+    except:
+        print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
 
 if __name__ == '__main__':
