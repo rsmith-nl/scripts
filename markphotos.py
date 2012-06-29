@@ -3,7 +3,7 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-04-28 11:42:44 rsmith>
+# Time-stamp: <2012-06-29 23:19:12 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
@@ -38,11 +38,16 @@ def processfile(name):
     globallock.release()
 
 def checkfor(args):
-    '''Make sure that a program necessary for using this script is available.'''
+    """Make sure that a program necessary for using this script is
+    available."""
+    if isinstance(args, str):
+        args = args.split()
     try:
-        subprocess.check_output(args, stderr=subprocess.STDOUT)
-    except CalledProcessError:
-        print "Required program '{}' not found! exiting.".format(progname)
+        f = open('/dev/null')
+        subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
+        f.close()
+    except:
+        print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
 
 if __name__ == '__main__':
