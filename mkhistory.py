@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date: 2012-07-29$
+# $Date: 2012-08-05$
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
@@ -28,6 +28,7 @@ revisiecontrolesysteem. De meest recente wijzigingen staan bovenaan.
 commithdr = r'wijziging:'
 authorhdr = r'door:'
 datehdr = r'datum:'
+
 # If you change the commithdr, authorhdr or datehdr, you might have to change
 # the widths in the begintable text below.
 begintable = r"""\begingroup\hspace{-\tabcolsep}
@@ -38,6 +39,11 @@ endtable = r"""\end{tabular}\endgroup
 """
 
 def genrecords(lol):
+    """Generate a LaTeX table for each commit in the input lines..
+
+    Keyword arguments:
+    lol -- list of lines
+    """
     rv = ''
     for ln in lol:
         if ln.startswith('commit'):
