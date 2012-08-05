@@ -68,12 +68,17 @@ def genrecords(lol):
         yield rv
     return
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        path, binary = os.path.split(sys.argv[0])
+def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
+    if len(argv) == 1:
+        path, binary = os.path.split(argv[0])
         print "Usage: {} outputfilename".format(binary)
-        exit(0)
-    fn = sys.argv[1]
+        sys.exit(0)
+    fn = argv[1]
     try:
         lines = subprocess.check_output(['git', 'log']).split('\n')
     except  CalledProcessError:
@@ -87,3 +92,6 @@ if __name__ == '__main__':
     for rec in genrecords(lines):
         of.write(rec)
     of.close()
+
+if __name__ == '__main__':
+    main(sys.argv)
