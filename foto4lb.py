@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-06-29 23:29:38 rsmith>
+# Time-stamp: <2012-08-05 13:40:10 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -18,6 +18,8 @@ from os import utime
 import os.path
 from time import mktime
 from datetime import datetime
+
+globallock = Lock()
 
 def getexifdict(name):
     args = ['exiftool', '-CreateDate', '-Comment', '-Copyright', name]
@@ -46,7 +48,7 @@ def processfile(name):
         ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
                                       dt.hour, dt.minute, dt.second)
     args = ['mogrify', '-strip', '-resize', '886', '-units', 'PixelsPerInch',
-            '-density', "300', '-quality', '90', name]
+            '-density', '300', '-quality', '90', name]
     rv = subprocess.call(args)
     errstr = "Error when processing file '{}'"
     if rv != 0:
@@ -83,15 +85,21 @@ def checkfor(args):
         print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
 
-if __name__ == '__main__':
-    files = sys.argv[1:]
-    if len(files) == 0:
-        path, binary = os.path.split(sys.argv[0])
+def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
+    if len(argv) == 1:
+        path, binary = os.path.split(argv[0])
         print "Usage: {} [file ...]".format(binary)
-        exit(0)
+        sys.exit(0)
     checkfor(['exiftool',  '-ver'])
     checkfor('mogrify')
-    globallock = Lock()
     p = Pool()
-    p.map(processfile, files)
+    p.map(processfile, argv[1:])
     p.close()
+
+if __name__ == '__main__':
+    main(sys.argv)
