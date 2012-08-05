@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-06-29 23:16:10 rsmith>
+# Time-stamp: <2012-08-05 13:41:14 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -16,6 +16,8 @@ import os
 import sys
 import subprocess
 from multiprocessing import Pool, Lock
+
+globallock = Lock()
 
 def checkfor(args):
     """Make sure that a program necessary for using this script is
@@ -34,7 +36,7 @@ def processfile(fname):
     """Use the convert(1) program from the ImageMagick suite to convert the
        image and crop it."""
     size = '1574x2048'
-    args = ['convert', fname, '-units', 'PixelsPerInch', '-density', "300',
+    args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300',
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
     rv = subprocess.call(args)
     globallock.acquire()
@@ -44,14 +46,22 @@ def processfile(fname):
         print "File '{}' processed.".format(fname)
     globallock.release()
 
-## This is the main program ##
-if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        path, binary = os.path.split(sys.argv[0])
+def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
+    if len(argv) == 1:
+        path, binary = os.path.split(argv[0])
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
     checkfor('convert')
-    globallock = Lock()
     p = Pool()
-    p.map(processfile, sys.argv[1:])
+    p.map(processfile, argv[1:])
     p.close()
+
+
+## This is the main program ##
+if __name__ == '__main__':
+    main(sys.argv)

@@ -47,11 +47,19 @@ def histogram(counts, sz, name):
     plt.savefig('hist-' + name+'.png', bbox_inches='tight')
     plt.close()
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
+def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
+    if len(argv) < 2:
         sys.exit(1)
-    for fn in sys.argv[1:]:
+    for fn in argv[1:]:
         hdata, size = readdata(fn)
         e = entropy(hdata, size)
         print "entropy of {} is {:.4f} bits/byte".format(fn, e)
         histogram(hdata, size, fn)
+
+if __name__ == '__main__':
+    def main(sys.argv)

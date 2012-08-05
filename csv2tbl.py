@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-07-17 00:13:39 rsmith>
+# Time-stamp: <2012-08-05 13:29:09 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to csv2tbl.py. This work is published from
@@ -15,15 +15,42 @@ import os.path
 from datetime import date
 
 def readlines(filename):
-    """Read a file and return the contents as a list of lines."""
-    infile = open(filename)
-    lines = infile.readlines()
-    infile.close()
-    lines = [l.rstrip() for l in lines]
+    """Read a file and return the contents as a list of lines.
+
+    Keyword arguments:
+    filename -- name of the file to read.
+    """
+    with open(filename) as infile:
+        lines = infile.readlines()
+    lines = [l.strip() for l in lines]
     return lines
 
+def csvsep(lines, separators=',\t;:'):
+    """Determine and return the separator used in the lines of csv data.
+
+    Keyword arguments:
+    lines -- csv data
+    separator -- string of separators
+    """
+    mx = 0
+    sep = ''
+    for c in separators:
+        n = lines[1].count(c)
+        if n > mx:
+            mx = n
+            sep = c
+    return sep
+
 def fmtcsv(line, sep):
-    """Format a single line of CSV as a LaTeX table cells."""
+    """Format a single line of CSV data as a LaTeX table cells.
+
+    Keyword arguments:
+    line -- the string of CSV data to convert
+    sep  -- the separator to use
+    """
+    # Skip empty lines.
+    if len(line) == line.count(sep):
+        return
     items = line.split(sep)
     outs =  '    '
     for it in items:
@@ -33,27 +60,27 @@ def fmtcsv(line, sep):
     outs = outs.replace(r' & \\', r'\\')
     print outs
 
+
 def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
     if len(argv) < 2:
         print "Usage: {} file".format(argv[0])
         sys.exit(0)
     # Read the data into a list of lines.
-    lines = readlines(sys.argv[1])
+    lines = readlines(argv[1])
     # Check which seperator is used.
-    mx = 0
-    sep = ''
-    for c in ';,\t':
-        n = lines[0].count(c)
-        if n > mx:
-            mx = n
-            sep = c
+    sep = csvsep(lines)
     # Get the filename and remove the extension.
     fname = os.path.basename(argv[1])
     shortname = fname[:]
     if fname.endswith(('.csv', '.CSV')):
         fname = fname[:-4]
     # Create a format definition for the tabular environment.
-    columns = len(lines[0].split(sep))
+    columns = len(lines[1].split(sep))
     columns = 'l'*columns
     # Print the output.
     print '% Generated from '+ str(shortname)
@@ -70,6 +97,7 @@ def main(argv):
     print r'    \bottomrule'
     print r'  \end{tabular}'
     print r'\end{table}'
+
 
 ## This is the main program ##
 if __name__ == '__main__':

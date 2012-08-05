@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-06-29 23:23:24 rsmith>
+# Time-stamp: <2012-08-05 14:09:42 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -36,12 +36,13 @@ def process(fname):
         args = ['tiffinfo', fname]
             # Gather information about the TIFF file.
         txt = subprocess.check_output(args).split()
-        if not txt[7] == 'Width:':
+        if 'Width:' not in txt:
             raise ValueError
-        width = float(txt[8])
-        length = float(txt[11])
-        xres = float(txt[13][:-1])
-        yres = float(txt[14])
+        index = txt.index('Width:')
+        width = float(txt[index+1])
+        length = float(txt[index+4])
+        xres = float(txt[index+6][:-1])
+        yres = float(txt[index+7])
             # Create the output file name.
         if fname.endswith(('.tif', '.TIF')):
             outname = fname[:-4]
@@ -53,21 +54,28 @@ def process(fname):
         subprocess.call(args)
         globallock.acquire()
         print "File '{}' converted to '{}'.".format(fname, outname)
-        globallock.release()
-        
+        globallock.release()  
     except:
+        exctype, value = sys.exc_info()[:2]
         globallock.acquire()
         print "Converting {} failed.".format(fname)
         globallock.release()
 
-## This is the main program ##
-if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        path, binary = os.path.split(sys.argv[0])
+def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
+    if len(argv) == 1:
+        path, binary = os.path.split(argv[0])
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
     checkfor('tiffinfo')
     checkfor('tiff2pdf')
     p = Pool()
-    p.map(process, sys.argv[1:])
+    p.map(process, argv[1:])
     p.close()
+
+if __name__ == '__main__':
+    main(sys.argv)
