@@ -3,7 +3,7 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Time-stamp: <2012-06-29 23:19:12 rsmith>
+# Time-stamp: <2012-08-05 13:48:48 rsmith>
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
@@ -15,6 +15,8 @@ from multiprocessing import Pool, Lock
 from os import utime
 import os.path
 from time import mktime
+
+globallock = Lock() 
 
 def processfile(name):
     args = ['exiftool', '-CreateDate', name]
@@ -50,14 +52,20 @@ def checkfor(args):
         print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
 
-if __name__ == '__main__':
-    files = sys.argv[1:]
-    if len(files) == 0:
-        path, binary = os.path.split(sys.argv[0])
+def main(argv):
+    """Main program.
+
+    Keyword arguments:
+    argv -- command line arguments
+    """
+    if len(argv) == 1:
+        path, binary = os.path.split(argv[0])
         print "Usage: {} [file ...]".format(binary)
-        exit(0)
-    checkfor(['exiftool', '-ver'])
-    globallock = Lock()
+        sys.exit(0)
+    checkfor(['exiftool',  '-ver'])
     p = Pool()
-    p.map(processfile, files)
+    p.map(processfile, argv[1:])
     p.close()
+
+if __name__ == '__main__':
+    main(sys.argv)
