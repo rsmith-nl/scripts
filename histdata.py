@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-'''Make a histogram of the bytes in the input files, and calculate their
-entropy.'''
+"""Make a histogram of the bytes in the input files, and calculate their
+entropy."""
 
 import sys
 import math
@@ -9,8 +9,8 @@ import subprocess
 import matplotlib.pyplot as plt
 
 def readdata(name):
-    '''Read the data from a file and count how often each byte value
-    occurs.'''
+    """Read the data from a file and count how often each byte value
+    occurs."""
     f = open(name, 'rb')
     data = f.read()
     f.close()
@@ -22,7 +22,7 @@ def readdata(name):
     return (counts, float(len(ba)))
 
 def entropy(counts, sz):
-    '''Calculate the entropy of the data represented by the counts list'''
+    """Calculate the entropy of the data represented by the counts list"""
     ent = 0.0
     for b in counts:
         if b == 0:
@@ -32,7 +32,7 @@ def entropy(counts, sz):
     return ent*8
 
 def histogram(counts, sz, name):
-    '''Use matplotlib to create a histogram from the data'''
+    """Use matplotlib to create a histogram from the data"""
     xdata = [n for n in xrange(0, 256)]
     counts = [100*c/sz for c in counts]
     top = math.ceil(max(counts)*10.0)/10.0

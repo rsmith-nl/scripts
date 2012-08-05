@@ -8,14 +8,14 @@
 # related or neighboring rights to csv2tbl.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-'''Convert a CSV file to a LaTeX table'''
+"""Convert a CSV file to a LaTeX table"""
 
 import sys
 import os.path
 from datetime import date
 
 def readlines(filename):
-    '''Read a file and return the contents as a list of lines.'''
+    """Read a file and return the contents as a list of lines."""
     infile = open(filename)
     lines = infile.readlines()
     infile.close()
@@ -23,7 +23,7 @@ def readlines(filename):
     return lines
 
 def fmtcsv(line, sep):
-    '''Format a single line of CSV as a LaTeX table cells.'''
+    """Format a single line of CSV as a LaTeX table cells."""
     items = line.split(sep)
     outs =  '    '
     for it in items:

@@ -8,9 +8,9 @@
 # related or neighboring rights to dicom2png.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-'''Convert DICOM files to PNG format, remove blank areas. The blank erea
+"""Convert DICOM files to PNG format, remove blank areas. The blank erea
    removal is based on the image size of a Philips flat detector. The image
-   goes from 2048x2048 pixels to 1574x2048 pixels.'''
+   goes from 2048x2048 pixels to 1574x2048 pixels."""
 
 import os
 import sys
@@ -31,10 +31,10 @@ def checkfor(args):
         sys.exit(1)
 
 def processfile(fname):
-    '''Use the convert(1) program from the ImageMagick suite to convert the
-       image and crop it.'''
+    """Use the convert(1) program from the ImageMagick suite to convert the
+       image and crop it."""
     size = '1574x2048'
-    args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300',
+    args = ['convert', fname, '-units', 'PixelsPerInch', '-density', "300',
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
     rv = subprocess.call(args)
     globallock.acquire()
