@@ -8,7 +8,7 @@
 # related or neighboring rights to mkhistory.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-'''Script to format a Git log for LaTeX'''
+"""Script to format a Git log for LaTeX"""
 
 import subprocess
 import sys
@@ -16,7 +16,7 @@ import os
 
 # The following texts determine how the commits are generated. Change them to
 # suit your preferences.
-header = r'''% -*- latex -*-
+header = r"""% -*- latex -*-
 % Automatisch gegenereerd door tools/mkhistory.py
 
 \chapter{Wijzigingen}
@@ -24,18 +24,18 @@ header = r'''% -*- latex -*-
 Dit hoofdstuk wordt automatisch gegenereerd uit het \texttt{git}
 revisiecontrolesysteem. De meest recente wijzigingen staan bovenaan.
 
-'''
+"""
 commithdr = r'wijziging:'
 authorhdr = r'door:'
 datehdr = r'datum:'
 # If you change the commithdr, authorhdr or datehdr, you might have to change
 # the widths in the begintable text below.
-begintable = r'''\begingroup\hspace{-\tabcolsep}
+begintable = r"""\begingroup\hspace{-\tabcolsep}
 \begin{tabular}{p{0.1\textwidth}p{0.8\textwidth}}
-'''
-endtable = r'''\end{tabular}\endgroup
+"""
+endtable = r"""\end{tabular}\endgroup
 
-'''
+"""
 
 def genrecords(lol):
     rv = ''
