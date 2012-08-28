@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Make a histogram of the bytes in the input files, and calculate their
 entropy."""
@@ -7,19 +8,18 @@ import sys
 import math
 import subprocess
 import matplotlib.pyplot as plt
+import os
 
 def readdata(name):
     """Read the data from a file and count how often each byte value
     occurs."""
-    f = open(name, 'rb')
-    data = f.read()
-    f.close()
-    ba = bytearray(data)
-    del data
+    with open(name, 'rb') as f:
+        ba = bytearray(os.path.getsize(name))
+        f.readinto(ba)
     counts = [0]*256
     for b in ba:
         counts[b] += 1
-    return (counts, float(len(ba)))
+    return (counts, len(ba))
 
 def entropy(counts, sz):
     """Calculate the entropy of the data represented by the counts list"""
@@ -53,13 +53,14 @@ def main(argv):
     Keyword arguments:
     argv -- command line arguments
     """
-    if len(argv) < 2:
+    if len(argv) < 1:
+        print 'No arguments given. Quitting.'
         sys.exit(1)
-    for fn in argv[1:]:
+    for fn in argv:
         hdata, size = readdata(fn)
         e = entropy(hdata, size)
         print "entropy of {} is {:.4f} bits/byte".format(fn, e)
         histogram(hdata, size, fn)
 
 if __name__ == '__main__':
-    def main(sys.argv)
+    main(sys.argv[1:])
