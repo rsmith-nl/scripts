@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date: 2012-08-05$
+# $Date$
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
