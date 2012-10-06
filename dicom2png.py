@@ -15,36 +15,54 @@
 import os
 import sys
 import subprocess
-from multiprocessing import Pool, Lock
-
-globallock = Lock()
+from multiprocessing import cpu_count
+from time import sleep
 
 def checkfor(args):
     """Make sure that a program necessary for using this script is
-    available."""
+    available.
+
+    Arguments:
+    args -- string or list of strings of commands. A single string may
+            not contain spaces.
+    """
     if isinstance(args, str):
-        args = args.split()
+        if ' ' in args:
+            raise ValueError('No spaces in single command allowed.')
+        args = [args]
     try:
-        f = open('/dev/null')
-        subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
-        f.close()
+        with open('/dev/null', 'w') as bb:
+            subprocess.check_call(args, stdout=bb, stderr=bb)
     except:
         print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
 
-def processfile(fname):
+def startconvert(fname):
     """Use the convert(1) program from the ImageMagick suite to convert the
        image and crop it."""
     size = '1574x2048'
     args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300',
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
-    rv = subprocess.call(args)
-    globallock.acquire()
-    if rv != 0:
-        print "Error '{}' when processing file '{}'.".format(rv, fname)
-    else:
-        print "File '{}' processed.".format(fname)
-    globallock.release()
+    with open('/dev/null') as bb:
+        p = subprocess.Popen(args, stdout=bb, stderr=bb)
+    print 'Start processing', fname
+    return (fname, p)
+
+def manageprocs(proclist):
+    """Check a list of subprocesses for processes that have ended and
+    remove them from the list.
+    """
+    for it in proclist:
+        fn, pr = it
+        result = pr.poll()
+        if result != None:
+            proclist.remove(it)
+            if result == 0:
+                print 'Finished processing', fn
+            else:
+                s = 'The conversion of {} exited with error code {}.'
+                print s.format(fn, result)
+    sleep(0.5)
 
 def main(argv):
     """Main program.
@@ -56,10 +74,16 @@ def main(argv):
         path, binary = os.path.split(argv[0])
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
+    del argv[0] # delete the name of the script.
     checkfor('convert')
-    p = Pool()
-    p.map(processfile, argv[1:])
-    p.close()
+    procs = []
+    maxprocs = cpu_count()
+    for ifile in argv:
+        while len(procs) == maxprocs:
+            manageprocs(procs)
+        procs.append(startconvert(ifile))
+    while len(procs) > 0:
+        manageprocs(procs)
 
 
 ## This is the main program ##
