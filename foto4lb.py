@@ -24,7 +24,7 @@ globallock = Lock()
 def getexifdict(name):
     args = ['exiftool', '-CreateDate', '-Comment', '-Copyright', name]
     data = subprocess.check_output(args)
-    lines = data.splitlines()
+    lines = data.splitlines() #pylint: disable=E1103
     ld = {}
     for l in lines:
         key, val = l.split(':', 1)
@@ -92,7 +92,7 @@ def main(argv):
     argv -- command line arguments
     """
     if len(argv) == 1:
-        path, binary = os.path.split(argv[0])
+        path, binary = os.path.split(argv[0]) #pylint: disable=W0612
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
     checkfor(['exiftool',  '-ver'])
