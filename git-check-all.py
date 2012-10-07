@@ -71,8 +71,9 @@ def runchecks(d):
 
 def main():
     """Main program."""
+    #pylint: disable=W0612
     checkfor(['git', '--version'])
-    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
+    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']): 
         if '.git' in dirnames:
             runchecks(dirpath)
 

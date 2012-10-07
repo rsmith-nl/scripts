@@ -6,7 +6,6 @@ entropy."""
 
 import sys
 import math
-import subprocess
 import matplotlib.pyplot as plt
 import os
 
@@ -37,7 +36,7 @@ def histogram(counts, sz, name):
     counts = [100*c/sz for c in counts]
     top = math.ceil(max(counts)*10.0)/10.0
     rnd = [1.0/256*100]*256
-    fig = plt.figure(None, (7, 4), 100)
+    plt.figure(None, (7, 4), 100)
     plt.axis([0, 255, 0, top])
     plt.xlabel('byte value')
     plt.ylabel('occurance [%]')

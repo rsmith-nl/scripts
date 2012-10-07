@@ -71,7 +71,7 @@ def main(argv):
     argv -- command line arguments
     """
     if len(argv) == 1:
-        path, binary = os.path.split(argv[0])
+        path, binary = os.path.split(argv[0]) #pylint: disable=W0612
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
     del argv[0] # delete the name of the script.
