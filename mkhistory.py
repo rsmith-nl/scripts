@@ -81,13 +81,14 @@ def main(argv):
     argv -- command line arguments
     """
     if len(argv) == 1:
-        path, binary = os.path.split(argv[0])
+        path, binary = os.path.split(argv[0]) #pylint: disable=W0612
         print "Usage: {} outputfilename".format(binary)
         sys.exit(0)
     fn = argv[1]
     try:
+        #pylint: disable=E1103
         lines = subprocess.check_output(['git', 'log']).split('\n')
-    except  CalledProcessError:
+    except  subprocess.CalledProcessError:
         print "Git not found! Stop."
         sys.exit(1)
     if fn == '-':
