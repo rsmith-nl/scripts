@@ -21,7 +21,7 @@ globallock = Lock()
 def processfile(name):
     args = ['exiftool', '-CreateDate', name]
     createdate = subprocess.check_output(args)
-    fields = createdate.split(":")
+    fields = createdate.split(":") #pylint: disable=E1103
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
     cmt = "Copyright © {} {}".format(year, cr)
@@ -59,7 +59,7 @@ def main(argv):
     argv -- command line arguments
     """
     if len(argv) == 1:
-        path, binary = os.path.split(argv[0])
+        path, binary = os.path.split(argv[0]) #pylint: disable=W0612
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
     checkfor(['exiftool',  '-ver'])
