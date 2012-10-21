@@ -73,7 +73,7 @@ def main(argv):
     argv -- command line arguments
     """
     if len(argv) == 1:
-        path, binary = os.path.split(argv[0]) #pylint: disable=W0612
+        binary = os.path.basename(argv[0])
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
     checkfor('tiffinfo')
