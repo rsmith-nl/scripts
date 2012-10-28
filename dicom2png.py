@@ -31,7 +31,7 @@ def checkfor(args):
             raise ValueError('No spaces in single command allowed.')
         args = [args]
     try:
-        with open('/dev/null', 'w') as bb:
+        with open(os.devnull, 'w') as bb:
             subprocess.check_call(args, stdout=bb, stderr=bb)
     except:
         print "Required program '{}' not found! exiting.".format(args[0])
@@ -43,7 +43,7 @@ def startconvert(fname):
     size = '1574x2048'
     args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300',
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
-    with open('/dev/null') as bb:
+    with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
     print 'Start processing', fname
     return (fname, p)

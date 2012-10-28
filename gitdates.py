@@ -30,7 +30,7 @@ def checkfor(args):
             raise ValueError('No spaces in single command allowed.')
         args = [args]
     try:
-        with open('/dev/null', 'w') as bb:
+        with open(os.devnull, 'w') as bb:
             subprocess.check_call(args, stdout=bb, stderr=bb)
     except subprocess.CalledProcessError:
         print "Required program '{}' not found! exiting.".format(args[0])
@@ -40,6 +40,9 @@ def filecheck(fname):
     """Start a git process to get file info. Return a string
     containing the filename, the abbreviated commit hash and the
     author date in ISO 8601 format.
+
+    Arguments:
+    fname -- Name of the file to check.
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%ai', fname]
     try:

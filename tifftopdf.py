@@ -30,7 +30,7 @@ def checkfor(args):
             raise ValueError('No spaces in single command allowed.')
         args = [args]
     try:
-        with open('/dev/null', 'w') as bb:
+        with open(os.devnull, 'w') as bb:
             subprocess.check_call(args, stdout=bb, stderr=bb)
     except:
         print "Required program '{}' not found! exiting.".format(args[0])
