@@ -41,12 +41,12 @@ def filecheck(fname):
     containing the filename, the abbreviated commit hash and the
     author date in ISO 8601 format.
     """
-    args = ['git', '--no-pager', 'log', '-1', '--format=%h %ai', fname]
+    args = ['git', '--no-pager', 'log', '-1', '--format=%h|%ai', fname]
     try:
-        data = subprocess.check_output(args)
+        data = subprocess.check_output(args)[:-1]
     except subprocess.CalledProcessError:
-        data = 'no data'
-    outs = '{} {}'.format(fname[2:], data[:-1])
+        data = ''
+    outs = '{}|{}'.format(fname[2:], data)
     return outs
 
 def main():
