@@ -12,7 +12,7 @@
 import sys
 import subprocess
 from multiprocessing import Pool, Lock
-from os import utime
+from os import utime, devnull
 import os.path
 from time import mktime
 
@@ -45,9 +45,8 @@ def checkfor(args):
     if isinstance(args, str):
         args = args.split()
     try:
-        f = open('/dev/null')
-        subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
-        f.close()
+        with open(devnull, 'w') as f:
+            subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
     except:
         print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
