@@ -4,11 +4,13 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # $Date$
 #
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to <script>. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# To the extent possible under law, Roland Smith has waived all
+# copyright and related or neighboring rights to gitdates.py. This
+# work is published from the Netherlands. See
+# http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Description."""
+"""For each file in a directory managed by git, get the short hash and
+data of the most recent commit of that file."""
 
 import os
 import sys
@@ -35,7 +37,10 @@ def checkfor(args):
         sys.exit(1)
 
 def filecheck(fname):
-    """Start a git process to get file info."""
+    """Start a git process to get file info. Return a string
+    containing the filename, the abbreviated commit hash and the
+    author date in ISO 8601 format.
+    """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h %ai', fname]
     try:
         data = subprocess.check_output(args)
@@ -43,8 +48,6 @@ def filecheck(fname):
         data = 'no data'
     outs = '{} {}'.format(fname[2:], data[:-1])
     return outs
-
-#    gprint("Updating {} failed.".format(fname))
 
 def main():
     """Main program."""
