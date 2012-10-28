@@ -13,17 +13,7 @@
 import os
 import sys
 import subprocess
-from multiprocessing import Pool, Lock
-
-def gprint(s):
-    """Print a string while holding the global print lock.
-
-    Arguments:
-    s -- string to print
-    """
-    prlock.acquire()
-    print s
-    prlock.release()
+from multiprocessing import Pool
 
 def checkfor(args):
     """Make sure that a program necessary for using this script is
@@ -60,12 +50,12 @@ def main():
     """Main program."""
     checkfor(['git', '--version'])
     allfiles = []
+    if not '.git' in os.listdir('.'):
+        print 'This directory is not managed by git.'
+        sys.exit(0)
     for root, dirs, files in os.walk('.'):
         if '.git' in dirs:
             dirs.remove('.git')
-        if root == './' and not '.git' in dirs:
-            print 'This directory is not managed by git.'
-            sys.exit(0)
         tmp = [os.path.join(root, f) for f in files]
         allfiles += tmp
     p = Pool()
