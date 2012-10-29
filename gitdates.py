@@ -15,6 +15,7 @@ data of the most recent commit of that file."""
 import os
 import sys
 import subprocess
+import time
 from multiprocessing import Pool
 
 # Suppres terminal windows on MS windows.
@@ -51,17 +52,34 @@ def filecheck(fname):
     Arguments:
     fname -- Name of the file to check.
     """
-    args = ['git', '--no-pager', 'log', '-1', '--format=%h|%ai', fname]
+    args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
         data = subprocess.check_output(args, startupinfo=startupinfo)[:-1]
+        h, t = data.split('|')
+        out = (fname[2:], h, time.gmtime(float(t)))
     except subprocess.CalledProcessError:
-        data = ''
-    outs = '{}|{}'.format(fname[2:], data)
-    return outs
+        out = (fname)
+    return out
+
+def filedatasorter(a, b):
+    """Sort the 3-tuples of the filedata list in reverse order, according
+    to their dates which is the third item in the tuple.
+
+    Arguments:
+    a, b -- 3-tuple of a name, short hash tag and struct_time.
+    """
+    p = a[2]
+    q = b[2]
+    if p > q:
+        return -1
+    if p == q:
+        return 0
+    return 1
 
 def main():
     """Main program."""
     checkfor(['git', '--version'])
+    # Get a list of all files
     allfiles = []
     if not '.git' in os.listdir('.'):
         print 'This directory is not managed by git.'
@@ -71,10 +89,18 @@ def main():
             dirs.remove('.git')
         tmp = [os.path.join(root, f) for f in files]
         allfiles += tmp
+    # Gather the files' data using a Pool.
     p = Pool()
+    filedata = []
     for res in p.imap(filecheck, allfiles):
-        print res
+        filedata.append(res)
     p.close()
+    # Sort the data (latest modified first) and print it
+    filedata.sort(filedatasorter)
+    dfmt = '%Y-%m-%d %H:%M:%S %Z'
+    for name, tag, date in filedata:
+        print '{}|{}|{}'.format(name, tag, time.strftime(dfmt, date))
+
 
 if __name__ == '__main__':
     main()
