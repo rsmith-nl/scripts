@@ -17,6 +17,12 @@ import sys
 import subprocess
 from multiprocessing import Pool
 
+# Suppres terminal windows on MS windows.
+startupinfo = None
+if os.name == 'nt':
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
 def checkfor(args):
     """Make sure that a program necessary for using this script is
     available.
@@ -31,7 +37,8 @@ def checkfor(args):
         args = [args]
     try:
         with open(os.devnull, 'w') as bb:
-            subprocess.check_call(args, stdout=bb, stderr=bb)
+            subprocess.check_call(args, stdout=bb, stderr=bb, 
+                                  startupinfo=startupinfo)
     except subprocess.CalledProcessError:
         print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
@@ -46,7 +53,7 @@ def filecheck(fname):
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%ai', fname]
     try:
-        data = subprocess.check_output(args)[:-1]
+        data = subprocess.check_output(args, startupinfo=startupinfo)[:-1]
     except subprocess.CalledProcessError:
         data = ''
     outs = '{}|{}'.format(fname[2:], data)
