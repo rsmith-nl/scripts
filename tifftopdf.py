@@ -17,7 +17,7 @@ from multiprocessing import Pool, Lock
 
 globallock = Lock()
 
-def checkfor(args):
+def checkfor(args, rv = 0):
     """Make sure that a program necessary for using this script is
     available.
 
@@ -29,10 +29,9 @@ def checkfor(args):
         if ' ' in args:
             raise ValueError('No spaces in single command allowed.')
         args = [args]
-    try:
-        with open(os.devnull, 'w') as bb:
-            subprocess.check_call(args, stdout=bb, stderr=bb)
-    except:
+    with open(os.devnull, 'w') as bb:
+        rc = subprocess.call(args, stdout=bb, stderr=bb)
+    if rc != rv:
         print "Required program '{}' not found! exiting.".format(args[0])
         sys.exit(1)
 
@@ -76,8 +75,8 @@ def main(argv):
         binary = os.path.basename(argv[0])
         print "Usage: {} [file ...]".format(binary)
         sys.exit(0)
-    checkfor('tiffinfo')
-    checkfor('tiff2pdf')
+    checkfor('tiffinfo', 255)
+    checkfor(['tiff2pdf', '-v'])
     p = Pool()
     p.map(process, argv[1:])
     p.close()
