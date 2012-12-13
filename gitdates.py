@@ -17,32 +17,13 @@ import sys
 import subprocess
 import time
 from multiprocessing import Pool
+from checkfor import checkfor
 
 # Suppres terminal windows on MS windows.
 startupinfo = None
 if os.name == 'nt':
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-def checkfor(args):
-    """Make sure that a program necessary for using this script is
-    available.
-
-    Arguments:
-    args -- string or list of strings of commands. A single string may
-            not contain spaces.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('No spaces in single command allowed.')
-        args = [args]
-    try:
-        with open(os.devnull, 'w') as bb:
-            subprocess.check_call(args, stdout=bb, stderr=bb, 
-                                  startupinfo=startupinfo)
-    except subprocess.CalledProcessError:
-        print "Required program '{}' not found! exiting.".format(args[0])
-        sys.exit(1)
 
 def filecheck(fname):
     """Start a git process to get file info. Return a string

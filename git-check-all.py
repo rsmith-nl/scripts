@@ -14,24 +14,7 @@ unless they have uncommitted changes."""
 import os
 import sys
 import subprocess
-
-def checkfor(args):
-    """Make sure that a program necessary for using this script is
-    available.
-
-    arguments:
-    args -- string or list of strings of commands.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('No spaces in single command allowed.')
-        args = [args]
-    try:
-        with open(os.devnull, 'w') as bb:
-            subprocess.check_call(args, stdout=bb, stderr=bb)
-    except subprocess.CalledProcessError:
-        print "Required program '{}' not found! exiting.".format(args[0])
-        sys.exit(1)
+from checkfor import checkfor
 
 def gitcmd(cmds, output=False):
     """Run the specified git command.

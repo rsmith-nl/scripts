@@ -17,25 +17,7 @@ import sys
 import subprocess
 from multiprocessing import cpu_count
 from time import sleep
-
-def checkfor(args):
-    """Make sure that a program necessary for using this script is
-    available.
-
-    Arguments:
-    args -- string or list of strings of commands. A single string may
-            not contain spaces.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('No spaces in single command allowed.')
-        args = [args]
-    try:
-        with open(os.devnull, 'w') as bb:
-            subprocess.check_call(args, stdout=bb, stderr=bb)
-    except:
-        print "Required program '{}' not found! exiting.".format(args[0])
-        sys.exit(1)
+from checkfor import checkfor
 
 def startconvert(fname):
     """Use the convert(1) program from the ImageMagick suite to convert the

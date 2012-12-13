@@ -14,26 +14,9 @@ import os
 import sys
 import subprocess
 from multiprocessing import Pool, Lock
+from checkfor import checkfor
 
 globallock = Lock()
-
-def checkfor(args, rv = 0):
-    """Make sure that a program necessary for using this script is
-    available.
-
-    Arguments:
-    args -- string or list of strings of commands. A single string may
-            not contain spaces.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('No spaces in single command allowed.')
-        args = [args]
-    with open(os.devnull, 'w') as bb:
-        rc = subprocess.call(args, stdout=bb, stderr=bb)
-    if rc != rv:
-        print "Required program '{}' not found! exiting.".format(args[0])
-        sys.exit(1)
 
 def process(fname):
     """Process the file named fname."""
