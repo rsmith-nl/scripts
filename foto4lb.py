@@ -18,6 +18,7 @@ from os import utime
 import os.path
 from time import mktime
 from datetime import datetime
+from checkfor import checkfor
 
 globallock = Lock()
 
@@ -71,18 +72,6 @@ def processfile(name):
         globallock.acquire()
         print errstr.format(name)
         globallock.release()
-
-def checkfor(args):
-    """Make sure that a program necessary for using this script is
-    available."""
-    if isinstance(args, str):
-        args = args.split()
-    try:
-        with open(os.devnull, 'w') as f:
-            subprocess.call(args, stderr=subprocess.STDOUT, stdout=f)
-    except:
-        print "Required program '{}' not found! exiting.".format(args[0])
-        sys.exit(1)
 
 def main(argv):
     """Main program.
