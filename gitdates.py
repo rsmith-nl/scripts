@@ -38,8 +38,8 @@ def filecheck(fname):
         data = subprocess.check_output(args, startupinfo=startupinfo)[:-1]
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
-    except subprocess.CalledProcessError:
-        out = (fname)
+    except (subprocess.CalledProcessError, ValueError):
+        return (fname[2:], '', time.gmtime(0.0))
     return out
 
 def filedatasorter(a, b):
@@ -62,18 +62,21 @@ def main():
     checkfor(['git', '--version'])
     # Get a list of all files
     allfiles = []
+    # Get a list of excluded files.
+    exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
+    exc = subprocess.check_output(exargs).split()
     if not '.git' in os.listdir('.'):
         print 'This directory is not managed by git.'
         sys.exit(0)
     for root, dirs, files in os.walk('.'):
         if '.git' in dirs:
             dirs.remove('.git')
-        tmp = [os.path.join(root, f) for f in files]
+        tmp = [os.path.join(root, f) for f in files if f not in exc]
         allfiles += tmp
     # Gather the files' data using a Pool.
     p = Pool()
     filedata = []
-    for res in p.imap(filecheck, allfiles):
+    for res in p.imap_unordered(filecheck, allfiles):
         filedata.append(res)
     p.close()
     # Sort the data (latest modified first) and print it
