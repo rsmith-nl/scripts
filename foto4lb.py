@@ -19,6 +19,7 @@ import os.path
 from time import mktime
 from datetime import datetime
 from checkfor import checkfor
+import argparse
 
 globallock = Lock()
 
@@ -36,7 +37,8 @@ def getexifdict(name):
         ld[key] = val
     return ld
 
-def processfile(name):
+def processfile(args):
+    name, width = args
     try:
         ed = getexifdict(name)
         fields = ed['CreateDate'].split(':')
@@ -79,15 +81,20 @@ def main(argv):
     Keyword arguments:
     argv -- command line arguments
     """
-    if len(argv) == 1:
-        binary = os.path.basename(argv[0])
-        print "Usage: {} [file ...]".format(binary)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-w', '--width', default=886, type=int,
+                        help='width of the images in pixels (default 886)')
+    parser.add_argument('file', nargs='*')
+    args = parser.parse_args(argv)
+    if not args.file:
+        parser.print_help()
         sys.exit(0)
     checkfor(['exiftool',  '-ver'])
     checkfor('mogrify')
     p = Pool()
-    p.map(processfile, argv[1:])
+    mapargs = [(fn, args.width) for fn in args.file]
+    p.map(processfile, mapargs)
     p.close()
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])
