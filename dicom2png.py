@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -27,7 +27,7 @@ def startconvert(fname):
             '-crop', size+'+232+0', '-page', size+'+0+0', fname+'.png']
     with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
-    print 'Start processing', fname
+    print('Start processing', fname)
     return (fname, p)
 
 def manageprocs(proclist):
@@ -40,10 +40,10 @@ def manageprocs(proclist):
         if result != None:
             proclist.remove(it)
             if result == 0:
-                print 'Finished processing', fn
+                print('Finished processing', fn)
             else:
                 s = 'The conversion of {} exited with error code {}.'
-                print s.format(fn, result)
+                print(s.format(fn, result))
     sleep(0.5)
 
 def main(argv):
@@ -54,7 +54,7 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print "Usage: {} [file ...]".format(binary)
+        print("Usage: {} [file ...]".format(binary))
         sys.exit(0)
     del argv[0] # delete the name of the script.
     checkfor('convert')

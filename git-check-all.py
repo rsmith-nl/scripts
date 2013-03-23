@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -30,7 +30,7 @@ def gitcmd(cmds, output=False):
         cmds = [cmds]
     cmds = ['git'] + cmds
     if output:
-        rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
+        rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT).decode()
     else:
         with open(os.devnull, 'w') as bb:
             rv = subprocess.call(cmds, stdout=bb, stderr=bb)
@@ -46,11 +46,11 @@ def runchecks(d):
     os.chdir(d)
     outp = gitcmd('status', True)
     if not 'clean' in outp:
-        print "'{}' is not clean, skipping.".format(d)
+        print("'{}' is not clean, skipping.".format(d))
         return
     rv = gitcmd(['gc', '--auto', '--quiet',])
     if rv:
-        print "git gc failed on '{}'!".format(d)
+        print("git gc failed on '{}'!".format(d))
 
 def main():
     """Main program."""

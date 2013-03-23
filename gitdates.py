@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -35,27 +35,13 @@ def filecheck(fname):
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
-        data = subprocess.check_output(args, startupinfo=startupinfo)[:-1]
+        b = subprocess.check_output(args, startupinfo=startupinfo)
+        data = b.decode()[:-1]
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
     except (subprocess.CalledProcessError, ValueError):
         return (fname[2:], '', time.gmtime(0.0))
     return out
-
-def filedatasorter(a, b):
-    """Sort the 3-tuples of the filedata list in reverse order, according
-    to their dates which is the third item in the tuple.
-
-    Arguments:
-    a, b -- 3-tuple of a name, short hash tag and struct_time.
-    """
-    p = a[2]
-    q = b[2]
-    if p > q:
-        return -1
-    if p == q:
-        return 0
-    return 1
 
 def main():
     """Main program."""
@@ -66,7 +52,7 @@ def main():
     exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
     exc = subprocess.check_output(exargs).split()
     if not '.git' in os.listdir('.'):
-        print 'This directory is not managed by git.'
+        print('This directory is not managed by git.')
         sys.exit(0)
     for root, dirs, files in os.walk('.'):
         if '.git' in dirs:
@@ -80,10 +66,10 @@ def main():
         filedata.append(res)
     p.close()
     # Sort the data (latest modified first) and print it
-    filedata.sort(filedatasorter)
+    filedata.sort(key=lambda a: a[2], reverse=True)
     dfmt = '%Y-%m-%d %H:%M:%S %Z'
     for name, tag, date in filedata:
-        print '{}|{}|{}'.format(name, tag, time.strftime(dfmt, date))
+        print('{}|{}|{}'.format(name, tag, time.strftime(dfmt, date)))
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -23,7 +23,7 @@ def process(fname):
     try:
         args = ['tiffinfo', fname]
         # Gather information about the TIFF file.
-        txt = subprocess.check_output(args).split() #pylint: disable=E1103
+        txt = subprocess.check_output(args).decode().split() #pylint: disable=E1103
         if 'Width:' not in txt:
             raise ValueError
         index = txt.index('Width:')
@@ -41,11 +41,11 @@ def process(fname):
                 '-x', str(xres), '-y', str(yres), '-o', outname, fname]
         subprocess.call(args)
         globallock.acquire()
-        print "File '{}' converted to '{}'.".format(fname, outname)
+        print("File '{}' converted to '{}'.".format(fname, outname))
         globallock.release()  
     except:
         globallock.acquire()
-        print "Converting {} failed.".format(fname)
+        print("Converting {} failed.".format(fname))
         globallock.release()
 
 def main(argv):
@@ -56,7 +56,7 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print "Usage: {} [file ...]".format(binary)
+        print("Usage: {} [file ...]".format(binary))
         sys.exit(0)
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])

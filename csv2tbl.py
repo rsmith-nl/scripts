@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -58,7 +58,7 @@ def fmtcsv(line, sep):
     outs = outs[:-3]
     outs += r'\\'
     outs = outs.replace(r' & \\', r'\\')
-    print outs
+    print(outs)
 
 
 def main(argv):
@@ -68,7 +68,7 @@ def main(argv):
     argv -- command line arguments
     """
     if len(argv) < 2:
-        print "Usage: {} file".format(argv[0])
+        print("Usage: {} file".format(argv[0]))
         sys.exit(0)
     # Read the data into a list of lines.
     lines = readlines(argv[1])
@@ -83,20 +83,20 @@ def main(argv):
     columns = len(lines[1].split(sep))
     columns = 'l'*columns
     # Print the output.
-    print '% Generated from '+ str(shortname)
-    print '% by csv2tbl.py on ' + str(date.today())
-    print r'\begin{table}[!htbp]'
-    print r'  \centering'
-    print r'  \caption{\label{tb:' + fname + r'}'+ fname +r'}'
-    print r'  \begin{tabular}{' + columns + r'}'
-    print r'    \toprule'
+    print('% Generated from '+ str(shortname))
+    print('% by csv2tbl.py on ' + str(date.today()))
+    print(r'\begin{table}[!htbp]')
+    print(r'  \centering')
+    print(r'  \caption{\label{tb:' + fname + r'}'+ fname +r'}')
+    print(r'  \begin{tabular}{' + columns + r'}')
+    print(r'    \toprule')
     fmtcsv(lines[0], sep)
-    print r'    \midrule'
+    print(r'    \midrule')
     for l in lines[1:]:
         fmtcsv(l, sep)
-    print r'    \bottomrule'
-    print r'  \end{tabular}'
-    print r'\end{table}'
+    print(r'    \bottomrule')
+    print(r'  \end{tabular}')
+    print(r'\end{table}')
 
 
 ## This is the main program ##

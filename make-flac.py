@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -80,7 +80,7 @@ def startflac(tinfo):
             '-o', ofname, ifname]
     with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
-    print 'Start processing "{}" as {}'.format(title, ofname) 
+    print('Start processing "{}" as {}'.format(title, ofname)) 
     return (ofname, p)
 
 def manageprocs(proclist):
@@ -93,10 +93,10 @@ def manageprocs(proclist):
         if result != None:
             proclist.remove(it)
             if result == 0:
-                print 'Finished processing', fn
+                print('Finished processing', fn)
             else:
                 s = 'The conversion of {} exited with error code {}.'
-                print s.format(fn, result)
+                print(s.format(fn, result))
     sleep(0.5)
 
 def main():
@@ -105,7 +105,7 @@ def main():
     procs = []
     tracks = trackdata()
     if not tracks:
-        print 'No tracks found.'
+        print('No tracks found.')
         sys.exit(1)
     maxprocs = cpu_count()
     for track in tracks:

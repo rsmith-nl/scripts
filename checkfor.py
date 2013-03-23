@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -33,10 +33,10 @@ def checkfor(args, rv = 0):
             raise OSError
     except OSError as oops:
         outs = "Required program '{}' not found: {}."
-        print outs.format(args[0], oops.strerror)
+        print(outs.format(args[0], oops.strerror))
         sys.exit(1)
 
 if __name__ == '__main__':
     for p in ['ls', 'foo']:
         checkfor(p)
-        print 'found', p
+        print('found', p)

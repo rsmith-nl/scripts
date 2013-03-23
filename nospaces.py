@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -29,14 +29,14 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print "Usage: {} [file ...]".format(binary)
+        print("Usage: {} [file ...]".format(binary))
         sys.exit(0)
     del sys.argv[0] # delete the name of the script.
     for n in sys.argv:
         try:
             os.rename(n, fixname(n))
         except OSError as e:
-            print 'Renaming "{}" failed: {}'.format(n, e.strerror)
+            print('Renaming "{}" failed: {}'.format(n, e.strerror))
 
 if __name__ == '__main__':
     main(sys.argv)
