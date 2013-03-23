@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -82,14 +82,14 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print "Usage: {} outputfilename".format(binary)
+        print("Usage: {} outputfilename".format(binary))
         sys.exit(0)
     fn = argv[1]
     try:
         #pylint: disable=E1103
-        lines = subprocess.check_output(['git', 'log']).split('\n')
+        lines = subprocess.check_output(['git', 'log']).decode().split('\n')
     except  subprocess.CalledProcessError:
-        print "Git not found! Stop."
+        print("Git not found! Stop.")
         sys.exit(1)
     if fn == '-':
         of = sys.stdout
