@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -56,11 +56,11 @@ def processfile(args):
     errstr = "Error when processing file '{}'"
     if rv != 0:
         globallock.acquire()
-        print errstr.format(name)
+        print(errstr.format(name))
         globallock.release()
         return
     args = ['exiftool']
-    args += ['-{}="{}"'.format(k, ed[k]) for k in ed.iterkeys()]
+    args += ['-{}="{}"'.format(k, ed[k]) for k in ed.keys()]
     args += ['-q', '-overwrite_original', name]
     rv = subprocess.call(args)
     if rv == 0:
@@ -68,11 +68,11 @@ def processfile(args):
                          dt.minute, dt.second, 0,0,-1))
         utime(name, (modtime, modtime))
         globallock.acquire()
-        print "File '{}' processed".format(name)
+        print("File '{}' processed".format(name))
         globallock.release()
     else:
         globallock.acquire()
-        print errstr.format(name)
+        print(errstr.format(name))
         globallock.release()
 
 def main(argv):
