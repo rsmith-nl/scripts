@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Adds my copyright notice to photos.
 #
@@ -21,7 +21,7 @@ globallock = Lock()
 
 def processfile(name):
     args = ['exiftool', '-CreateDate', name]
-    createdate = subprocess.check_output(args)
+    createdate = subprocess.check_output(args).decode()
     fields = createdate.split(":") #pylint: disable=E1103
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
@@ -35,9 +35,9 @@ def processfile(name):
     utime(name, (modtime, modtime))
     globallock.acquire()
     if rv == 0:
-        print "File '{}' processed.".format(name)
+        print("File '{}' processed.".format(name))
     else:
-        print "Error when processing file '{}'".format(name)
+        print("Error when processing file '{}'".format(name))
     globallock.release()
 
 def main(argv):
@@ -48,7 +48,7 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print "Usage: {} [file ...]".format(binary)
+        print("Usage: {} [file ...]".format(binary))
         sys.exit(0)
     checkfor(['exiftool',  '-ver'])
     p = Pool()
