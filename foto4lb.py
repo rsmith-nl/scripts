@@ -15,7 +15,6 @@ import sys
 import subprocess
 from multiprocessing import Pool, Lock
 from os import utime
-import os.path
 from time import mktime
 from datetime import datetime
 from checkfor import checkfor
@@ -50,7 +49,7 @@ def processfile(args):
         dt = datetime.today()
         ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
                                       dt.hour, dt.minute, dt.second)
-    args = ['mogrify', '-strip', '-resize', '886', '-units', 'PixelsPerInch',
+    args = ['mogrify', '-strip', '-resize', width, '-units', 'PixelsPerInch',
             '-density', '300', '-quality', '90', name]
     rv = subprocess.call(args)
     errstr = "Error when processing file '{}'"
