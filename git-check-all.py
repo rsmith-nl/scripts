@@ -12,7 +12,6 @@
 unless they have uncommitted changes."""
 
 import os
-import sys
 import subprocess
 from checkfor import checkfor
 
