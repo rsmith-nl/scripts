@@ -12,7 +12,7 @@
 import sys
 import subprocess
 from multiprocessing import Pool, Lock
-from os import utime, devnull
+from os import utime
 import os.path
 from time import mktime
 from checkfor import checkfor
