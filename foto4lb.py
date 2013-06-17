@@ -49,8 +49,8 @@ def processfile(args):
         dt = datetime.today()
         ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
                                       dt.hour, dt.minute, dt.second)
-    args = ['mogrify', '-strip', '-resize', width, '-units', 'PixelsPerInch',
-            '-density', '300', '-quality', '90', name]
+    args = ['mogrify', '-strip', '-resize', str(width), '-units', 
+            'PixelsPerInch', '-density', '300', '-quality', '90', name]
     rv = subprocess.call(args)
     errstr = "Error when processing file '{}'"
     if rv != 0:
