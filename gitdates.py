@@ -25,6 +25,7 @@ if os.name == 'nt':
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
+
 def filecheck(fname):
     """Start a git process to get file info. Return a string
     containing the filename, the abbreviated commit hash and the
@@ -43,20 +44,24 @@ def filecheck(fname):
         return (fname[2:], '', time.gmtime(0.0))
     return out
 
+
 def main():
     """Main program."""
     checkfor(['git', '--version'])
     # Get a list of all files
     allfiles = []
     # Get a list of excluded files.
-    exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
-    exc = subprocess.check_output(exargs).split()
     if not '.git' in os.listdir('.'):
         print('This directory is not managed by git.')
         sys.exit(0)
+    exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
+    exc = subprocess.check_output(exargs).split()
     for root, dirs, files in os.walk('.'):
-        if '.git' in dirs:
-            dirs.remove('.git')
+        for d in ['.git', '__pycache__']:
+            try:
+                dirs.remove(d)
+            except ValueError:
+                pass
         tmp = [os.path.join(root, f) for f in files if f not in exc]
         allfiles += tmp
     # Gather the files' data using a Pool.

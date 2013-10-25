@@ -9,9 +9,13 @@ import math
 import matplotlib.pyplot as plt
 import os
 
+
 def readdata(name):
     """Read the data from a file and count how often each byte value
-    occurs."""
+    occurs.
+
+    :param name: name of the file to read
+    """
     with open(name, 'rb') as f:
         ba = bytearray(os.path.getsize(name))
         f.readinto(ba)
@@ -20,8 +24,13 @@ def readdata(name):
         counts[b] += 1
     return (counts, len(ba))
 
+
 def entropy(counts, sz):
-    """Calculate the entropy of the data represented by the counts list"""
+    """Calculate the entropy of the data represented by the counts list.
+
+    :param counts: number of occurance of each bite in a dataset
+    :param sz: length of the dataset
+    """
     ent = 0.0
     for b in counts:
         if b == 0:
@@ -29,6 +38,7 @@ def entropy(counts, sz):
         p = float(b)/sz
         ent -= p*math.log(p, 256)
     return ent*8
+
 
 def histogram(counts, sz, name):
     """Use matplotlib to create a histogram from the data"""
@@ -46,11 +56,11 @@ def histogram(counts, sz, name):
     plt.savefig('hist-' + name+'.png', bbox_inches='tight')
     plt.close()
 
+
 def main(argv):
     """Main program.
 
-    Keyword arguments:
-    argv -- command line arguments
+    :param argv: command line arguments
     """
     if len(argv) < 1:
         print 'No arguments given. Quitting.'
@@ -60,6 +70,7 @@ def main(argv):
         e = entropy(hdata, size)
         print "entropy of {} is {:.4f} bits/byte".format(fn, e)
         histogram(hdata, size, fn)
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

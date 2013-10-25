@@ -14,23 +14,23 @@ import sys
 import os.path
 from datetime import date
 
+
 def readlines(filename):
     """Read a file and return the contents as a list of lines.
 
-    Keyword arguments:
-    filename -- name of the file to read.
+    :param filename: name of the file to read
     """
     with open(filename) as infile:
         lines = infile.readlines()
     lines = [l.strip() for l in lines]
     return lines
 
+
 def csvsep(lines, separators=',\t;:'):
     """Determine and return the separator used in the lines of csv data.
 
-    Keyword arguments:
-    lines -- csv data
-    separator -- string of separators
+    :param lines: csv data
+    :param separator: string of separators
     """
     mx = 0
     sep = ''
@@ -40,6 +40,7 @@ def csvsep(lines, separators=',\t;:'):
             mx = n
             sep = c
     return sep
+
 
 def fmtcsv(line, sep):
     """Format a single line of CSV data as a LaTeX table cells.
@@ -52,7 +53,7 @@ def fmtcsv(line, sep):
     if len(line) == line.count(sep):
         return
     items = line.split(sep)
-    outs =  '    '
+    outs = '    '
     for it in items:
         outs += it + r' & '
     outs = outs[:-3]
@@ -83,11 +84,11 @@ def main(argv):
     columns = len(lines[1].split(sep))
     columns = 'l'*columns
     # Print the output.
-    print('% Generated from '+ str(shortname))
+    print('% Generated from ' + str(shortname))
     print('% by csv2tbl.py on ' + str(date.today()))
     print(r'\begin{table}[!htbp]')
     print(r'  \centering')
-    print(r'  \caption{\label{tb:' + fname + r'}'+ fname +r'}')
+    print(r'  \caption{\label{tb:' + fname + r'}' + fname + r'}')
     print(r'  \begin{tabular}{' + columns + r'}')
     print(r'    \toprule')
     fmtcsv(lines[0], sep)

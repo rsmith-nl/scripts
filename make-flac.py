@@ -21,6 +21,7 @@ from multiprocessing import cpu_count
 from time import sleep
 from checkfor import checkfor
 
+
 def trackdata(fname='titels'):
     """Read the data describing the tracks from a text file.
 
@@ -61,6 +62,7 @@ def trackdata(fname='titels'):
             tracks.append((num, title, artist, album, ifname, ofname))
     return tracks
 
+
 def startflac(tinfo):
     """Use the flac(1) program to convert the music to FLAC format.
 
@@ -74,14 +76,15 @@ def startflac(tinfo):
     for the running conversion.
     """
     num, title, artist, album, ifname, ofname = tinfo
-    args = ['flac', '--best', '--totally-silent', 
+    args = ['flac', '--best', '--totally-silent',
             '-TARTIST=' + artist, '-TALBUM=' + album,
-            '-TTITLE=' + title, '-TTRACKNUM={:02d}'.format(num), 
+            '-TTITLE=' + title, '-TTRACKNUM={:02d}'.format(num),
             '-o', ofname, ifname]
     with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
-    print('Start processing "{}" as {}'.format(title, ofname)) 
+    print('Start processing "{}" as {}'.format(title, ofname))
     return (ofname, p)
+
 
 def manageprocs(proclist):
     """Check a list of subprocesses for processes that have ended and
@@ -90,7 +93,7 @@ def manageprocs(proclist):
     for it in proclist:
         fn, pr = it
         result = pr.poll()
-        if result != None:
+        if result is not None:
             proclist.remove(it)
             if result == 0:
                 print('Finished processing', fn)
@@ -98,6 +101,7 @@ def manageprocs(proclist):
                 s = 'The conversion of {} exited with error code {}.'
                 print(s.format(fn, result))
     sleep(0.5)
+
 
 def main():
     """Main program."""
@@ -115,6 +119,6 @@ def main():
     while len(procs) > 0:
         manageprocs(procs)
 
-## Call the main program ##
+
 if __name__ == '__main__':
     main()

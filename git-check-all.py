@@ -15,6 +15,7 @@ import os
 import subprocess
 from checkfor import checkfor
 
+
 def gitcmd(cmds, output=False):
     """Run the specified git command.
 
@@ -35,6 +36,7 @@ def gitcmd(cmds, output=False):
             rv = subprocess.call(cmds, stdout=bb, stderr=bb)
     return rv
 
+
 def runchecks(d):
     """Run git checks in the specified directory. If the repository is
     clean, do a ligth-weight garbage collection run on it.
@@ -47,18 +49,19 @@ def runchecks(d):
     if not 'clean' in outp:
         print("'{}' is not clean, skipping.".format(d))
         return
-    rv = gitcmd(['gc', '--auto', '--quiet',])
+    rv = gitcmd(['gc', '--auto', '--quiet'])
     if rv:
         print("git gc failed on '{}'!".format(d))
+
 
 def main():
     """Main program."""
     #pylint: disable=W0612
     checkfor(['git', '--version'])
-    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']): 
+    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
         if '.git' in dirnames:
             runchecks(dirpath)
 
+
 if __name__ == '__main__':
     main()
-

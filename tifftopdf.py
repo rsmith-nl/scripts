@@ -13,17 +13,17 @@
 import os
 import sys
 import subprocess
-from multiprocessing import Pool, Lock
+from multiprocessing import cpu_count
+from time import sleep
 from checkfor import checkfor
 
-globallock = Lock()
 
-def process(fname):
-    """Process the file named fname."""
+def convert(fname):
+    """Convert the file named fname."""
     try:
         args = ['tiffinfo', fname]
-        # Gather information about the TIFF file.
-        txt = subprocess.check_output(args).decode().split() #pylint: disable=E1103
+        # Gather information about the TIFF file. pylint: disable=E1103
+        txt = subprocess.check_output(args).decode().split()
         if 'Width:' not in txt:
             raise ValueError
         index = txt.index('Width:')
@@ -37,22 +37,32 @@ def process(fname):
         elif fname.endswith(('.tiff', '.TIFF')):
             outname = fname[:-5]
         outname = outname.replace(' ', '_') + '.pdf'
-        args = ['tiff2pdf', '-w', str(width/xres), '-l', str(length/xres), 
+        args = ['tiff2pdf', '-w', str(width/xres), '-l', str(length/xres),
                 '-x', str(xres), '-y', str(yres), '-o', outname, fname]
         subprocess.call(args)
-        globallock.acquire()
         print("File '{}' converted to '{}'.".format(fname, outname))
-        globallock.release()  
     except:
-        globallock.acquire()
         print("Converting {} failed.".format(fname))
-        globallock.release()
+
+
+def manageprocs(proclist):
+    """Check a list of subprocesses for processes that have ended and
+    remove them from the list.
+    """
+    print('# of conversions running: {}\r'.format(len(proclist)), end='')
+    sys.stdout.flush()
+    for p in proclist:
+        pr, ifn, ofn = p
+        if pr.poll() is not None:
+            print('Conversion of {} to {} finished.'.format(ifn, ofn))
+            proclist.remove(p)
+    sleep(0.5)
+
 
 def main(argv):
     """Main program.
 
-    Keyword arguments:
-    argv -- command line arguments
+    :param argv: command line arguments
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
@@ -60,9 +70,15 @@ def main(argv):
         sys.exit(0)
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])
-    p = Pool()
-    p.map(process, argv[1:])
-    p.close()
+    procs = []
+    maxprocs = cpu_count()
+    for fname in argv[1:]:
+        while len(procs) == maxprocs:
+            manageprocs(procs)
+        procs.append(convert(fname))
+    while len(procs) > 0:
+        manageprocs(procs)
+
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -13,14 +13,14 @@ import subprocess
 import sys
 import os
 
-def checkfor(args, rv = 0):
+
+def checkfor(args, rv=0):
     """Make sure that a program necessary for using this script is
     available.
 
-    Arguments:
-    args  -- string or list of strings of commands. A single string may
-             not contain spaces.
-    rv    -- expected return value from evoking the command.
+    :param args: String or list of strings of commands. A single string may
+    not contain spaces.
+    :param rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
         if ' ' in args:
@@ -35,6 +35,7 @@ def checkfor(args, rv = 0):
         outs = "Required program '{}' not found: {}."
         print(outs.format(args[0], oops.strerror))
         sys.exit(1)
+
 
 if __name__ == '__main__':
     for p in ['ls', 'foo']:

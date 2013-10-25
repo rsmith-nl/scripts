@@ -19,6 +19,7 @@ from multiprocessing import cpu_count
 from time import sleep
 from checkfor import checkfor
 
+
 def startconvert(fname):
     """Use the convert(1) program from the ImageMagick suite to convert the
        image and crop it."""
@@ -30,6 +31,7 @@ def startconvert(fname):
     print('Start processing', fname)
     return (fname, p)
 
+
 def manageprocs(proclist):
     """Check a list of subprocesses for processes that have ended and
     remove them from the list.
@@ -37,7 +39,7 @@ def manageprocs(proclist):
     for it in proclist:
         fn, pr = it
         result = pr.poll()
-        if result != None:
+        if result is not None:
             proclist.remove(it)
             if result == 0:
                 print('Finished processing', fn)
@@ -45,6 +47,7 @@ def manageprocs(proclist):
                 s = 'The conversion of {} exited with error code {}.'
                 print(s.format(fn, result))
     sleep(0.5)
+
 
 def main(argv):
     """Main program.
@@ -56,7 +59,7 @@ def main(argv):
         binary = os.path.basename(argv[0])
         print("Usage: {} [file ...]".format(binary))
         sys.exit(0)
-    del argv[0] # delete the name of the script.
+    del argv[0]
     checkfor('convert')
     procs = []
     maxprocs = cpu_count()
