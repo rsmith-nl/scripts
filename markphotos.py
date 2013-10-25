@@ -17,12 +17,13 @@ import os.path
 from time import mktime
 from checkfor import checkfor
 
-globallock = Lock() 
+globallock = Lock()
+
 
 def processfile(name):
     args = ['exiftool', '-CreateDate', name]
     createdate = subprocess.check_output(args).decode()
-    fields = createdate.split(":") #pylint: disable=E1103
+    fields = createdate.split(":")
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
     cmt = "Copyright © {} {}".format(year, cr)
@@ -31,7 +32,7 @@ def processfile(name):
     rv = subprocess.call(args)
     modtime = int(mktime((year, int(fields[2]), int(fields[3][:2]),
                           int(fields[3][3:]), int(fields[4]), int(fields[5]),
-                          0,0,-1)))
+                          0, 0, -1)))
     utime(name, (modtime, modtime))
     globallock.acquire()
     if rv == 0:
@@ -39,6 +40,7 @@ def processfile(name):
     else:
         print("Error when processing file '{}'".format(name))
     globallock.release()
+
 
 def main(argv):
     """Main program.
