@@ -38,6 +38,7 @@ endtable = r"""\end{tabular}\endgroup
 
 """
 
+
 def genrecords(lol):
     """Generate a LaTeX table for each commit in the input lines..
 
@@ -68,11 +69,12 @@ def genrecords(lol):
         else:
             ln = ln.lstrip(None)
             if len(ln):
-                rv += '  & '+ ln + '\\\\\n'
+                rv += '  & ' + ln + '\\\\\n'
     if rv:
         rv += endtable + '% EOF\n'
         yield rv
     return
+
 
 def main(argv):
     """Main program.
@@ -88,7 +90,7 @@ def main(argv):
     try:
         #pylint: disable=E1103
         lines = subprocess.check_output(['git', 'log']).decode().split('\n')
-    except  subprocess.CalledProcessError:
+    except subprocess.CalledProcessError:
         print("Git not found! Stop.")
         sys.exit(1)
     if fn == '-':
@@ -99,6 +101,7 @@ def main(argv):
     for rec in genrecords(lines):
         of.write(rec)
     of.close()
+
 
 if __name__ == '__main__':
     main(sys.argv)
