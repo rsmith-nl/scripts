@@ -22,10 +22,11 @@ import argparse
 
 globallock = Lock()
 
+
 def getexifdict(name):
     args = ['exiftool', '-CreateDate', '-Comment', '-Copyright', name]
     data = subprocess.check_output(args)
-    lines = data.splitlines() #pylint: disable=E1103
+    lines = data.splitlines()
     ld = {}
     for l in lines:
         key, val = l.split(':', 1)
@@ -35,6 +36,7 @@ def getexifdict(name):
             val = val.replace(' ', ':')
         ld[key] = val
     return ld
+
 
 def processfile(args):
     name, width = args
@@ -49,7 +51,7 @@ def processfile(args):
         dt = datetime.today()
         ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
                                       dt.hour, dt.minute, dt.second)
-    args = ['mogrify', '-strip', '-resize', str(width), '-units', 
+    args = ['mogrify', '-strip', '-resize', str(width), '-units',
             'PixelsPerInch', '-density', '300', '-quality', '90', name]
     rv = subprocess.call(args)
     errstr = "Error when processing file '{}'"
@@ -64,7 +66,7 @@ def processfile(args):
     rv = subprocess.call(args)
     if rv == 0:
         modtime = mktime((dt.year, dt.month, dt.day, dt.hour,
-                         dt.minute, dt.second, 0,0,-1))
+                         dt.minute, dt.second, 0, 0, -1))
         utime(name, (modtime, modtime))
         globallock.acquire()
         print("File '{}' processed".format(name))
@@ -73,6 +75,7 @@ def processfile(args):
         globallock.acquire()
         print(errstr.format(name))
         globallock.release()
+
 
 def main(argv):
     """Main program.
@@ -94,6 +97,7 @@ def main(argv):
     mapargs = [(fn, args.width) for fn in args.file]
     p.map(processfile, mapargs)
     p.close()
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
