@@ -10,6 +10,8 @@
 
 """Convert TIFF files to PDF format using the libtiff package."""
 
+from __future__ import division, print_function
+
 import os
 import sys
 import subprocess
