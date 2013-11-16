@@ -11,6 +11,10 @@
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
 
+from __future__ import division, print_function
+
+__version__ = '$Revision$'[11:-2]
+
 import sys
 import subprocess
 from multiprocessing import Pool, Lock
@@ -86,6 +90,8 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-w', '--width', default=886, type=int,
                         help='width of the images in pixels (default 886)')
+    parser.add_argument('-v', '--version', action='version',
+                        version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
     if not args.file:
