@@ -11,6 +11,10 @@
 """Rename files mentioned on the command line, removing spaces from
 their names and replacing them with underscores."""
 
+from __future__ import division, print_function
+
+__version__ = '$Revision$'[11:-2]
+
 import os
 import sys
 
@@ -35,10 +39,11 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print("Usage: {} [file ...]".format(binary))
+        print("{} version {}".format(binary, __version__), file=sys.stderr)
+        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
-    del sys.argv[0]  # delete the name of the script.
-    for n in sys.argv:
+    del argv[0]  # delete the name of the script.
+    for n in argv:
         try:
             os.rename(n, fixname(n))
         except OSError as e:

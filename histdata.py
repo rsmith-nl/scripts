@@ -4,6 +4,8 @@
 """Make a histogram of the bytes in the input files, and calculate their
 entropy."""
 
+__version__ = '$Revision$'[11:-2]
+
 import sys
 import math
 import matplotlib.pyplot as plt
@@ -62,10 +64,12 @@ def main(argv):
 
     :param argv: command line arguments
     """
-    if len(argv) < 1:
-        print 'No arguments given. Quitting.'
-        sys.exit(1)
-    for fn in argv:
+    if len(argv) == 1:
+        binary = os.path.basename(argv[0])
+        print >>sys.stderr, "{} ver. {}".format(binary, __version__)
+        print >>sys.stderr, "Usage: {} [file ...]".format(binary)
+        sys.exit(0)
+    for fn in argv[1:]:
         hdata, size = readdata(fn)
         e = entropy(hdata, size)
         print "entropy of {} is {:.4f} bits/byte".format(fn, e)
@@ -73,4 +77,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv)

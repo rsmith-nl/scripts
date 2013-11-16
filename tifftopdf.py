@@ -12,6 +12,8 @@
 
 from __future__ import division, print_function
 
+__version__ = '$Revision$'[11:-2]
+
 import os
 import sys
 import subprocess
@@ -68,7 +70,8 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print("Usage: {} [file ...]".format(binary))
+        print("{} version {}".format(binary, __version__), file=sys.stderr)
+        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])

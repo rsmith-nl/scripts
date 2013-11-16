@@ -10,6 +10,10 @@
 
 """Convert a CSV file to a LaTeX table"""
 
+from __future__ import print_function
+
+__version__ = '$Revision$'[11:-2]
+
 import sys
 import os.path
 from datetime import date
@@ -68,8 +72,10 @@ def main(argv):
     Keyword arguments:
     argv -- command line arguments
     """
+    binary = os.path.basename(argv[0])
     if len(argv) < 2:
-        print("Usage: {} file".format(argv[0]))
+        print("{} ver. {}".format(binary, __version__))
+        print("Usage: {} file".format(binary), file=sys.stderr)
         sys.exit(0)
     # Read the data into a list of lines.
     lines = readlines(argv[1])
