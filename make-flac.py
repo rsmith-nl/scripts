@@ -14,6 +14,10 @@ cores. Title and song information is gathered from a text file called
 titles.
 """
 
+from __future__ import division, print_function
+
+__version__ = '$Revision$'[11:-2]
+
 import os
 import sys
 import subprocess
@@ -103,13 +107,18 @@ def manageprocs(proclist):
     sleep(0.5)
 
 
-def main():
+def main(argv):
     """Main program."""
     checkfor('flac')
     procs = []
     tracks = trackdata()
     if not tracks:
         print('No tracks found.')
+        binary = os.path.basename(argv[0])
+        print("{} version {}".format(binary, __version__), file=sys.stderr)
+        print("Usage: {}".format(binary), file=sys.stderr)
+        print("In a directory where a file 'titels' and WAV files are present",
+              file=sys.stderr)
         sys.exit(1)
     maxprocs = cpu_count()
     for track in tracks:
@@ -121,4 +130,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
