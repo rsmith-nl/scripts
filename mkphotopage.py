@@ -134,15 +134,4 @@ htmlfooter = """      </tbody>
   </body>
 </html>"""
 outfile.write(htmlfooter.format(today.year, rootdir, rootdir, today))
-
-# This footer is somewhat mangled, otherwise Emacs will pick it up.
-emacsfooter = """<!-- {} -->
-<!-- mode: nxml -->
-<!-- time-stamp-start: "[\\">]Last update:[ \\t]+" -->
-<!-- time-stamp-end: "[<\\"]" -->
-<!-- time-stamp-format: "%:y-%02m-%02d %02H:%02M %Z" -->
-<!-- time-stamp-line-limit: 0 -->
-<!-- time-stamp-count: 2 -->
-<!-- End: -->"""
-outfile.write(emacsfooter.format("Local Variables:"))
 outfile.close()
