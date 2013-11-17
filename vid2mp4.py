@@ -4,10 +4,9 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # $Date$
 #
-# To the extent possible under law, Roland Smith has waived all
-# copyright and related or neighboring rights to avi2mp4.py. This work
-# is published from the Netherlands. See
-# http://creativecommons.org/publicdomain/zero/1.0/
+# To the extent possible under law, Roland Smith has waived all copyright and
+# related or neighboring rights to vid2mp4.py. This work is published from the
+# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Convert all video files given on the command line to H.264/AAC streams in
 an MP4 container."""
@@ -23,6 +22,15 @@ from multiprocessing import cpu_count
 from time import sleep
 
 
+def warn(s):
+    """Print a warning message.
+
+    :param s: Message string
+    """
+    s = ' '.join(['Warning:', s])
+    print(s, file=sys.stderr)
+
+
 def startencoder(fname):
     """Use ffmpeg to convert a video file to H.264/AAC
     streams in an MP4 container.
@@ -33,7 +41,7 @@ def startencoder(fname):
     basename, ext = os.path.splitext(fname)
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv']
     if ext.lower() not in known:
-        print("ERROR: File {} has unknown extension.".format(fname))
+        warn("File {} has unknown extension, ignoring it.".format(fname))
         return (None, fname, None)
     ofn = basename + '.mp4'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libx264', '-crf', '29', '-flags',
@@ -43,7 +51,7 @@ def startencoder(fname):
             p = subprocess.Popen(args, stdout=bitbucket, stderr=bitbucket)
             print("Conversion of {} to {} started.".format(fname, ofn))
         except:
-            print("ERROR: Starting conversion of {} failed.".format(fname))
+            warn("Starting conversion of {} failed.".format(fname))
     return (p, fname, ofn)
 
 
