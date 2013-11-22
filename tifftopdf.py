@@ -10,7 +10,7 @@
 
 """Convert TIFF files to PDF format using the libtiff package."""
 
-from __future__ import division, print_function
+from __future__ import division, print_function  # Python 2 compatibility
 
 __version__ = '$Revision$'[11:-2]
 
@@ -43,10 +43,13 @@ def convert(fname):
         outname = outname.replace(' ', '_') + '.pdf'
         args = ['tiff2pdf', '-w', str(width/xres), '-l', str(length/xres),
                 '-x', str(xres), '-y', str(yres), '-o', outname, fname]
-        subprocess.call(args)
-        print("File '{}' converted to '{}'.".format(fname, outname))
+        with open(os.devnull, 'w') as bitbucket:
+            p = subprocess.Popen(args, stdout=bitbucket, stderr=bitbucket)
+            print("Conversion of {} to {} started.".format(fname, outname))
+        return (p, fname, outname)
     except:
-        print("Converting {} failed.".format(fname))
+        print("Starting conversion of {} failed.".format(fname))
+        return (None, fname, None)
 
 
 def manageprocs(proclist):
@@ -57,6 +60,8 @@ def manageprocs(proclist):
     sys.stdout.flush()
     for p in proclist:
         pr, ifn, ofn = p
+        if pr is None:
+            proclist.remove(p)
         if pr.poll() is not None:
             print('Conversion of {} to {} finished.'.format(ifn, ofn))
             proclist.remove(p)
