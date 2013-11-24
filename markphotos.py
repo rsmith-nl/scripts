@@ -19,9 +19,31 @@ from multiprocessing import Pool, Lock
 from os import utime
 import os.path
 from time import mktime
-from checkfor import checkfor
 
 globallock = Lock()
+
+
+def checkfor(args, rv=0):
+    """Make sure that a program necessary for using this script is
+    available.
+
+    :param args: String or list of strings of commands. A single string may
+    not contain spaces.
+    :param rv: Expected return value from evoking the command.
+    """
+    if isinstance(args, str):
+        if ' ' in args:
+            raise ValueError('no spaces in single command allowed')
+        args = [args]
+    try:
+        with open(os.devnull, 'w') as bb:
+            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        if rc != rv:
+            raise OSError
+    except OSError as oops:
+        outs = "Required program '{}' not found: {}."
+        print(outs.format(args[0], oops.strerror))
+        sys.exit(1)
 
 
 def processfile(name):
