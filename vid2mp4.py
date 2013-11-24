@@ -31,6 +31,29 @@ def warn(s):
     print(s, file=sys.stderr)
 
 
+def checkfor(args, rv=0):
+    """Make sure that a program necessary for using this script is
+    available.
+
+    :param args: String or list of strings of commands. A single string may
+    not contain spaces.
+    :param rv: Expected return value from evoking the command.
+    """
+    if isinstance(args, str):
+        if ' ' in args:
+            raise ValueError('no spaces in single command allowed')
+        args = [args]
+    try:
+        with open(os.devnull, 'w') as bb:
+            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        if rc != rv:
+            raise OSError
+    except OSError as oops:
+        outs = "Required program '{}' not found: {}."
+        print(outs.format(args[0], oops.strerror))
+        sys.exit(1)
+
+
 def startencoder(fname):
     """Use ffmpeg to convert a video file to H.264/AAC
     streams in an MP4 container.
@@ -84,6 +107,7 @@ def main(argv):
         print("{} version {}".format(binary, __version__), file=sys.stderr)
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
+    checkfor(['ffmpeg', '-version'])
     avis = argv[1:]
     procs = []
     maxprocs = cpu_count()

@@ -9,6 +9,8 @@
 # is published from the Netherlands. See
 # http://creativecommons.org/publicdomain/zero/1.0/
 
+from __future__ import division, print_function
+
 import subprocess
 import sys
 import os
