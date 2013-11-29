@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -23,8 +23,18 @@ from os import utime
 from time import mktime
 from datetime import datetime
 import argparse
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 globallock = Lock()
+
+
+def report(s, prefix=None):
+    globallock.acquire()
+    if prefix:
+        s = ': '.join([prefix, s])
+    print(s)
+    globallock.release()
 
 
 def checkfor(args, rv=0):
@@ -50,26 +60,18 @@ def checkfor(args, rv=0):
         sys.exit(1)
 
 
-def getexifdict(name):
-    args = ['exiftool', '-CreateDate', '-Comment', '-Copyright', name]
-    data = subprocess.check_output(args)
-    lines = data.splitlines()
-    ld = {}
-    for l in lines:
-        key, val = l.split(':', 1)
-        key = key.replace(' ', '')
-        val = val.strip()
-        if key == 'CreateDate':
-            val = val.replace(' ', ':')
-        ld[key] = val
-    return ld
-
-
 def processfile(args):
     name, width = args
     try:
-        ed = getexifdict(name)
-        fields = ed['CreateDate'].split(':')
+        img = Image.open(name)
+        ld = {}
+        for tag, value in img._getexif().items():
+            decoded = TAGS.get(tag, tag)
+            ld[decoded] = value
+        want = set(['DateTime', 'DateTimeOriginal', 'CreateDate',
+                    'DateTimeDigitized'])
+        available = list(want.intersection(set(ld.keys()))).sort()
+        fields = ld[available[0]].replace(' ', ':').split(':')
         dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]),
                       int(fields[3]), int(fields[4]), int(fields[5]))
     except:
@@ -81,27 +83,14 @@ def processfile(args):
     args = ['mogrify', '-strip', '-resize', str(width), '-units',
             'PixelsPerInch', '-density', '300', '-quality', '90', name]
     rv = subprocess.call(args)
-    errstr = "Error when processing file '{}'"
+    errstr = "code {} when processing file '{}'"
     if rv != 0:
-        globallock.acquire()
-        print(errstr.format(name))
-        globallock.release()
+        report(errstr.format(rv, name), 'ERROR')
         return
-    args = ['exiftool']
-    args += ['-{}="{}"'.format(k, ed[k]) for k in ed.keys()]
-    args += ['-q', '-overwrite_original', name]
-    rv = subprocess.call(args)
-    if rv == 0:
-        modtime = mktime((dt.year, dt.month, dt.day, dt.hour,
-                         dt.minute, dt.second, 0, 0, -1))
-        utime(name, (modtime, modtime))
-        globallock.acquire()
-        print("File '{}' processed".format(name))
-        globallock.release()
-    else:
-        globallock.acquire()
-        print(errstr.format(name))
-        globallock.release()
+    modtime = mktime((dt.year, dt.month, dt.day, dt.hour,
+                     dt.minute, dt.second, 0, 0, -1))
+    utime(name, (modtime, modtime))
+    report("File '{}' processed".format(name))
 
 
 def main(argv):
@@ -120,7 +109,6 @@ def main(argv):
     if not args.file:
         parser.print_help()
         sys.exit(0)
-    checkfor(['exiftool',  '-ver'])
     checkfor('mogrify')
     p = Pool()
     mapargs = [(fn, args.width) for fn in args.file]
