@@ -19,10 +19,41 @@ import sys
 __version__ = '$Revision$'[11:-2]
 
 
+def roundup(characters):
+    """Rounds up the number of characters so that you don't end up with '='
+    af the end of the base64 encoded string.
+
+    :param characters: number of requested (8-bit) characters
+    :returns: revised number
+    """
+    bits = characters * 6
+    upto = 24
+    rem = bits % upto
+    if rem:
+        bits += (upto - rem)
+    return int(bits/8)
+
+
+def genpw(length, dev='/dev/random'):
+    """Generate a random password
+
+    :param length: length of the requested password
+    :param dev: device to use
+    :returns: password string
+    """
+    n = roundup(length)
+    with open(dev, 'rb') as rf:
+        d = rf.read(n)
+    s = str(b64encode(d), encoding='utf-8')
+    for c in r'/+':
+        s = s.replace(c, '_')
+    return s
+
+
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-l', '--length', default=18, type=int,
-                        help='# of random bytes for password (default 18)')
+    parser.add_argument('-l', '--length', default=8, type=int,
+                        help='# of random character for password (default 8)')
     parser.add_argument('-r', '--repeat', default=1, type=int,
                         help='number of passwords to generate (default: 1)')
     parser.add_argument('-d', '--device', default='/dev/random', type=str,
@@ -31,12 +62,7 @@ def main(argv):
                         version=__version__)
     args = parser.parse_args(argv)
     for _ in range(args.repeat):
-        with open(args.device, 'rb') as rf:
-            d = rf.read(args.length)
-            s = str(b64encode(d), encoding='utf-8')
-            for c in r'/+':
-                s = s.replace(c, '_')
-            print(s)
+        print(genpw(args.length, args.device))
 
 
 if __name__ == '__main__':
