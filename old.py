@@ -31,14 +31,14 @@ def main(argv):
         sys.exit(1)
     dirname = argv[1]
     if not os.path.isdir(dirname):
-        print("'{}' is not a directory. Exiting".format(dirname))
+        print("'{}' is not a directory. Exiting.".format(dirname))
         sys.exit(2)
     if dirname.startswith('.'):
         newname = ''.join(['old-dot', dirname[1:]])
     else:
         newname = ''.join(['old-', dirname])
     if os.path.exists(newname):
-        print("'{}' already exists. Exiting".format(newname))
+        print("'{}' already exists. Exiting.".format(newname))
         sys.exit(3)
     os.rename(dirname, newname)
 
