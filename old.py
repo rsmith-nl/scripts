@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # vim:fileencoding=utf-8
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -9,7 +9,9 @@
 # related or neighboring rights to old.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Renames a directory by prefixing the name with 'old-'."""
+"""Renames a directory by prefixing the name with 'old-'. If the directory
+name starts with a period, it removes the period and prefixes it with
+'old-dot'."""
 
 from __future__ import print_function, division  # 2 and 3 compatibility.
 
