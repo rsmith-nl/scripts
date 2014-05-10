@@ -44,7 +44,7 @@ def genpw(length, dev='/dev/random'):
     n = roundup(length)
     with open(dev, 'rb') as rf:
         d = rf.read(n)
-    s = str(b64encode(d), encoding='utf-8')
+    s = b64encode(d)
     for c in r'/+':
         s = s.replace(c, '_')
     return s
