@@ -52,7 +52,7 @@ def genpw(length, dev='/dev/random'):
 
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-l', '--length', default=8, type=int,
+    parser.add_argument('-l', '--length', default=16, type=int,
                         help='# of random character for password (default 8)')
     parser.add_argument('-r', '--repeat', default=1, type=int,
                         help='number of passwords to generate (default: 1)')
