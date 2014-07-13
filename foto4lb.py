@@ -109,7 +109,7 @@ def main(argv):
     if not args.file:
         parser.print_help()
         sys.exit(0)
-    checkfor('mogrify')
+    checkfor('mogrify', rv=1)
     p = Pool()
     mapargs = [(fn, args.width) for fn in args.file]
     p.map(processfile, mapargs)
