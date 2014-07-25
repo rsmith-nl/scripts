@@ -55,22 +55,30 @@ def convert(fname):
         index = txt.index('Width:')
         width = float(txt[index+1])
         length = float(txt[index+4])
-        xres = float(txt[index+6][:-1])
-        yres = float(txt[index+7])
+        try:
+            index = txt.index('Resolution:')
+            xres = float(txt[index+1][:-1])
+            yres = float(txt[index+2])
+        except ValueError:
+            xres, yres = None, None
         # Create the output file name.
         if fname.endswith(('.tif', '.TIF')):
             outname = fname[:-4]
         elif fname.endswith(('.tiff', '.TIFF')):
             outname = fname[:-5]
         outname = outname.replace(' ', '_') + '.pdf'
-        args = ['tiff2pdf', '-w', str(width/xres), '-l', str(length/xres),
-                '-x', str(xres), '-y', str(yres), '-o', outname, fname]
+        if xres:
+            args = ['tiff2pdf', '-w', str(width/xres), '-l', str(length/xres),
+                    '-x', str(xres), '-y', str(yres), '-o', outname, fname]
+        else:
+            args = ['tiff2pdf', '-o', outname, '-z', '-p', 'A4', '-F', fname]
+            print("No resolution in {}. Fitting to A4.".format(fname))
         with open(os.devnull, 'w') as bitbucket:
             p = subprocess.Popen(args, stdout=bitbucket, stderr=bitbucket)
             print("Conversion of {} to {} started.".format(fname, outname))
         return (p, fname, outname)
-    except:
-        print("Starting conversion of {} failed.".format(fname))
+    except Exception as e:
+        print("Starting conversion of {} failed: {}".format(fname, str(e)))
         return (None, fname, None)
 
 
@@ -84,6 +92,7 @@ def manageprocs(proclist):
         pr, ifn, ofn = p
         if pr is None:
             proclist.remove(p)
+            break
         if pr.poll() is not None:
             print('Conversion of {} to {} finished.'.format(ifn, ofn))
             proclist.remove(p)
