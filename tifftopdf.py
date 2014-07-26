@@ -8,7 +8,8 @@
 # related or neighboring rights to tiff2pdf.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Convert TIFF files to PDF format using the libtiff package."""
+"""Convert TIFF files to PDF format using the utilities from the libtiff
+package."""
 
 from __future__ import division, print_function  # Python 2 compatibility
 
@@ -45,7 +46,11 @@ def checkfor(args, rv=0):
 
 
 def convert(fname):
-    """Convert the file named fname."""
+    """Start a tiff2pdf process for the file fname.
+
+    :param fname: name of the tiff file to convert.
+    :returns: a 3-tuple (Popen object, input filename, output filename)
+    """
     try:
         args = ['tiffinfo', fname]
         # Gather information about the TIFF file. pylint: disable=E1103
@@ -83,8 +88,10 @@ def convert(fname):
 
 
 def manageprocs(proclist):
-    """Check a list of subprocesses for processes that have ended and
-    remove them from the list.
+    """Manage a list of subprocesses.
+
+    :param proclist: a list of 3-tuples
+    (Popen, input filename, output filename)
     """
     print('# of conversions running: {}\r'.format(len(proclist)), end='')
     sys.stdout.flush()
@@ -92,11 +99,21 @@ def manageprocs(proclist):
         pr, ifn, ofn = p
         if pr is None:
             proclist.remove(p)
-            break
-        if pr.poll() is not None:
+        elif pr.poll() is not None:
             print('Conversion of {} to {} finished.'.format(ifn, ofn))
             proclist.remove(p)
     sleep(0.5)
+
+
+def mapprocs(lst, fn):
+    procs = []
+    maxprocs = cpu_count()
+    for fname in lst:
+        while len(procs) == maxprocs:
+            manageprocs(procs)
+        procs.append(fn(fname))
+    while len(procs) > 0:
+        manageprocs(procs)
 
 
 def main(argv):
@@ -111,14 +128,7 @@ def main(argv):
         sys.exit(0)
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])
-    procs = []
-    maxprocs = cpu_count()
-    for fname in argv[1:]:
-        while len(procs) == maxprocs:
-            manageprocs(procs)
-        procs.append(convert(fname))
-    while len(procs) > 0:
-        manageprocs(procs)
+    mapprocs(argv[1:], convert)
 
 
 if __name__ == '__main__':
