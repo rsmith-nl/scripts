@@ -11,8 +11,6 @@
 
 import datetime
 import glob
-#import zlib
-#import base64
 
 rootdir = "../../.."
 today = datetime.date.today()

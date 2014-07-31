@@ -69,7 +69,7 @@ def runchecks(d):
     """
     os.chdir(d)
     outp = gitcmd('status', True)
-    if not 'clean' in outp:
+    if 'clean' not in outp:
         print("'{}' is not clean, skipping.".format(d))
         return
     rv = gitcmd(['gc', '--auto', '--quiet'])
@@ -79,7 +79,6 @@ def runchecks(d):
 
 def main():
     """Main program."""
-    #pylint: disable=W0612
     checkfor(['git', '--version'])
     for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
         if '.git' in dirnames:

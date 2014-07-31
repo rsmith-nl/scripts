@@ -98,6 +98,5 @@ def main(argv):
         manageprocs(procs)
 
 
-## This is the main program ##
 if __name__ == '__main__':
     main(sys.argv)

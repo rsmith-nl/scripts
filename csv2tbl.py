@@ -106,6 +106,5 @@ def main(argv):
     print(r'\end{table}')
 
 
-## This is the main program ##
 if __name__ == '__main__':
     main(sys.argv)
