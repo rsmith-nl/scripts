@@ -73,7 +73,7 @@ def main():
     # Get a list of all files
     allfiles = []
     # Get a list of excluded files.
-    if not '.git' in os.listdir('.'):
+    if '.git' not in os.listdir('.'):
         print('This directory is not managed by git.')
         sys.exit(0)
     exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
