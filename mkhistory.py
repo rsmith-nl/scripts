@@ -88,7 +88,6 @@ def main(argv):
         sys.exit(0)
     fn = argv[1]
     try:
-        #pylint: disable=E1103
         lines = subprocess.check_output(['git', 'log']).decode().split('\n')
     except subprocess.CalledProcessError:
         print("Git not found! Stop.")
