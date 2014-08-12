@@ -53,8 +53,8 @@ def convert(fname):
     """
     try:
         args = ['tiffinfo', fname]
-        # Gather information about the TIFF file. pylint: disable=E1103
-        txt = subprocess.check_output(args).decode().split()
+        with open(os.devnull, 'w') as bb:
+            txt = subprocess.check_output(args, stderr=bb).split()
         if 'Width:' not in txt:
             raise ValueError
         index = txt.index('Width:')
