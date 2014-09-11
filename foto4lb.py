@@ -81,7 +81,8 @@ def processfile(args):
         ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
                                       dt.hour, dt.minute, dt.second)
     args = ['mogrify', '-strip', '-resize', str(width), '-units',
-            'PixelsPerInch', '-density', '300', '-quality', '90', name]
+            'PixelsPerInch', '-density', '300', '-unsharp', '2x0.5+0.7+0',
+            '-quality', '90', name]
     rv = subprocess.call(args)
     errstr = "code {} when processing file '{}'"
     if rv != 0:
