@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.4
 # vim:fileencoding=utf-8
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -11,7 +11,6 @@
 
 """Generate random passwords."""
 
-from __future__ import print_function, division
 import argparse
 from base64 import b64encode
 import sys
@@ -44,9 +43,7 @@ def genpw(length, dev='/dev/random'):
     n = roundup(length)
     with open(dev, 'rb') as rf:
         d = rf.read(n)
-    s = b64encode(d)
-    for c in r'/+':
-        s = s.replace(c, '_')
+    s = b64encode(d, b'__')
     return s
 
 
@@ -62,7 +59,7 @@ def main(argv):
                         version=__version__)
     args = parser.parse_args(argv)
     for _ in range(args.repeat):
-        print(genpw(args.length, args.device))
+        print(genpw(args.length, args.device).decode('ascii'))
 
 
 if __name__ == '__main__':
