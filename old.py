@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.4
 # vim:fileencoding=utf-8
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -26,23 +26,25 @@ def main(argv):
 
     :param argv: command line arguments.
     """
-    if len(argv) is not 2:
+    if len(argv) < 2:
         binary = os.path.basename(argv[0])
         print("{} ver. {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} directory".format(binary), file=sys.stderr)
+        print("Usage: {} directory ...".format(binary), file=sys.stderr)
         sys.exit(1)
-    dirname = argv[1]
-    if not os.path.isdir(dirname):
-        print("'{}' is not a directory. Exiting.".format(dirname))
-        sys.exit(2)
-    if dirname.startswith('.'):
-        newname = ''.join(['old-dot', dirname[1:]])
-    else:
-        newname = ''.join(['old-', dirname])
-    if os.path.exists(newname):
-        print("'{}' already exists. Exiting.".format(newname))
-        sys.exit(3)
-    os.rename(dirname, newname)
+    for dirname in argv[1:]:
+        if not os.path.isdir(dirname):
+            dirwarn = "'{}' is not an existing directory. Skipping."
+            print(dirwarn.format(dirname))
+            continue
+        if dirname.startswith('.'):
+            newname = ''.join(['old-dot', dirname[1:]])
+        else:
+            newname = ''.join(['old-', dirname])
+        if os.path.exists(newname):
+            renwarn = "'{}' already exists. Skipping rename of '{}'."
+            print(renwarn.format(newname, dirname))
+            continue
+        os.rename(dirname, newname)
 
 
 if __name__ == '__main__':
