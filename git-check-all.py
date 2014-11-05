@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -42,10 +42,9 @@ def checkfor(args, rv=0):
 def gitcmd(cmds, output=False):
     """Run the specified git command.
 
-    Arguments:
-    cmds   -- command string or list of strings of command and arguments
-    output -- wether the output should be captured and returned, or
-              just the return value
+    :param cmds: command string or list of strings of command and arguments.
+    :param output: flag to specify if the output should be captured and
+    returned, or just the return value.
     """
     if isinstance(cmds, str):
         if ' ' in cmds:
@@ -60,30 +59,38 @@ def gitcmd(cmds, output=False):
     return rv
 
 
-def runchecks(d):
+def runchecks(d, verbose=False):
     """Run git checks in the specified directory. If the repository is
     clean, do a ligth-weight garbage collection run on it.
 
-    Arguments:
-    d -- directory to run the checks in.
+    :param d: directory to run the checks in.
+    :param verbose: boolean to enable verbose messages.
     """
     os.chdir(d)
     outp = gitcmd('status', True)
     if 'clean' not in outp:
         print("'{}' is not clean, skipping.".format(d))
         return
+    if verbose:
+        print("Running check on '{}'".format(d))
     rv = gitcmd(['gc', '--auto', '--quiet'])
     if rv:
         print("git gc failed on '{}'!".format(d))
 
 
-def main():
-    """Main program."""
+def main(args):
+    """Main program.
+
+    :param args: command line arguments minus the program name.
+    """
     checkfor(['git', '--version'])
+    verbose = False
+    if '-v' in args:
+        verbose = True
     for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
         if '.git' in dirnames:
-            runchecks(dirpath)
+            runchecks(dirpath, verbose)
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
