@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -53,8 +53,7 @@ def filecheck(fname):
     containing the filename, the abbreviated commit hash and the
     author date in ISO 8601 format.
 
-    Arguments:
-    fname -- Name of the file to check.
+    :param fname: name of the file to check.
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
@@ -63,7 +62,7 @@ def filecheck(fname):
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
     except (subprocess.CalledProcessError, ValueError):
-        return (fname[2:], '', time.gmtime(0.0))
+        return None
     return out
 
 
@@ -88,9 +87,8 @@ def main():
         allfiles += tmp
     # Gather the files' data using a Pool.
     p = Pool()
-    filedata = []
-    for res in p.imap_unordered(filecheck, allfiles):
-        filedata.append(res)
+    filedata = [res for res in p.imap_unordered(filecheck, allfiles)
+                if res is not None]
     p.close()
     # Sort the data (latest modified first) and print it
     filedata.sort(key=lambda a: a[2], reverse=True)
