@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 # Adds my copyright notice to photos.
 #
@@ -8,8 +8,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
-from __future__ import division, print_function
 
 __version__ = '$Revision$'[11:-2]
 
