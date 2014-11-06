@@ -1,8 +1,10 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3.4
+# vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
+# Created: 2014-08-12 14:37:50 +0200
 # $Date$
+# $Revision$
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-flac.py. This work is published from
@@ -13,8 +15,6 @@ done in parallel using as many subprocesses as the machine has
 cores. Title and song information is gathered from a text file called
 titles.
 """
-
-from __future__ import division, print_function
 
 __version__ = '$Revision$'[11:-2]
 
