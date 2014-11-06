@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3.4
+# vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # $Date$
@@ -10,8 +10,6 @@
 
 """Rename files mentioned on the command line, removing spaces from
 their names and replacing them with underscores."""
-
-from __future__ import division, print_function
 
 __version__ = '$Revision$'[11:-2]
 
