@@ -1,5 +1,5 @@
 #! /usr/bin/env python3.4
-# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8:ft=python
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
