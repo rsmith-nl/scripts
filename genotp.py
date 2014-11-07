@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.4
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -22,7 +22,7 @@ def rndcaps(n):
     :returns: a string of n random capital letters.
     """
     b = urandom(n)
-    return ''.join([chr(int(round(ord(c)/10.2))+65) for c in b])
+    return ''.join([chr(int(round(c/10.2))+65) for c in b])
 
 
 def otp(n=65):
