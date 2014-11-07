@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3.4
+# vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # $Date$
@@ -10,8 +10,6 @@
 
 """Convert TIFF files to PDF format using the utilities from the libtiff
 package."""
-
-from __future__ import division, print_function  # Python 2 compatibility
 
 __version__ = '$Revision$'[11:-2]
 
