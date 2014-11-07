@@ -1,5 +1,5 @@
-#! /usr/bin/env python2
-# -*- coding: utf-8 -*-
+#! /usr/bin/env python3.4
+# vim:fileencoding=utf-8:ft=python
 # Make a webpage for all pictures in the current directory.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
