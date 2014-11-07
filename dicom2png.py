@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -11,8 +11,6 @@
 """Convert DICOM files to PNG format, remove blank areas. The blank erea
    removal is based on the image size of a Philips flat detector. The image
    goes from 2048x2048 pixels to 1574x2048 pixels."""
-
-from __future__ import division, print_function
 
 __version__ = '$Revision$'[11:-2]
 
