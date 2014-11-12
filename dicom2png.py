@@ -85,7 +85,7 @@ def main(argv):
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
     del argv[0]
-    checkfor('convert')
+    checkfor('convert', 1)
     procs = []
     maxprocs = cpu_count()
     for ifile in argv:
