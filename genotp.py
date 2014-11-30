@@ -41,7 +41,7 @@ def otp(n=65):
 
 def main():
     ident = '>> {}, {} <<'
-    print(ident.format(rndcaps(10), datetime.utcnow()))
+    print(ident.format(rndcaps(10), datetime.utcnow().strftime("%FT%TZ")))
     print(otp())
 
 
