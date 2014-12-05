@@ -90,6 +90,7 @@ def main(argv):
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
     args.width *= 72/25.4  # convert to points
+    del args.file[0]
     if not args.file:
         parser.print_help()
         sys.exit(0)
