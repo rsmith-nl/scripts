@@ -106,13 +106,15 @@ def main(argv):
                 scale = args.width/bbwidth
             fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
             opts = fs.format(*bbox, s=scale)
-        elif filename.endswith(('.png', '.PNG', '.jpg', '.JPG', '.jpeg', '.JPEG')):
+        elif filename.endswith(('.png', '.PNG', '.jpg', '.JPG', '.jpeg',
+                                '.JPEG')):
             width = getpixwidth(filename)
             opts = ''
             if width > args.width:
                 opts = '[scale={:.3f}]'.format(args.width/width)
         else:
-            print('File "{}" has an unrecognized format. Skipping...'.format(filename))
+            fskip = 'File "{}" has an unrecognized format. Skipping...'
+            print(fskip.format(filename))
             continue
         output_figure(filename, opts)
     print()
