@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -15,16 +15,16 @@ from __future__ import division, print_function
 
 __version__ = '$Revision$'[11:-2]
 
-import os
-import sys
-import subprocess
+from PIL import Image
+from PIL.ExifTags import TAGS
+from datetime import datetime
 from multiprocessing import Pool, Lock
 from os import utime
 from time import mktime
-from datetime import datetime
 import argparse
-from PIL import Image
-from PIL.ExifTags import TAGS
+import os
+import subprocess
+import sys
 
 globallock = Lock()
 
