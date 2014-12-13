@@ -11,12 +11,12 @@
 
 __version__ = '$Revision$'[11:-2]
 
-import sys
-import subprocess
 from multiprocessing import Pool, Lock
 from os import utime
-import os.path
 from time import mktime
+import os.path
+import subprocess
+import sys
 
 globallock = Lock()
 
