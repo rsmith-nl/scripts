@@ -12,8 +12,8 @@
 unless they have uncommitted changes."""
 
 import os
-import sys
 import subprocess
+import sys
 
 
 def checkfor(args, rv=0):

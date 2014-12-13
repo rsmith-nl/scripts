@@ -13,11 +13,11 @@ in a Matroska container."""
 
 __version__ = '$Revision$'[11:-2]
 
-import os
-import sys
-import subprocess
 from multiprocessing import cpu_count
 from time import sleep
+import os
+import subprocess
+import sys
 
 
 def warn(s):

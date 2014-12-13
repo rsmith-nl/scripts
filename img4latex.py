@@ -18,8 +18,8 @@ __version__ = '$Revision$'[11:-2]
 
 import argparse
 import os
-import sys
 import subprocess
+import sys
 
 
 def getpdfbb(fn):

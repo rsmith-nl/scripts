@@ -11,10 +11,9 @@
 
 from __future__ import division, print_function
 
+import os
 import subprocess
 import sys
-import os
-
 
 def checkfor(args, rv=0):
     """Make sure that a program necessary for using this script is

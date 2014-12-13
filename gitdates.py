@@ -12,11 +12,11 @@
 """For each file in a directory managed by git, get the short hash and
 data of the most recent commit of that file."""
 
-import os
-import sys
-import subprocess
-import time
 from multiprocessing import Pool
+import os
+import subprocess
+import sys
+import time
 
 # Suppres terminal windows on MS windows.
 startupinfo = None

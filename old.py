@@ -13,10 +13,8 @@
 name starts with a period, it removes the period and prefixes it with
 'old-dot'."""
 
-from __future__ import print_function, division  # 2 and 3 compatibility.
-
-import sys
 import os
+import sys
 
 __version__ = '$Revision$'[11:-2]
 

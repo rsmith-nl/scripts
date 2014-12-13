@@ -11,8 +11,8 @@
 
 """Generate random passwords."""
 
-import argparse
 from base64 import b64encode
+import argparse
 import sys
 
 __version__ = '$Revision$'[11:-2]

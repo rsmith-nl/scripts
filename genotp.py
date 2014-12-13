@@ -10,10 +10,8 @@
 
 """Generates a one-time pad."""
 
-from __future__ import division, print_function
 from datetime import datetime
 from os import urandom
-
 
 def rndcaps(n):
     """Generates a string of random capital letters.

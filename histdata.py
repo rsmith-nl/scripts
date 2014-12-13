@@ -6,10 +6,10 @@ entropy."""
 
 __version__ = '$Revision$'[11:-2]
 
-import sys
 import math
 import matplotlib.pyplot as plt
 import os
+import sys
 
 
 def readdata(name):

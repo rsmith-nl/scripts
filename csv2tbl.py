@@ -14,9 +14,9 @@ from __future__ import print_function
 
 __version__ = '$Revision$'[11:-2]
 
-import sys
-import os.path
 from datetime import date
+import os.path
+import sys
 
 
 def readlines(filename):
