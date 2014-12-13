@@ -10,9 +10,9 @@
 
 """Script to format a Git log for LaTeX"""
 
+import os
 import subprocess
 import sys
-import os
 
 # The following texts determine how the commits are generated. Change them to
 # suit your preferences.
