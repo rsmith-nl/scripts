@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+#!/usr/bin/env python3
 # vim:fileencoding=utf-8:ft=python
 # file: img4latex.py
 #
