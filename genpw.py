@@ -24,6 +24,25 @@ def roundup(characters):
 
     :param characters: number of requested (8-bit) characters
     :returns: revised number
+
+    >>> roundup(1)
+    3
+    >>> roundup(2)
+    3
+    >>> roundup(3)
+    3
+    >>> roundup(4)
+    3
+    >>> roundup(5)
+    6
+    >>> roundup(6)
+    6
+    >>> roundup(7)
+    6
+    >>> roundup(8)
+    6
+    >>> roundup(9)
+    9
     """
     bits = characters * 6
     upto = 24
@@ -39,6 +58,21 @@ def genpw(length, dev='/dev/random'):
     :param length: length of the requested password
     :param dev: device to use
     :returns: password string
+
+    >>> len(genpw(1)) == 4
+    True
+    >>> len(genpw(2)) == 4
+    True
+    >>> len(genpw(3)) == 4
+    True
+    >>> len(genpw(4)) == 4
+    True
+    >>> len(genpw(5)) == 8
+    True
+    >>> len(genpw(8)) == 8
+    True
+    >>> len(genpw(9)) == 12
+    True
     """
     n = roundup(length)
     with open(dev, 'rb') as rf:
