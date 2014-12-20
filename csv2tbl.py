@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -9,8 +9,6 @@
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Convert a CSV file to a LaTeX table"""
-
-from __future__ import print_function
 
 __version__ = '$Revision$'[11:-2]
 
