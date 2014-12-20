@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
@@ -10,8 +10,6 @@
 
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
-
-from __future__ import division, print_function
 
 __version__ = '$Revision$'[11:-2]
 
