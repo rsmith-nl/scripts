@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
