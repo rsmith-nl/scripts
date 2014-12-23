@@ -14,6 +14,7 @@ import os
 import subprocess
 import sys
 
+
 def checkfor(args, rv=0):
     """Make sure that a program necessary for using this script is
     available.

@@ -13,6 +13,7 @@
 from datetime import datetime
 from os import urandom
 
+
 def rndcaps(n):
     """Generates a string of random capital letters.
 
