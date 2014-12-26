@@ -19,7 +19,8 @@ __version__ = '$Revision$'[11:-2]
 filetypes = {'\.pdf$': ['mupdf'], '\.html$': ['firefox', '-new-tab'],
              '\.zip$': ['unzip', '-l'], '\.xcf$': ['gimp'],
              '\.(jpg|jpeg|png|gif|tif)$': ['gpicview'],
-             '\.(tar\.|t)([zZ]|gz|bz[2]?|xz)$': ['tar', 'tf']}
+             '\.(tar\.|t)([zZ]|gz|bz[2]?|xz)$': ['tar', 'tf'],
+             '\.(mp4|mkv|avi|flv|mpg|mov)$': ['mpv']}
 
 
 def findprog(matchdict, fname):
@@ -51,7 +52,6 @@ def main(args):
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
     del args[0]  # delete the name of the script.
-    # Real work starts here.
     for nm in args:
         if isdir(nm):
             cmds = ['rox', nm]
