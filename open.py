@@ -12,13 +12,14 @@
 from re import search, IGNORECASE
 from subprocess import Popen, check_output
 from sys import argv
+from os.path import isdir, isfile
 
 __version__ = '$Revision$'[11:-2]
 
-matches = {'\.pdf$': ['mupdf'], '\.html$': ['firefox', '-new-tab'],
-           '\.zip$': ['unzip', '-l'], '\.xcf$': ['gimp'],
-           '\.(jpg|jpeg|png|gif|tif)$': ['gpicview'],
-           '\.(tar\.|t)([zZ]|gz|bz[2]?|xz)$': ['tar', 'tf']}
+filetypes = {'\.pdf$': ['mupdf'], '\.html$': ['firefox', '-new-tab'],
+             '\.zip$': ['unzip', '-l'], '\.xcf$': ['gimp'],
+             '\.(jpg|jpeg|png|gif|tif)$': ['gpicview'],
+             '\.(tar\.|t)([zZ]|gz|bz[2]?|xz)$': ['tar', 'tf']}
 
 
 def findprog(matchdict, fname):
@@ -51,8 +52,11 @@ def main(args):
         sys.exit(0)
     del args[0]  # delete the name of the script.
     # Real work starts here.
-    for fn in args:
-        cmds = findprog(matches, fn)
+    for nm in args:
+        if isdir(nm):
+            cmds = ['rox', nm]
+        elif isfile(nm):
+            cmds = findprog(filetypes, nm)
         if cmds is not None:
             Popen(cmds)
 
