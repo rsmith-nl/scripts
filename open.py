@@ -11,7 +11,7 @@
 
 from re import search, IGNORECASE
 from subprocess import Popen, check_output
-from sys import argv
+from sys import argv, exit, stderr
 from os.path import basename, isdir, isfile
 
 __version__ = '$Revision$'[11:-2]
@@ -48,9 +48,9 @@ def main(args):
     """
     if len(args) == 1:
         binary = basename(args[0])
-        print("{} ver. {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
-        sys.exit(0)
+        print("{} ver. {}".format(binary, __version__), file=stderr)
+        print("Usage: {} [file ...]".format(binary), file=stderr)
+        exit(0)
     del args[0]  # delete the name of the script.
     for nm in args:
         if isdir(nm):
