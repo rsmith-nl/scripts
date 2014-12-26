@@ -12,7 +12,7 @@
 from re import search, IGNORECASE
 from subprocess import Popen, check_output
 from sys import argv
-from os.path import isdir, isfile
+from os.path import basename, isdir, isfile
 
 __version__ = '$Revision$'[11:-2]
 
@@ -47,7 +47,7 @@ def main(args):
     :param args: command line arguments
     """
     if len(args) == 1:
-        binary = os.path.basename(args[0])
+        binary = basename(args[0])
         print("{} ver. {}".format(binary, __version__), file=sys.stderr)
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
