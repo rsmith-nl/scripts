@@ -24,9 +24,10 @@ from os.path import basename, isdir, isfile
 __version__ = '$Revision$'[11:-2]
 
 filetypes = {'\.pdf$': ['mupdf'], '\.html$': ['firefox', '-new-tab'],
-             '\.zip$': ['unzip', '-l'], '\.xcf$': ['gimp'],
-             '\.(jpg|jpeg|png|gif|tif)$': ['gpicview'],
-             '\.(tar\.|t)([zZ]|gz|bz[2]?|xz)$': ['tar', 'tf'],
+             '\.xcf$': ['gimp'], '\.[e]?ps$': ['gv'],
+             '\.(jp[e]?g|png|gif|tif[f]?)$': ['gpicview'],
+             '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
+             '\.(tar\.|t)(z|gz|bz[2]?|xz)$': ['tar', 'tf'],
              '\.(mp4|mkv|avi|flv|mpg|mov)$': ['mpv']}
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
@@ -74,7 +75,10 @@ def main(args):
         elif isfile(nm):
             cmds = matchfile(filetypes, othertypes, nm)
         if cmds is not None:
-            Popen(cmds)
+            try:
+                Popen(cmds)
+            except OSError as e:
+                print("Opening", nm, "failed:", e)
 
 if __name__ == '__main__':
     main(argv)
