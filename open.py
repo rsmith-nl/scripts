@@ -74,7 +74,9 @@ def main(args):
             cmds = othertypes['dir'] + [nm]
         elif isfile(nm):
             cmds = matchfile(filetypes, othertypes, nm)
-        if cmds is not None:
+        if cmds is None:
+            print("Sorry, don't know how to open '{}'".format(nm))
+        else:
             try:
                 Popen(cmds)
             except OSError as e:
