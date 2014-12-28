@@ -75,7 +75,7 @@ def main(args):
         elif isfile(nm):
             cmds = matchfile(filetypes, othertypes, nm)
         if cmds is None:
-            print("Sorry, don't know how to open '{}'".format(nm))
+            print("Sorry, don't know how to open '{}'.".format(nm))
         else:
             try:
                 Popen(cmds)
