@@ -1,0 +1,28 @@
+#!/bin/sh
+# file: sync-laptop
+# vim:fileencoding=utf-8:ft=shsh
+# Syncronize a directory to my laptop.
+#
+# Author: R.F. Smith <rsmith@xs4all.nl>
+# Created: 2015-01-04 21:15:48 +0100
+# $Date$
+# $Revision$
+
+if [ $# -lt 1 ]; then
+    prg=$(basename $0)
+    echo "Usage $prg [-x] dir"
+    echo "Where <dir> is a subdirectory of ${HOME}"
+    exit 1
+fi
+DIR=$1
+ARGS=-avn
+if [ $DIR == "-x" ]; then
+    ARGS=-av
+    DIR=$2
+fi
+if [ ! -d ${HOME}/${DIR} ]; then
+    echo "/home/rsmith/"${DIR}" is not a directory, exiting."
+    exit 2
+fi
+echo "Syncing "${HOME}/${DIR}"/ to rfs::"${HOME#/}/${DIR}
+rsync ${ARGS} --delete ${HOME}/${DIR}/ rfs::${HOME#/}/${DIR}
