@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: sync-laptop
-# vim:fileencoding=utf-8:ft=shsh
+# vim:fileencoding=utf-8:ft=sh
 # Syncronize a directory to my laptop.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
