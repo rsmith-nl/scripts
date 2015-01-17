@@ -7,8 +7,8 @@
 # $Date$
 # $Revision$
 
-'''Make a histogram of the bytes in the input files, and calculate their
-entropy.'''
+"""Make a histogram of the bytes in the input files, and calculate their
+entropy."""
 
 import math
 import os.path
@@ -17,7 +17,11 @@ import sys
 
 
 def readdata(name):
-    '''Read the data from a file and count it.'''
+    """Read the data from a file and count it.
+
+    :param name: string containing the filename to open
+    :returns: a tuple (counts list, length of data)
+    """
     f = open(name, 'rb')
     data = f.read()
     f.close()
@@ -30,7 +34,12 @@ def readdata(name):
 
 
 def entropy(counts, sz):
-    '''Calculate the entropy of the data represented by the counts list'''
+    """Calculate the entropy of the data represented by the counts list.
+
+    :param counts: list of counts
+    :param sz: length of the data in bytes
+    :returns: entropy value
+    """
     ent = 0.0
     for b in counts:
         if b == 0:
@@ -41,7 +50,12 @@ def entropy(counts, sz):
 
 
 def histogram_gnuplot(counts, sz, name):
-    '''Use gnuplot to create a histogram from the data'''
+    """Use gnuplot to create a histogram from the data in the form of a PDF file.
+
+    :param counts: list of counts
+    :param sz: length of the data in bytes
+    :param name: name of the output file.
+    """
     counts = [100*c/sz for c in counts]
     rnd = 1.0/256*100
     pl = ['set terminal pdfcairo size 18 cm,10 cm']
