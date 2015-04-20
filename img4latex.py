@@ -50,7 +50,7 @@ def getpixwidth(fn):
         k, v = ln.strip().split(':', 1)
         data[k] = v.strip()
     if data['Units'] != 'Undefined':
-        res = int(data['Resolution'].split('x')[0])
+        res = float(data['Resolution'].split('x')[0])
     else:
         res = 300
     size = int(data['Geometry'].split('+')[0].split('x')[0])
