@@ -11,4 +11,8 @@
 # related or neighboring rights to set-title.sh. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-printf "\033]2;${HOST}\007"
+VAR=`hostname`
+if [ $1 ]; then
+    VAR=$1
+fi
+printf "\033]2;${VAR}\007"
