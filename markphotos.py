@@ -77,10 +77,11 @@ def main(argv):
         print("{} version {}".format(binary, __version__), file=sys.stderr)
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
-    checkfor(['exiftool',  '-ver'])
+    checkfor(['exiftool', '-ver'])
     p = Pool()
     p.map(processfile, argv[1:])
     p.close()
+
 
 if __name__ == '__main__':
     main(sys.argv)
