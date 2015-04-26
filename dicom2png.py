@@ -49,8 +49,8 @@ def startconvert(fname):
        image and crop it."""
     size = '1574x2048'
     args = ['convert', fname, '-units', 'PixelsPerInch', '-density', '300',
-            '-crop', size+'+232+0', '-page', size+'+0+0', '-auto-gamma',
-            fname+'.png']
+            '-crop', size + '+232+0', '-page', size + '+0+0', '-auto-gamma',
+            fname + '.png']
     with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
     print('Start processing', fname)

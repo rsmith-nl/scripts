@@ -86,7 +86,7 @@ def main(argv):
         fname = fname[:-4]
     # Create a format definition for the tabular environment.
     columns = len(lines[1].split(sep))
-    columns = 'l'*columns
+    columns = 'l' * columns
     # Print the output.
     print('% Generated from ' + str(shortname))
     print('% by csv2tbl.py on ' + str(date.today()))

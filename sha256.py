@@ -32,9 +32,10 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
     hs = '''compare file to this sha256 string;
             will add "[ OK ]" or "[ Failed ]" after the checksum'''
-    parser.add_argument('-c', '--checksum', default=None,
-                        help=hs)
-    parser.add_argument('-v', '--version', action='version',
+
+    parser.add_argument('-c', '--checksum', default=None, help=hs)
+    parser.add_argument('-v', '--version',
+                        action='version',
                         version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)

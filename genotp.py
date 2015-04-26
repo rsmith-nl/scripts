@@ -21,7 +21,7 @@ def rndcaps(n):
     :returns: a string of n random capital letters.
     """
     b = urandom(n)
-    return ''.join([chr(int(round(c/10.2))+65) for c in b])
+    return ''.join([chr(int(round(c / 10.2)) + 65) for c in b])
 
 
 def otp(n=65):

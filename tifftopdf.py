@@ -56,12 +56,12 @@ def convert(fname):
         if 'Width:' not in txt:
             raise ValueError
         index = txt.index('Width:')
-        width = float(txt[index+1])
-        length = float(txt[index+4])
+        width = float(txt[index + 1])
+        length = float(txt[index + 4])
         try:
             index = txt.index('Resolution:')
-            xres = float(txt[index+1][:-1])
-            yres = float(txt[index+2])
+            xres = float(txt[index + 1][:-1])
+            yres = float(txt[index + 2])
         except ValueError:
             xres, yres = None, None
         # Create the output file name.
@@ -71,8 +71,9 @@ def convert(fname):
             outname = fname[:-5]
         outname = outname.replace(' ', '_') + '.pdf'
         if xres:
-            args = ['tiff2pdf', '-w', str(width/xres), '-l', str(length/xres),
-                    '-x', str(xres), '-y', str(yres), '-o', outname, fname]
+            args = ['tiff2pdf', '-w', str(width / xres), '-l',
+                    str(length / xres), '-x', str(xres), '-y', str(yres), '-o',
+                    outname, fname]
         else:
             args = ['tiff2pdf', '-o', outname, '-z', '-p', 'A4', '-F', fname]
             print("No resolution in {}. Fitting to A4.".format(fname))

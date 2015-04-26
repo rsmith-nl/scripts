@@ -55,9 +55,12 @@ def getpixwidth(fn):
         res = 300
     size = int(data['Geometry'].split('+')[0].split('x')[0])
     # Convert pixels to points
-    factor = {'PixelsPerInch': 72, 'PixelsPerCentimeter': 28.35,
-              'Undefined': 72}
-    return size/res*factor[data['Units']]
+    factor = {
+        'PixelsPerInch': 72,
+        'PixelsPerCentimeter': 28.35,
+        'Undefined': 72
+    }
+    return size / res * factor[data['Units']]
 
 
 def output_figure(fn, options=""):
@@ -67,7 +70,7 @@ def output_figure(fn, options=""):
     :param options: options to add to the \includegraphics command
     """
     fb = fn.rpartition('.')[0]
-    fbnodir = fb[fn.rfind('/')+1:]
+    fbnodir = fb[fn.rfind('/') + 1:]
     print()
     print(r'\begin{figure}[!htbp]')
     print(r'  \centerline{\includegraphics' + options + '%')
@@ -83,13 +86,16 @@ def main(argv):
     :param argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-w', '--width', default=160, type=float,
+    parser.add_argument('-w', '--width',
+                        default=160,
+                        type=float,
                         help='width of the text block in mm.')
-    parser.add_argument('-v', '--version', action='version',
+    parser.add_argument('-v', '--version',
+                        action='version',
                         version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
-    args.width *= 72/25.4  # convert to points
+    args.width *= 72 / 25.4  # convert to points
     del args.file[0]
     if not args.file:
         parser.print_help()
@@ -103,7 +109,7 @@ def main(argv):
             bbwidth = float(bbox[2]) - float(bbox[0])
             scale = 1.0
             if bbwidth > args.width:
-                scale = args.width/bbwidth
+                scale = args.width / bbwidth
             fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
             opts = fs.format(*bbox, s=scale)
         elif filename.endswith(('.png', '.PNG', '.jpg', '.JPG', '.jpeg',
@@ -111,7 +117,7 @@ def main(argv):
             width = getpixwidth(filename)
             opts = ''
             if width > args.width:
-                opts = '[scale={:.3f}]'.format(args.width/width)
+                opts = '[scale={:.3f}]'.format(args.width / width)
         else:
             fskip = 'File "{}" has an unrecognized format. Skipping...'
             print(fskip.format(filename))

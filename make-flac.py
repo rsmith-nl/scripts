@@ -102,10 +102,9 @@ def startflac(tinfo):
     for the running conversion.
     """
     num, title, artist, album, ifname, ofname = tinfo
-    args = ['flac', '--best', '--totally-silent',
-            '-TARTIST=' + artist, '-TALBUM=' + album,
-            '-TTITLE=' + title, '-TTRACKNUM={:02d}'.format(num),
-            '-o', ofname, ifname]
+    args = ['flac', '--best', '--totally-silent', '-TARTIST=' + artist,
+            '-TALBUM=' + album, '-TTITLE=' + title,
+            '-TTRACKNUM={:02d}'.format(num), '-o', ofname, ifname]
     with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
     print('Start processing "{}" as {}'.format(title, ofname))

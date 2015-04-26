@@ -30,7 +30,7 @@ def roundup(characters):
     rem = bits % upto
     if rem:
         bits += (upto - rem)
-    return int(bits/8)
+    return int(bits / 8)
 
 
 def genpw(length, dev='/dev/random'):
@@ -49,13 +49,20 @@ def genpw(length, dev='/dev/random'):
 
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-l', '--length', default=16, type=int,
+    parser.add_argument('-l', '--length',
+                        default=16,
+                        type=int,
                         help='# of random character for password (default 16)')
-    parser.add_argument('-r', '--repeat', default=1, type=int,
+    parser.add_argument('-r', '--repeat',
+                        default=1,
+                        type=int,
                         help='number of passwords to generate (default: 1)')
-    parser.add_argument('-d', '--device', default='/dev/random', type=str,
+    parser.add_argument('-d', '--device',
+                        default='/dev/random',
+                        type=str,
                         help='random number device (default: /dev/random)')
-    parser.add_argument('-v', '--version', action='version',
+    parser.add_argument('-v', '--version',
+                        action='version',
                         version=__version__)
     args = parser.parse_args(argv)
     for _ in range(args.repeat):

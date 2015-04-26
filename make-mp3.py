@@ -103,8 +103,8 @@ def startmp3(tinfo):
     """
     num, title, artist, album, ifname, ofname = tinfo
     args = ['lame', '-S', '--preset', 'standard', '--tt', title, '--ta',
-            artist, '--tl', album, '--tn', '{:02d}'.format(num),
-            ifname, ofname]
+            artist, '--tl', album, '--tn', '{:02d}'.format(num), ifname,
+            ofname]
     with open(os.devnull, 'w') as bb:
         p = subprocess.Popen(args, stdout=bb, stderr=bb)
     print('Start processing "{}" as {}'.format(title, ofname))

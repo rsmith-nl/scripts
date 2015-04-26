@@ -45,5 +45,6 @@ def main(argv):
                 print("Not a git repository! Exiting.")
             break
 
+
 if __name__ == '__main__':
     main(sys.argv)

@@ -27,7 +27,7 @@ def readdata(name):
     f.close()
     ba = bytearray(data)
     del data
-    counts = [0]*256
+    counts = [0] * 256
     for b in ba:
         counts[b] += 1
     return (counts, float(len(ba)))
@@ -44,9 +44,9 @@ def entropy(counts, sz):
     for b in counts:
         if b == 0:
             continue
-        p = float(b)/sz
-        ent -= p*math.log(p, 256)
-    return ent*8
+        p = float(b) / sz
+        ent -= p * math.log(p, 256)
+    return ent * 8
 
 
 def histogram_gnuplot(counts, sz, name):
@@ -56,8 +56,8 @@ def histogram_gnuplot(counts, sz, name):
     :param sz: length of the data in bytes
     :param name: name of the output file.
     """
-    counts = [100*c/sz for c in counts]
-    rnd = 1.0/256*100
+    counts = [100 * c / sz for c in counts]
+    rnd = 1.0 / 256 * 100
     pl = ['set terminal pdfcairo size 18 cm,10 cm']
 
     pl += ["set style line 1 lc rgb '#E41A1C' pt 1 ps 1 lt 1 lw 4"]

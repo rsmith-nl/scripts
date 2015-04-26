@@ -71,7 +71,7 @@ outfile.write(header.format(today.year, today, rootdir, rootdir))
 
 flist = glob.glob("*.jpg")
 flist.sort()
-twinned = [(flist[i], flist[i+1]) for i in range(0, len(flist)/2*2, 2)]
+twinned = [(flist[i], flist[i + 1]) for i in range(0, len(flist) / 2 * 2, 2)]
 picline = """        <tr valign="bottom"> <!-- Begin of row of pictures  -->
           <td align="center" width="50%">
               <img border="0" width="100%"
@@ -82,6 +82,7 @@ picline = """        <tr valign="bottom"> <!-- Begin of row of pictures  -->
                src="{}" alt="{}" />
           </td>
         </tr> <!-- End of row of pictures  -->\n"""
+
 cmtline = """        <tr valign="top"> <!-- Begin of row of comments -->
           <td width="50%">
             {}
@@ -102,11 +103,13 @@ if len(flist) % 2 == 1:
                src="{}" alt="{}" />
           </td>
         </tr> <!-- End of row of pictures  -->\n"""
+
     cmtline = """        <tr valign="top"> <!-- Begin of row of comments -->
           <td width="50%">
             {}
           </td>
         </tr> <!-- End of row of comments -->\n"""
+
     outfile.write(picline.format(flist[-1], flist[-1]))
     outfile.write(cmtline.format(flist[-1]))
 
@@ -131,5 +134,6 @@ htmlfooter = """      </tbody>
       <br />Last update: {}</p>
   </body>
 </html>"""
+
 outfile.write(htmlfooter.format(today.year, rootdir, rootdir, today))
 outfile.close()
