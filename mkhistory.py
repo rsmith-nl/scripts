@@ -25,6 +25,7 @@ Dit hoofdstuk wordt automatisch gegenereerd uit het \texttt{git}
 revisiecontrolesysteem. De meest recente wijzigingen staan bovenaan.
 
 """
+
 commithdr = r'wijziging:'
 authorhdr = r'door:'
 datehdr = r'datum:'
@@ -34,6 +35,7 @@ datehdr = r'datum:'
 begintable = r"""\begingroup\hspace{-\tabcolsep}
 \begin{tabular}{p{0.1\textwidth}p{0.8\textwidth}}
 """
+
 endtable = r"""\end{tabular}\endgroup
 
 """
