@@ -76,8 +76,8 @@ def processfile(args):
         ed = {}
         cds = '{}:{}:{} {}:{}:{}'
         dt = datetime.today()
-        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day,
-                                      dt.hour, dt.minute, dt.second)
+        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, dt.hour,
+                                      dt.minute, dt.second)
     args = ['mogrify', '-strip', '-resize', str(width), '-units',
             'PixelsPerInch', '-density', '300', '-unsharp', '2x0.5+0.7+0',
             '-quality', '90', name]
@@ -86,8 +86,8 @@ def processfile(args):
     if rv != 0:
         report(errstr.format(rv, name), 'ERROR')
         return
-    modtime = mktime((dt.year, dt.month, dt.day, dt.hour,
-                     dt.minute, dt.second, 0, 0, -1))
+    modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                      0, 0, -1))
     utime(name, (modtime, modtime))
     report("File '{}' processed".format(name))
 
@@ -99,9 +99,12 @@ def main(argv):
     argv -- command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-w', '--width', default=886, type=int,
+    parser.add_argument('-w', '--width',
+                        default=886,
+                        type=int,
                         help='width of the images in pixels (default 886)')
-    parser.add_argument('-v', '--version', action='version',
+    parser.add_argument('-v', '--version',
+                        action='version',
                         version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
