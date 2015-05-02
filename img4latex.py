@@ -4,8 +4,6 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# $Date$
-# $Revision$
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -80,11 +78,36 @@ def output_figure(fn, options=""):
     print(r'\end{figure}')
 
 
+def checkfor(args, rv=0):
+    """Make sure that a program necessary for using this script is
+    available.
+
+    :param args: String or list of strings of commands. A single string may
+    not contain spaces.
+    :param rv: Expected return value from evoking the command.
+    """
+    if isinstance(args, str):
+        if ' ' in args:
+            raise ValueError('no spaces in single command allowed')
+        args = [args]
+    try:
+        with open(os.devnull, 'w') as bb:
+            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        if rc != rv:
+            raise OSError
+    except OSError as oops:
+        outs = "Required program '{}' not found: {}."
+        print(outs.format(args[0], oops.strerror))
+        sys.exit(1)
+
+
 def main(argv):
     """Entry point for this script.
 
     :param argv: command line arguments
     """
+    checkfor(['gs', '-v'])
+    checkfor(['identify', '-version'])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-w', '--width',
                         default=160,
