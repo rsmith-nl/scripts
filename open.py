@@ -5,8 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# $Date$
-# $Revision$
+# Last modified: 2015-05-03 10:24:16 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to open.py. This work is
@@ -16,22 +15,22 @@
 """Opens the file(s) given on the command line in the approriate program.
 It assumes you are running X11. It uses the following programs;"""
 
+from os.path import basename, isdir, isfile
 from re import search, IGNORECASE
 from subprocess import Popen, check_output
 from sys import argv, exit, stderr
-from os.path import basename, isdir, isfile
 
 __version__ = '$Revision$'[11:-2]
 
 filetypes = {
-    '\.pdf$': ['mupdf'],
-    '\.html$': ['firefox', '-new-tab'],
-    '\.xcf$': ['gimp'],
-    '\.[e]?ps$': ['gv'],
-    '\.(jp[e]?g|png|gif|tif[f]?)$': ['gpicview'],
-    '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
-    '\.(tar\.|t)(z|gz|bz[2]?|xz)$': ['tar', 'tf'],
-    '\.(mp4|mkv|avi|flv|mpg|mov)$': ['mpv']
+    '\.(pdf|epub)$': ('mupdf'),
+    '\.html$': ('firefox', '-new-tab'),
+    '\.xcf$': ('gimp'),
+    '\.(e)?ps$': ('gv'),
+    '\.(jp(e)?g|png|gif|tif(f)?)$': ('gpicview'),
+    '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ('tar', 'tf'),
+    '\.(tar\.|t)(z|gz|bz(2)?|xz)$': ('tar', 'tf'),
+    '\.(mp4|mkv|avi|flv|mpg|mov)$': ('mpv')
 }
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
@@ -39,10 +38,14 @@ othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 def matchfile(fdict, odict, fname):
     """For the given filename, returns the matching program.
 
-    :param fdict: handlers for files; dictionary of regex:[arguments]
-    :param odict: handlers for other types; dictionary of str:[arguments]
-    :param fname: file name
-    :returns: a list of commands for subprocess.Open.
+    Arguments:
+        fdict: Handlers for files. A dictionary of regex:(commands)
+            representing the file type and the action that is to be taken for
+            opening one.
+        odict: Handlers for other types. A dictionary of str:(arguments).
+        fname: A string containing the name of the file to be opened.
+
+    Returns: A list of commands for subprocess.Open.
     """
     for k, v in fdict.items():
         if search(k, fname, IGNORECASE) is not None:
@@ -58,7 +61,8 @@ def matchfile(fdict, odict, fname):
 def main(args):
     """Entry point for this script.
 
-    :param args: command line arguments
+    Arguments:
+        args: command line arguments; list of strings.
     """
     if len(args) == 1:
         binary = basename(args[0])
