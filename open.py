@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2015-05-03 10:24:16 +0200
+# Last modified: 2015-05-03 15:00:08 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to open.py. This work is
@@ -23,14 +23,14 @@ from sys import argv, exit, stderr
 __version__ = '$Revision$'[11:-2]
 
 filetypes = {
-    '\.(pdf|epub)$': ('mupdf'),
-    '\.html$': ('firefox', '-new-tab'),
-    '\.xcf$': ('gimp'),
-    '\.(e)?ps$': ('gv'),
-    '\.(jp(e)?g|png|gif|tif(f)?)$': ('gpicview'),
-    '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ('tar', 'tf'),
-    '\.(tar\.|t)(z|gz|bz(2)?|xz)$': ('tar', 'tf'),
-    '\.(mp4|mkv|avi|flv|mpg|mov)$': ('mpv')
+    '\.(pdf|epub)$': ['mupdf'],
+    '\.html$': ['firefox', '-new-tab'],
+    '\.xcf$': ['gimp'],
+    '\.(e)?ps$': ['gv'],
+    '\.(jp(e)?g|png|gif|tif(f)?)$': ['gpicview'],
+    '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
+    '\.(tar\.|t)(z|gz|bz(2)?|xz)$': ['tar', 'tf'],
+    '\.(mp4|mkv|avi|flv|mpg|mov)$': ['mpv']
 }
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
