@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-03 22:01:35 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -11,7 +11,7 @@
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 from PIL import Image
 from PIL.ExifTags import TAGS
