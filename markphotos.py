@@ -3,13 +3,13 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-03 22:08:32 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 from multiprocessing import Pool, Lock
 from os import utime
