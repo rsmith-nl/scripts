@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2015-05-03 15:00:08 +0200
+# Last modified: 2015-05-03 21:49:32 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to open.py. This work is
@@ -13,14 +13,16 @@
 # http://creativecommons.org/publicdomain/zero/1.0/
 
 """Opens the file(s) given on the command line in the approriate program.
-It assumes you are running X11. It uses the following programs;"""
+Some of the programs are X11 programs."""
 
 from os.path import basename, isdir, isfile
 from re import search, IGNORECASE
 from subprocess import Popen, check_output
 from sys import argv, exit, stderr
+import argparse
+import logging
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
@@ -54,41 +56,46 @@ def matchfile(fdict, odict, fname):
         if b'text' in check_output(['file', fname]):
             return odict['txt'] + [fname]
     except CalledProcessError:
-        pass
-    return None
+        logging.warning("the command 'file {}' failed.".format(fname))
+        return None
 
 
-def main(args):
+def main(argv):
     """Entry point for this script.
 
     Arguments:
-        args: command line arguments; list of strings.
+        argv: command line arguments; list of strings.
     """
-    if len(args) == 1:
-        binary = basename(args[0])
-        print("{} ver. {}".format(binary, __version__), file=stderr)
-        print("Usage: {} [file ...]\n".format(binary), file=stderr)
-        print(__doc__)
-        print("* file")
-        for v in filetypes.values():
-            print("* {}".format(v[0]))
-        tfs = "\nAny other files that contain text are opened with {}."
-        print(tfs.format(othertypes['txt'][0]))
-        print("Directories are opened with {}.".format(othertypes['dir'][0]))
-        exit(0)
-    del args[0]  # delete the name of the script.
-    for nm in args:
+    if argv[0].endswith(('open', 'open.py')):
+        del argv[0]
+    opts = argparse.ArgumentParser(prog='open', description=__doc__)
+    opts.add_argument('-v', '--version', action='version',
+                      version=__version__)
+    opts.add_argument('--log', default='warning',
+                      choices=['info', 'debug', 'warning', 'error'],
+                      help="logging level (defaults to 'warning')")
+    opts.add_argument("files", metavar='file', nargs='*',
+                      help="one or more files to process")
+    args = opts.parse_args(argv)
+    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
+                        format='%(levelname)s: %(message)s')
+    logging.info('command line arguments = {}'.format(argv))
+    logging.info('parsed arguments = {}'.format(args))
+    for nm in args.files:
+        logging.info("Trying '{}'".format(nm))
         if isdir(nm):
             cmds = othertypes['dir'] + [nm]
         elif isfile(nm):
             cmds = matchfile(filetypes, othertypes, nm)
-        if cmds is None:
-            print("Sorry, don't know how to open '{}'.".format(nm))
         else:
-            try:
-                Popen(cmds)
-            except OSError as e:
-                print("Opening", nm, "failed:", e)
+            cmds = None
+        if not cmds:
+            logging.warning("do not know how to open '{}'".format(nm))
+            continue
+        try:
+            Popen(cmds)
+        except OSError as e:
+            logging.error("opening '{}' failed: {}".format(nm, e))
 
 
 if __name__ == '__main__':
