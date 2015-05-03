@@ -3,7 +3,7 @@
 # Make a webpage for all pictures in the current directory.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-03 22:10:26 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkphotopage. This work is published from the

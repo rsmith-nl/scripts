@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-03 22:41:15 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -11,7 +11,7 @@
 """Convert TIFF files to PDF format using the utilities from the libtiff
 package."""
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 from multiprocessing import cpu_count
 from time import sleep

@@ -4,8 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-07-12 01:38:08 +0200
-# $Date$
-# $Revision$
+# Last modified: 2015-05-03 22:05:43 +0200
 
 """Make a histogram of the bytes in the input files, and calculate their
 entropy."""

@@ -4,6 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
+# Last modified: 2015-05-03 22:06:06 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -12,7 +13,7 @@
 """Program to check a PDF, PNG or JPEG file and return
    a suitable LaTeX figure environment for it."""
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 import argparse
 import os

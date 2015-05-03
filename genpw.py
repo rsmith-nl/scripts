@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-12-11 22:58:53 +0100
-# Modified: $Date$
+# Last modified: 2015-05-03 22:02:41 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genpw.py. This work is published
@@ -15,7 +15,7 @@ from base64 import b64encode
 import argparse
 import sys
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 
 def roundup(characters):

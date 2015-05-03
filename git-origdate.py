@@ -4,8 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-01-03 15:48:13 +0100
-# $Date$
-# $Revision$
+# Last modified: 2015-05-03 22:04:56 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to git-origdate.py. This work is
@@ -19,7 +18,7 @@ import os.path
 import subprocess
 import sys
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 
 def main(argv):

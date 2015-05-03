@@ -3,8 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# $Date$
-# $Revision$
+# Last modified: 2015-05-03 22:08:06 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-mp3.py. This work is published from
@@ -16,7 +15,7 @@ the machine has cores. Title and song information is gathered from a
 text file called titles.
 """
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 from multiprocessing import cpu_count
 from time import sleep

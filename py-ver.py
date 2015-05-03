@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-28 23:25:35 +0200
-# Last modified: 2015-05-03 19:50:07 +0200
+# Last modified: 2015-05-03 22:38:08 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to py-ver.py. This work is published
@@ -49,6 +49,7 @@ def replacever(fn, newver):
         if _vre.search(data):
             data = _vre.sub(newver, data, count=1)
             f.seek(0)
+            f.truncate()
             f.write(data)
 
 

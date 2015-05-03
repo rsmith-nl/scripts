@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-10 21:43:11 +0100
-# Modified: $Date$
+# Last modified: 2015-05-03 22:11:26 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to old.py. This work is published
@@ -16,7 +16,7 @@ name starts with a period, it removes the period and prefixes it with
 import os
 import sys
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 
 def main(argv):

@@ -4,8 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-28 13:36:38 +0100
-# $Date$
-# $Revision$
+# Last modified: 2015-05-03 22:39:00 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to sha256.py. This work is
@@ -21,7 +20,7 @@ from os.path import isfile
 from sys import argv, exit
 import argparse
 
-__version__ = '$Revision$'[11:-2]
+__version__ = '1.0.0'
 
 
 def main(argv):
