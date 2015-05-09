@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2008-05-26 22:59:14 +0200
-# Last modified: 2015-05-08 19:32:28 +0200
+# Last modified: 2015-05-09 12:26:44 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to backup-local. This work is published
@@ -26,12 +26,12 @@ LOG="logger -t 'backup-local'"
 # This script assumes that the backups are not mounted.
 
 __mkbackup() { # 1=origin 2=dest
-    echo mount ${2}
+    mount ${2}
     if df|grep ${2} >/dev/null; then
-        echo rsync $FLAGS ${1%/}/ ${2} && $LOG "${1} successfully backed-up."
-        echo umount ${2}
+        rsync $FLAGS ${1%/}/ ${2} && $LOG "${1} successfully backed-up."
+        umount ${2}
     else
-        echo "Backup for ${1} not mounted! Not backed up."
+        "Backup for ${1} not mounted! Not backed up."
     fi
 }
 
