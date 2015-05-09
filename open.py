@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2015-05-03 21:49:32 +0200
+# Last modified: 2015-05-09 17:05:16 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to open.py. This work is
@@ -72,7 +72,7 @@ def main(argv):
     opts.add_argument('-v', '--version', action='version',
                       version=__version__)
     opts.add_argument('--log', default='warning',
-                      choices=['info', 'debug', 'warning', 'error'],
+                      choices=['debug', 'info', 'warning', 'error'],
                       help="logging level (defaults to 'warning')")
     opts.add_argument("files", metavar='file', nargs='*',
                       help="one or more files to process")
