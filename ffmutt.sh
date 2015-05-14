@@ -5,6 +5,5 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 22:49:16 +0100
-# $Date$
-# $Revision$
+# Last modified: 2015-05-14 21:11:10 +0200
 exec urxvt -e sh -c "mutt $$@"
