@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 21:30:51 +0200
+.. Last modified: 2015-05-14 22:17:55 +0200
 
 Introduction
 ============
@@ -107,9 +107,11 @@ a tar-file. The name of the backup file generally consists of;
 
 These parts are separated by dashes. The file has the extension ``tar``.
 
-
 genotp.py
 ---------
+
+Generates an old-fashioned one-time pad; 65 lines of 12 groups of 5 random
+capital letters.
 
 genpw.py
 --------

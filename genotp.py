@@ -2,33 +2,33 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:02:09 +0200
+# Last modified: 2015-05-14 22:17:10 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to genotp.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Generates a one-time pad."""
+"""Generates an old-fashioned one-time pad;
+65 lines of 12 groups of 5 random capital letters.
+"""
 
-from datetime import datetime
 from os import urandom
 
 
-def rndcaps(n):
-    """Generates a string of random capital letters.
-
-    :param n: length of the output string
-    :returns: a string of n random capital letters.
-    """
-    b = urandom(n)
-    return ''.join([chr(int(round(c / 10.2)) + 65) for c in b])
+def main():
+    ident = '+++++ {} +++++'
+    print(ident.format(rndcaps(10)))
+    print(otp())
 
 
 def otp(n=65):
     """Return a one-time pad.
 
-    :param n: number of lines in the key
-    :returns: 65 lines of 12 groups of 5 random capital letters.
+    Arguments:
+        n: number of lines in the key
+
+    Returns:
+        65 lines of 12 groups of 5 random capital letters.
     """
     lines = []
     for num in range(1, 66):
@@ -38,10 +38,17 @@ def otp(n=65):
     return '\n'.join(lines)
 
 
-def main():
-    ident = '>> {}, {} <<'
-    print(ident.format(rndcaps(10), datetime.utcnow().strftime("%FT%TZ")))
-    print(otp())
+def rndcaps(n):
+    """Generates a string of random capital letters.
+
+    Arguments:
+        n: Length of the output string.
+
+    Returns:
+        A string of n random capital letters.
+    """
+    b = urandom(n)
+    return ''.join([chr(int(round(c / 10.2)) + 65) for c in b])
 
 
 if __name__ == '__main__':
