@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:05:17 +0200
+# Last modified: 2015-05-14 22:55:42 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
@@ -18,56 +18,11 @@ import subprocess
 import sys
 import time
 
-# Suppres terminal windows on MS windows.
-startupinfo = None
-if os.name == 'nt':
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-
-def checkfor(args, rv=0):
-    """Make sure that a program necessary for using this script is
-    available.
-
-    :param args: String or list of strings of commands. A single string may
-    not contain spaces.
-    :param rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
-    try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
-        if rc != rv:
-            raise OSError
-    except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
-        sys.exit(1)
-
-
-def filecheck(fname):
-    """Start a git process to get file info. Return a string
-    containing the filename, the abbreviated commit hash and the
-    author date in ISO 8601 format.
-
-    :param fname: name of the file to check.
-    """
-    args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
-    try:
-        b = subprocess.check_output(args, startupinfo=startupinfo)
-        data = b.decode()[:-1]
-        h, t = data.split('|')
-        out = (fname[2:], h, time.gmtime(float(t)))
-    except (subprocess.CalledProcessError, ValueError):
-        return None
-    return out
-
 
 def main():
-    """Main program."""
+    """
+    Entry point for gitdates.
+    """
     checkfor(['git', '--version'])
     # Get a list of all files
     allfiles = []
@@ -95,6 +50,55 @@ def main():
     dfmt = '%Y-%m-%d %H:%M:%S %Z'
     for name, tag, date in filedata:
         print('{}|{}|{}'.format(name, tag, time.strftime(dfmt, date)))
+
+
+def checkfor(args, rv=0):
+    """
+    Make sure that a program necessary for using this script is available.
+    Calls sys.exit when this is not the case.
+
+    Arguments:
+        args: String or list of strings of commands. A single string may
+            not contain spaces.
+        rv: Expected return value from evoking the command.
+    """
+    if isinstance(args, str):
+        if ' ' in args:
+            raise ValueError('no spaces in single command allowed')
+        args = [args]
+    try:
+        with open(os.devnull, 'w') as bb:
+            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        if rc != rv:
+            raise OSError
+    except OSError as oops:
+        outs = "Required program '{}' not found: {}."
+        print(outs.format(args[0], oops.strerror))
+        sys.exit(1)
+
+
+def filecheck(fname):
+    """
+    Start a git process to get file info. Return a string containing the
+    filename, the abbreviated commit hash and the author date in ISO 8601
+    format.
+
+    Arguments:
+        fname: Name of the file to check.
+
+    Returns:
+        A 3-tuple containing the file name, latest short hash and latest
+        commit date.
+    """
+    args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
+    try:
+        b = subprocess.check_output(args, startupinfo=startupinfo)
+        data = b.decode()[:-1]
+        h, t = data.split('|')
+        out = (fname[2:], h, time.gmtime(float(t)))
+    except (subprocess.CalledProcessError, ValueError):
+        return None
+    return out
 
 
 if __name__ == '__main__':

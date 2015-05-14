@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 22:48:44 +0200
+.. Last modified: 2015-05-14 22:56:07 +0200
 
 Introduction
 ============
@@ -135,6 +135,8 @@ For all command-line arguments, print out when they were first checked into
 gitdates.py
 -----------
 
+For each file in a directory managed by git, get the short hash and data of
+the most recent commit of that file.
 
 
 histdata.py
