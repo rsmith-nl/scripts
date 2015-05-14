@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-12-11 22:58:53 +0100
-# Last modified: 2015-05-03 22:02:41 +0200
+# Last modified: 2015-05-14 22:21:56 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genpw.py. This work is published
@@ -15,39 +15,11 @@ from base64 import b64encode
 import argparse
 import sys
 
-__version__ = '1.0.0'
-
-
-def roundup(characters):
-    """Rounds up the number of characters so that you don't end up with '='
-    af the end of the base64 encoded string.
-
-    :param characters: number of requested (8-bit) characters
-    :returns: revised number
-    """
-    bits = characters * 6
-    upto = 24
-    rem = bits % upto
-    if rem:
-        bits += (upto - rem)
-    return int(bits / 8)
-
-
-def genpw(length, dev='/dev/random'):
-    """Generate a random password
-
-    :param length: length of the requested password
-    :param dev: device to use
-    :returns: password string
-    """
-    n = roundup(length)
-    with open(dev, 'rb') as rf:
-        d = rf.read(n)
-    s = b64encode(d, b'__')
-    return s
+__version__ = '1.0.1'
 
 
 def main(argv):
+    """Entry point for genpw."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-l', '--length',
                         default=16,
@@ -67,6 +39,41 @@ def main(argv):
     args = parser.parse_args(argv)
     for _ in range(args.repeat):
         print(genpw(args.length, args.device).decode('ascii'))
+
+
+def genpw(length, dev='/dev/random'):
+    """Generate a random password.
+
+    Arguments:
+        length: Length of the requested password.
+        dev: Random device to use.
+
+    Returns:
+        A password string.
+    """
+    n = roundup(length)
+    with open(dev, 'rb') as rf:
+        d = rf.read(n)
+    s = b64encode(d, b'__')
+    return s
+
+
+def roundup(characters):
+    """Rounds up the number of characters so that you don't end up with '='
+    af the end of the base64 encoded string.
+
+    Arguments:
+        characters: The number of requested (8-bit) characters.
+
+    Returns:
+        The revised number.
+    """
+    bits = characters * 6
+    upto = 24
+    rem = bits % upto
+    if rem:
+        bits += (upto - rem)
+    return int(bits / 8)
 
 
 if __name__ == '__main__':

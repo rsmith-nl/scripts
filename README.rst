@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 22:17:55 +0200
+.. Last modified: 2015-05-14 22:22:29 +0200
 
 Introduction
 ============
@@ -115,6 +115,9 @@ capital letters.
 
 genpw.py
 --------
+
+Generates random passwords.
+
 
 git-check-all.py
 ----------------
