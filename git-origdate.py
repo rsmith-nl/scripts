@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-01-03 15:48:13 +0100
-# Last modified: 2015-05-03 22:04:56 +0200
+# Last modified: 2015-05-14 22:45:59 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to git-origdate.py. This work is
@@ -18,13 +18,14 @@ import os.path
 import subprocess
 import sys
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def main(argv):
-    """Entry point for this script.
+    """Entry point for git-origdate.
 
-    :param argv: command line arguments
+    Arguments:
+        argv: Command line arguments.
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
@@ -32,17 +33,17 @@ def main(argv):
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
     del argv[0]  # delete the name of the script.
-    # Real work starts here.
-    for fn in argv:
-        args = ['git', 'log', '--diff-filter=A', '--format=%ai', '--', fn]
-        try:
+    try:
+        for fn in argv:
+            args = ['git', 'log', '--diff-filter=A', '--format=%ai', '--', fn]
             date = subprocess.check_output(args, stderr=subprocess.PIPE)
             date = date.decode('utf-8').strip()
             print('{}: {}'.format(fn, date))
-        except subprocess.CalledProcessError as e:
-            if e.returncode == 128:
-                print("Not a git repository! Exiting.")
-            break
+    except subprocess.CalledProcessError as e:
+        if e.returncode == 128:
+            print("Not a git repository! Exiting.")
+        else:
+            print("git error: '{}'. Exiting.".format())
 
 
 if __name__ == '__main__':

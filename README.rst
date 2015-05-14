@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 22:31:18 +0200
+.. Last modified: 2015-05-14 22:48:44 +0200
 
 Introduction
 ============
@@ -129,8 +129,13 @@ and run ``git gc`` on them unless they have uncommitted changes.
 git-origdate.py
 ---------------
 
+For all command-line arguments, print out when they were first checked into
+``git``.
+
 gitdates.py
 -----------
+
+
 
 histdata.py
 -----------
