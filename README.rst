@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 22:56:07 +0200
+.. Last modified: 2015-05-15 01:29:13 +0200
 
 Introduction
 ============
@@ -141,6 +141,9 @@ the most recent commit of that file.
 
 histdata.py
 -----------
+
+Makes a histogram of the bytes in each input file, and calculates the entropy
+in each file.
 
 img4latex.py
 ------------

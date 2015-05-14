@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-07-12 01:38:08 +0200
-# Last modified: 2015-05-03 22:05:43 +0200
+# Last modified: 2015-05-15 01:28:11 +0200
 
 """Make a histogram of the bytes in the input files, and calculate their
 entropy."""
@@ -15,11 +15,31 @@ import subprocess
 import sys
 
 
-def readdata(name):
-    """Read the data from a file and count it.
+def main(argv):
+    """
+    Entry point for histdata.
 
-    :param name: string containing the filename to open
-    :returns: a tuple (counts list, length of data)
+    Arguments:
+        argv: List of file names.
+    """
+    if len(argv) < 1:
+        sys.exit(1)
+    for fn in argv:
+        hdata, size = readdata(fn)
+        e = entropy(hdata, size)
+        print("entropy of {} is {:.4f} bits/byte".format(fn, e))
+        histogram_gnuplot(hdata, size, fn)
+
+
+def readdata(name):
+    """
+    Read the data from a file and count it.
+
+    Arguments:
+        name: String containing the filename to open.
+
+    Returns:
+        A tuple (counts list, length of data).
     """
     f = open(name, 'rb')
     data = f.read()
@@ -35,9 +55,12 @@ def readdata(name):
 def entropy(counts, sz):
     """Calculate the entropy of the data represented by the counts list.
 
-    :param counts: list of counts
-    :param sz: length of the data in bytes
-    :returns: entropy value
+    Arguments:
+        counts: List of counts.
+        sz: Length of the data in bytes.
+
+    Returns:
+        Entropy value.
     """
     ent = 0.0
     for b in counts:
@@ -51,9 +74,10 @@ def entropy(counts, sz):
 def histogram_gnuplot(counts, sz, name):
     """Use gnuplot to create a histogram from the data in the form of a PDF file.
 
-    :param counts: list of counts
-    :param sz: length of the data in bytes
-    :param name: name of the output file.
+    Arguments
+        counts: List of counts.
+        sz: Length of the data in bytes.
+        name: Name of the output file.
     """
     counts = [100 * c / sz for c in counts]
     rnd = 1.0 / 256 * 100
@@ -94,10 +118,4 @@ def histogram_gnuplot(counts, sz, name):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        sys.exit(1)
-    for fn in sys.argv[1:]:
-        hdata, size = readdata(fn)
-        e = entropy(hdata, size)
-        print("entropy of {} is {:.4f} bits/byte".format(fn, e))
-        histogram_gnuplot(hdata, size, fn)
+    main(sys.argv[1:])
