@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 21:08:06 +0200
+.. Last modified: 2015-05-14 21:30:51 +0200
 
 Introduction
 ============
@@ -60,22 +60,53 @@ Convert a CSV file to a LaTeX table.
 dicom2png.py
 ------------
 
-Convert DICOM files from an x-ray machine to PNG format, remove blank areas.
+Convert DICOM_ files from an x-ray machine to PNG format, remove blank areas.
 The blank area removal is based on the image size of a Philips flat detector.
 The image goes from 2048x2048 pixels to 1574x2048 pixels."""
+
+.. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
 
 ffmutt.sh
 ---------
 
+Small helper script to start mutt_ in an urxvt_ terminal for a ``mailto`` link.
+
+.. _mutt: http://www.mutt.org/
+.. _urxvt: http://software.schmorp.de/pkg/rxvt-unicode.html
+
+
 find-modified.sh
 ----------------
+
+Front-end for find_ to locate all files under the current directory that have
+been modified up to a given number of days ago.
+
+.. _find: https://www.freebsd.org/cgi/man.cgi?query=find
+
 
 fixbb.sh
 --------
 
+Corrects the ``BoundingBox`` for single-page PostScript_ documents.
+
+.. _PostScript: http://en.wikipedia.org/wiki/PostScript
+
+
 genbackup.sh
 ------------
+
+Generates a backup of the directory it is called from in the form of
+a tar-file. The name of the backup file generally consists of;
+
+* the word ``backup``,
+* the date in the form YYYYMMDD,
+* the short hash-tag if the directory is managed by git_.
+
+.. _git: http://git-scm.com/
+
+These parts are separated by dashes. The file has the extension ``tar``.
+
 
 genotp.py
 ---------

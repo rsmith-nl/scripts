@@ -2,7 +2,7 @@
 # Script to correct the BoundingBox of PostScript files.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-14 21:21:30 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to fixbb. This work is published from the
@@ -37,8 +37,5 @@ fi
 # Determine the new BoundingBox.
 # This only works properly for single-page documents!
 NEWBB=$(echo|gs -sDEVICE=bbox $1 -c quit 2>&1|grep '^%%B')
-
-#echo "New bounding box is:"
-#echo $NEWBB
 
 sed -I .bak -e "s/^%%Bound.*/$NEWBB/" $1
