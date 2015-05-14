@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-14 22:22:29 +0200
+.. Last modified: 2015-05-14 22:31:18 +0200
 
 Introduction
 ============
@@ -121,6 +121,10 @@ Generates random passwords.
 
 git-check-all.py
 ----------------
+
+Find all directories in the user's home directory that are managed with git,
+and run ``git gc`` on them unless they have uncommitted changes.
+
 
 git-origdate.py
 ---------------
