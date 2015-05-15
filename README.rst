@@ -1,17 +1,33 @@
 Miscellaneous short utilities
 #############################
 
-:date: 2015-05-14
+:date: 2015-05-15
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-15 18:12:36 +0200
+.. Last modified: 2015-05-15 18:30:01 +0200
 
 Introduction
 ============
 
 This is a collection of small utilities that I've written over the years.
-All of them are in the public domain.
+Some of them are simple front-ends for a utility with some standard options,
+to save me from having to recall the options every time I need them.
+
+Another portion are basically Python_ front-ends to run a utility in parallel
+on different files.
+
+All the functions in the python scripts come with documentation strings to
+explain what they do. The shell scripts have comments where necessary. They
+use basic ``sh`` syntax and to not use ``bash`` extensions.
+
+
+License
+=======
+
+All of these programs are in the public domain. Use them as you wish.
+These programs come without *any* warranty whatsoever.
+
 
 The programs
 ============
@@ -20,7 +36,10 @@ backup-local.sh
 ---------------
 
 Backs up mount points to other mount points. This script is designed to be run
-from cron as root.
+from cron_ as ``root``.
+
+.. _cron: http://en.wikipedia.org/wiki/Cron
+
 
 .. NOTE::
     You should *not* run this script as-is!
@@ -219,7 +238,7 @@ environment for it.
 ips.sh
 ------
 
-Script to start an IPython_ session in a urxvt_ terminal.
+Script to start a new IPython_ session in a urxvt_ terminal.
 
 .. _IPython: http://ipython.org/
 
