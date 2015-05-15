@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-15 01:29:13 +0200
+.. Last modified: 2015-05-15 14:44:17 +0200
 
 Introduction
 ============
@@ -111,12 +111,61 @@ genotp.py
 ---------
 
 Generates an old-fashioned one-time pad; 65 lines of 12 groups of 5 random
-capital letters.
+capital letters. It was inspired by reading Neal Stephenson's Cryptonomicon.
+
+It uses random numbers from the operating system via Python's ``os.urandom``
+function.  My *impression* is that the random data device on FreeBSD is pretty
+good.  Testing the ``/dev/urandom`` device on FreeBSD;
+
+.. code-block:: console
+
+    > ./ent -u
+    ent --  Calculate entropy of file.  Call
+            with ent [options] [input-file]
+
+            Options:   -b   Treat input as a stream of bits
+                    -c   Print occurrence counts
+                    -f   Fold upper to lower case letters
+                    -t   Terse output in CSV format
+                    -u   Print this message
+
+    By John Walker
+    http://www.fourmilab.ch/
+    January 28th, 2008
+
+    > dd if=/dev/urandom of=rdata.bin bs=1K count=1K
+    1024+0 records in
+    1024+0 records out
+    1048576 bytes transferred in 0.086200 secs (12164455 bytes/sec)
+
+    > ./ent rdata.bin
+    Entropy = 7.999857 bits per byte.
+
+    Optimum compression would reduce the size
+    of this 1048576 byte file by 0 percent.
+
+    Chi square distribution for 1048576 samples is 208.12, and randomly
+    would exceed this value 98.57 percent of the times.
+
+    Arithmetic mean value of data bytes is 127.5057 (127.5 = random).
+    Monte Carlo value for Pi is 3.137043522 (error 0.14 percent).
+    Serial correlation coefficient is 0.000771 (totally uncorrelated = 0.0).
+
+According to the manual_ page, Wikipedia_ and other_ sources I could find the
+FreeBSD random device is intended to provide a cryptographically secure
+pseudorandom stream.
+
+.. _manual: https://www.freebsd.org/cgi/man.cgi?query=random&sektion=4
+.. _Wikipedia: http://en.wikipedia.org/?title=/dev/random
+.. _other: http://www.2uo.de/myths-about-urandom/
+
 
 genpw.py
 --------
 
-Generates random passwords.
+Generates random passwords. Like ``genotp``, It uses random numbers from the
+operating system via Python's ``os.urandom`` function. On FreeBSD I think this
+is secure enough given the previous section.
 
 
 git-check-all.py
@@ -145,78 +194,160 @@ histdata.py
 Makes a histogram of the bytes in each input file, and calculates the entropy
 in each file.
 
+
 img4latex.py
 ------------
+
+A program to check a PDF, PNG or JPEG file and return a suitable LaTeX figure_
+environment for it.
+
+.. _figure: http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions#Figures
+
 
 ips.sh
 ------
 
+Script to start an IPython_ session in a urxvt_ terminal.
+
+.. _IPython: http://ipython.org/
+
+
 jpeg2pdf.sh
 -----------
+
+Converts a list of JPEG files to a PDF file. It uses jpeg2ps_, ps2pdf_ and
+pdftk_.
+
+.. _jpeg2ps: https://www.ctan.org/tex-archive/support/jpeg2ps
+.. _ps2pdf: http://ghostscript.com/doc/current/Ps2pdf.htm
+.. _pdftk: https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
+
 
 make-flac.py
 ------------
 
+Encodes WAV files from cdparanoia to FLAC format. Processing is done in
+parallel using as many subprocesses as the machine has cores. Title and song
+information is gathered from a text file called ``titles``.
+
+This file has the following format::
+
+      album title
+      artist
+      01 title of 1st song
+      ..
+      14 title of 14th song
+
+.. _cdparanoia: https://www.xiph.org/paranoia/
+.. _FLAC: https://xiph.org/flac/
+
+
 make-mp3.py
 -----------
+
+Works like ``make-flac.py`` but uses lame_ to encode to variable bitrate MP3
+files.
+
+.. _lame: http://lame.sourceforge.net/
+
 
 mkdistinfo.sh
 -------------
 
+
+
 mkindexpic.sh
 -------------
+
+
 
 mkpdf.sh
 --------
 
+
+
 mkphotopage.py
 --------------
+
+
 
 nospaces.py
 -----------
 
+
+
 old.py
 ------
+
+
 
 open.py
 -------
 
+
+
 pdfselect.sh
 ------------
+
+
 
 pdftopdf.sh
 -----------
 
+
+
 povmake.sh
 ----------
+
+
 
 py-ver.py
 ---------
 
+
+
 raw2pgm.sh
 ----------
+
+
 
 serve-git.sh
 ------------
 
+
+
 set-title.sh
 ------------
+
+
 
 setres.sh
 ---------
 
+
+
 sha256.py
 ---------
+
+
 
 tifftopdf.py
 ------------
 
+
+
 tolower.sh
 ----------
+
+
 
 vid2mkv.py
 ----------
 
+
+
 vid2mp4.py
 ----------
+
+
 

@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2015-05-03 22:08:06 +0200
+# Last modified: 2015-05-15 14:42:43 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-mp3.py. This work is published from
@@ -15,7 +15,7 @@ the machine has cores. Title and song information is gathered from a
 text file called titles.
 """
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 from multiprocessing import cpu_count
 from time import sleep
@@ -24,13 +24,38 @@ import subprocess
 import sys
 
 
-def checkfor(args, rv=0):
-    """Make sure that a program necessary for using this script is
-    available.
+def main(argv):
+    """
+    Entry point for make-mp3.
+    """
+    checkfor(['lame', '--help'])
+    procs = []
+    tracks = trackdata()
+    if not tracks:
+        print('No tracks found.')
+        binary = os.path.basename(argv[0])
+        print("{} version {}".format(binary, __version__), file=sys.stderr)
+        print("Usage: {}".format(binary), file=sys.stderr)
+        print("In a directory where a file 'titels' and WAV files are present",
+              file=sys.stderr)
+        sys.exit(1)
+    maxprocs = cpu_count()
+    for track in tracks:
+        while len(procs) == maxprocs:
+            manageprocs(procs)
+        procs.append(startmp3(track))
+    while len(procs) > 0:
+        manageprocs(procs)
 
-    :param args: String or list of strings of commands. A single string may
-    not contain spaces.
-    :param rv: Expected return value from evoking the command.
+
+def checkfor(args, rv=0):
+    """
+    Make sure that a program necessary for using this script is available.
+
+    Arguments:
+        args: String or list of strings of commands. A single string may
+            not contain spaces.
+        rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
         if ' ' in args:
@@ -48,10 +73,11 @@ def checkfor(args, rv=0):
 
 
 def trackdata(fname='titels'):
-    """Read the data describing the tracks from a text file.
+    """
+    Read the data describing the tracks from a text file.
 
     Arguments:
-    fname -- name of the text file describing the tracks.
+        fname: name of the text file describing the tracks.
 
     This file has the following format:
 
@@ -62,9 +88,9 @@ def trackdata(fname='titels'):
       14 title of 14th song
 
     Returns:
-    A list of tuples. Each tuple contains the track number, title of
-    the track, name of the artist, name of the album, input file name
-    and output file name.
+        A list of tuples. Each tuple contains the track number, title of
+        the track, name of the artist, name of the album, input file name
+        and output file name.
     """
     tracks = []
     try:
@@ -89,16 +115,17 @@ def trackdata(fname='titels'):
 
 
 def startmp3(tinfo):
-    """Use the lame(1) program to convert the music file to MP3 format.
+    """
+    Use the lame(1) program to convert the music file to MP3 format.
 
     Arguments:
-    tinfo -- a tuple containing the track number, title of the track,
-    name of the artist, name of the album, input file name and output
-    file name.
+        tinfo: A tuple containing the track number, title of the track,
+        name of the artist, name of the album, input file name and output
+        file name.
 
     Returns:
-    A tuple containing the output filename and the Popen object
-    for the running conversion.
+        A tuple containing the output filename and the Popen object
+        for the running conversion.
     """
     num, title, artist, album, ifname, ofname = tinfo
     args = ['lame', '-S', '--preset', 'standard', '--tt', title, '--ta',
@@ -111,8 +138,12 @@ def startmp3(tinfo):
 
 
 def manageprocs(proclist):
-    """Check a list of subprocesses for processes that have ended and
+    """
+    Check a list of subprocesses for processes that have ended and
     remove them from the list.
+
+    Arguments:
+        proclist: List of (filename, Popen) tuples.
     """
     for it in proclist:
         fn, pr = it
@@ -125,28 +156,6 @@ def manageprocs(proclist):
                 s = 'The conversion of {} exited with error code {}.'
                 print(s.format(fn, result))
     sleep(0.5)
-
-
-def main(argv):
-    """Main program."""
-    checkfor(['lame', '--help'])
-    procs = []
-    tracks = trackdata()
-    if not tracks:
-        print('No tracks found.')
-        binary = os.path.basename(argv[0])
-        print("{} version {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {}".format(binary), file=sys.stderr)
-        print("In a directory where a file 'titels' and WAV files are present",
-              file=sys.stderr)
-        sys.exit(1)
-    maxprocs = cpu_count()
-    for track in tracks:
-        while len(procs) == maxprocs:
-            manageprocs(procs)
-        procs.append(startmp3(track))
-    while len(procs) > 0:
-        manageprocs(procs)
 
 
 if __name__ == '__main__':
