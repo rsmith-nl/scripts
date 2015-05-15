@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-10 21:43:11 +0100
-# Last modified: 2015-05-03 22:11:26 +0200
+# Last modified: 2015-05-15 15:01:39 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to old.py. This work is published
@@ -16,13 +16,15 @@ name starts with a period, it removes the period and prefixes it with
 import os
 import sys
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def main(argv):
-    """Entry point for this script.
+    """
+    Entry point for old.
 
-    :param argv: command line arguments.
+    Arguments:
+        argv: command line arguments.
     """
     if len(argv) < 2:
         binary = os.path.basename(argv[0])

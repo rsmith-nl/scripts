@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:10:48 +0200
+# Last modified: 2015-05-15 14:59:25 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to nospaces.py. This work is published from the
@@ -11,29 +11,18 @@
 """Rename files mentioned on the command line, removing spaces from
 their names and replacing them with underscores."""
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 import os
 import sys
 
 
-def fixname(path):
-    """Replaces spaces in a path by underscores.
-
-    :param path: the path to change
-    :returns: the updated path
-    """
-    path = os.path.normpath(path)
-    head, tail = os.path.split(path)
-    tl = tail.split()
-    tail = '_'.join(tl)
-    return os.path.join(head, tail)
-
-
 def main(argv):
-    """Main program.
+    """
+    Entry point got nospaces.
 
-    :param argv: command line arguments
+    Arguments:
+        argv: All command line arguments.
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
@@ -46,6 +35,23 @@ def main(argv):
             os.rename(n, fixname(n))
         except OSError as e:
             print('Renaming "{}" failed: {}'.format(n, e.strerror))
+
+
+def fixname(path):
+    """
+    Replaces whitespace in a path by underscores.
+
+    Arguments:
+        path: The path to change.
+
+    Returns:
+        The updated path.
+    """
+    path = os.path.normpath(path)
+    head, tail = os.path.split(path)
+    tl = tail.split()
+    tail = '_'.join(tl)
+    return os.path.join(head, tail)
 
 
 if __name__ == '__main__':

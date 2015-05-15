@@ -4,14 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-28 23:25:35 +0200
-# Last modified: 2015-05-06 18:45:58 +0200
+# Last modified: 2015-05-15 16:39:10 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to py-ver.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""List the __version__ string in all Python files given on the command line
-or recursivelt in all directories given on the command line."""
+"""List or set the __version__ string in all Python files given on the command
+line or recursively in all directories given on the command line."""
 
 import argparse
 import os
@@ -22,52 +22,8 @@ _vre = re.compile('^__version__\s+=.+', flags=re.M)
 _vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
 
 
-def printver(fn, newver):
-    """
-    List the version string in a file.
-
-    Arguments:
-        fn: Name of the file to read.
-        newver: For compatibility with replacever, ignored.
-    """
-    ffmt = "{}: {}"
-    with open(fn, 'r', encoding='utf-8') as f:
-        data = f.read()
-    rlist = [_vre.search(data)]
-    if fn.endswith('setup.py'):
-        rlist.append(_vse.search(data))
-    rlist = [r for r in rlist if r is not None]
-    for res in rlist:
-        print(ffmt.format(fn, res.group().strip()))
-
-
-def replacever(fn, newver):
-    """
-    Replace the version string in a file.
-
-    Arguments:
-        fn: Name of the file to read.
-        newver: New version string.
-    """
-    with open(fn, 'r+', encoding='utf-8') as f:
-        data = f.read()
-        changed = False
-        if _vre.search(data):
-            newver = "__version__ = '{}'".format(newver)
-            data = _vre.sub(newver, data, count=1)
-            changed = True
-        elif fn.endswith('setup.py') and _vse.search(data):
-            newver = "      version='{}',".format(newver)
-            data = _vse.sub(newver, data, count=1)
-            changed = True
-        if changed:
-            f.seek(0)
-            f.truncate()
-            f.write(data)
-
-
 def main(argv):
-    """Entry point for this script.
+    """Entry point for py-ver.
 
     Arguments:
         argv: List command line argument strings.
@@ -103,6 +59,50 @@ def main(argv):
                          if f.endswith('.py')]
     for p in filelist:
         func(p, args.verstr)
+
+
+def replacever(fn, newver):
+    """
+    Replace the version string in a file.
+
+    Arguments:
+        fn: Name of the file to read.
+        newver: New version string.
+    """
+    with open(fn, 'r+', encoding='utf-8') as f:
+        data = f.read()
+        changed = False
+        if _vre.search(data):
+            newver = "__version__ = '{}'".format(newver)
+            data = _vre.sub(newver, data, count=1)
+            changed = True
+        elif fn.endswith('setup.py') and _vse.search(data):
+            newver = "      version='{}',".format(newver)
+            data = _vse.sub(newver, data, count=1)
+            changed = True
+        if changed:
+            f.seek(0)
+            f.truncate()
+            f.write(data)
+
+
+def printver(fn, newver):
+    """
+    List the version string in a file.
+
+    Arguments:
+        fn: Name of the file to read.
+        newver: For compatibility with replacever, ignored.
+    """
+    ffmt = "{}: {}"
+    with open(fn, 'r', encoding='utf-8') as f:
+        data = f.read()
+    rlist = [_vre.search(data)]
+    if fn.endswith('setup.py'):
+        rlist.append(_vse.search(data))
+    rlist = [r for r in rlist if r is not None]
+    for res in rlist:
+        print(ffmt.format(fn, res.group().strip()))
 
 
 if __name__ == '__main__':

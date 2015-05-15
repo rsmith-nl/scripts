@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-15 14:44:17 +0200
+.. Last modified: 2015-05-15 16:39:28 +0200
 
 Introduction
 ============
@@ -89,8 +89,10 @@ fixbb.sh
 --------
 
 Corrects the ``BoundingBox`` for single-page PostScript_ documents.
+It requires the ghostscript_ software.
 
 .. _PostScript: http://en.wikipedia.org/wiki/PostScript
+.. _ghostscript: http://www.ghostscript.com/
 
 
 genbackup.sh
@@ -105,7 +107,10 @@ a tar-file. The name of the backup file generally consists of;
 
 .. _git: http://git-scm.com/
 
-These parts are separated by dashes. The file has the extension ``tar``.
+These parts are separated by dashes, and the file gets the ``.tar`` extension.
+It requires the ``tar`` program. Tested with FreeBSD's tar. Should work with
+GNU tar as long as you don't use the ``-x`` option; the exclude syntax is
+different between BSD tar and GNU tar.
 
 genotp.py
 ---------
@@ -254,56 +259,92 @@ files.
 mkdistinfo.sh
 -------------
 
+Makes a ``distinfo`` file for a FreeBSD port. Does the same as the ``make
+makesum`` port rules, but outside of the ports tree.
 
 
 mkindexpic.sh
 -------------
 
+Use ``montage`` from the ImageMagick_ suite to create an index picture of all
+the files given on the command-line.
+
+.. _ImageMagick: http://www.imagemagick.org/
 
 
 mkpdf.sh
 --------
 
+Uses jpeg2ps_ and epspdf_ to convert scanned images to PDF files.
 
-
-mkphotopage.py
---------------
-
+.. _epspdf: http://tex.aanhet.net/epspdf/
 
 
 nospaces.py
 -----------
 
+Replaces whitespace in filenames with underscores.
 
 
 old.py
 ------
 
-
+Renames a directory by prefixing the name with ``old-``, unless that directory
+already exists. If the directory name starts with a period, it removes the
+period and prefixes it with ``old-dot``.
 
 open.py
 -------
 
 
+This Python script is a small helper to open files from the command line. It
+was inspired by a OS X utility of the same name.
+
+A lot of my interaction with the files on my computers is done through a
+command-line shell, even though I use the X Window System. One of the things I
+like about the ``gvim`` editor is that it forks and detach from the shell it
+was started from. With other programs one usually has to explicitly add an
+``&`` to the end of the command.
+
+Then I read about the `OS X open`_ program, and I decided to write a simple
+program like it in Python.
+
+.. _OS X open: https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/open.1.html
+
+The result is open.py_. Note that it is pretty simple. This is by design. It
+has no options and it only opens files and directories. I have no intention of
+it becoming like OS X's open or plan9's plumb_.
+
+.. _plumb: http://swtch.com/plan9port/man/man1/plumb.html
+
 
 pdfselect.sh
 ------------
 
+Select consecutive pages from a PDF document and put them in a separate
+document. Requires ghostscript_.
 
 
 pdftopdf.sh
 -----------
 
+Rewrite a PDF file using ghostscript_.
 
 
 povmake.sh
 ----------
 
+Front-end for POV-ray_ with a limited amount of choices for picture size and
+quality.
+
+.. _POV-ray: http://www.povray.org/
 
 
 py-ver.py
 ---------
 
+List or set the ``__version__`` string in all Python files given on the
+command line or recursively in all directories given on the command line.
 
 
 raw2pgm.sh
@@ -339,6 +380,8 @@ tifftopdf.py
 tolower.sh
 ----------
 
+Changes the names of all the files that it is given on the command-line to
+lower case.
 
 
 vid2mkv.py
