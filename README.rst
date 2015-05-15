@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-15 16:39:28 +0200
+.. Last modified: 2015-05-15 18:12:36 +0200
 
 Introduction
 ============
@@ -32,10 +32,12 @@ situation.
 checkfor.py
 -----------
 
-This is more of a snippet of Python code. It provides a function called
+This is more of a snippet of Python_ code. It provides a function called
 ``checkfor`` that detects the availability of a required program. It is
 designed to be called from the main part of a script and terminates the script
 if the required program is not found.
+
+.. _Python: http://www.python.org/
 
 
 clean.sh
@@ -119,8 +121,13 @@ Generates an old-fashioned one-time pad; 65 lines of 12 groups of 5 random
 capital letters. It was inspired by reading Neal Stephenson's Cryptonomicon.
 
 It uses random numbers from the operating system via Python's ``os.urandom``
-function.  My *impression* is that the random data device on FreeBSD is pretty
-good.  Testing the ``/dev/urandom`` device on FreeBSD;
+function.
+
+Testing /dev/random on FreeBSD
+++++++++++++++++++++++++++++++
+
+My *impression* is that the random data device on FreeBSD is pretty
+good;
 
 .. code-block:: console
 
@@ -138,7 +145,7 @@ good.  Testing the ``/dev/urandom`` device on FreeBSD;
     http://www.fourmilab.ch/
     January 28th, 2008
 
-    > dd if=/dev/urandom of=rdata.bin bs=1K count=1K
+    > dd if=/dev/random of=rdata.bin bs=1K count=1K
     1024+0 records in
     1024+0 records out
     1048576 bytes transferred in 0.086200 secs (12164455 bytes/sec)
@@ -311,7 +318,7 @@ program like it in Python.
 
 .. _OS X open: https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/open.1.html
 
-The result is open.py_. Note that it is pretty simple. This is by design. It
+The result is ``open.py``. Note that it is pretty simple. This is by design. It
 has no options and it only opens files and directories. I have no intention of
 it becoming like OS X's open or plan9's plumb_.
 
@@ -347,35 +354,38 @@ List or set the ``__version__`` string in all Python files given on the
 command line or recursively in all directories given on the command line.
 
 
-raw2pgm.sh
-----------
-
-
-
 serve-git.sh
 ------------
 
-
+Start a ``git daemon`` for every directory under the current working directory
+that is under git_ control.
 
 set-title.sh
 ------------
 
-
+Set the title of the current terminal window to the hostname or to the first
+argument given on the command line.
 
 setres.sh
 ---------
 
-
+Sets the resolution of pictures to the provided value in dots per inch.
+Uses the ``convert`` program from the ImageMagick_ suite.
 
 sha256.py
 ---------
 
+A utility written in pure Python_ to calculate the SHA-256 checksum of files,
+for systems that don't come with such a utility.
 
 
 tifftopdf.py
 ------------
 
+Convert TIFF files to PDF format using the utilities from the libtiff
+package.
 
+.. _libtiff: http://www.remotesensing.org/libtiff/
 
 tolower.sh
 ----------
@@ -387,10 +397,22 @@ lower case.
 vid2mkv.py
 ----------
 
+Convert all video files given on the command line to Theora_ / Vorbis_ streams
+in a `Matroška`_ container using ffmpeg_.
+
+.. _Theora: http://www.theora.org/
+.. _Vorbis: http://www.vorbis.com/
+.. _Matroška: http://www.matroska.org/
+.. _ffmpeg: https://www.ffmpeg.org/
 
 
 vid2mp4.py
 ----------
 
+Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
+/ AAC_ streams in an MP4_ container.
 
-
+.. _H.264: http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC
+.. _x264: http://www.videolan.org/developers/x264.html
+.. _AAC: http://en.wikipedia.org/wiki/Advanced_Audio_Coding
+.. _MP4: http://en.wikipedia.org/wiki/MPEG-4_Part_14

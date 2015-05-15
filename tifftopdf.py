@@ -2,16 +2,16 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:41:15 +0200
+# Last modified: 2015-05-15 17:27:42 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Convert TIFF files to PDF format using the utilities from the libtiff
-package."""
+"""Convert TIFF files to PDF format using the utilities tiffinfo and tiff2pdf
+from the libtiff package."""
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 from multiprocessing import cpu_count
 from time import sleep
@@ -20,13 +20,32 @@ import subprocess
 import sys
 
 
-def checkfor(args, rv=0):
-    """Make sure that a program necessary for using this script is
-    available.
+def main(argv):
+    """
+    Entry point for tifftopdf.
 
-    :param args: String or list of strings of commands. A single string may
-    not contain spaces.
-    :param rv: Expected return value from evoking the command.
+    Arguments:
+        argv: command line arguments
+    """
+    if len(argv) == 1:
+        binary = os.path.basename(argv[0])
+        print("{} version {}".format(binary, __version__), file=sys.stderr)
+        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
+        sys.exit(0)
+    checkfor('tiffinfo', 255)
+    checkfor(['tiff2pdf', '-v'])
+    mapprocs(argv[1:], convert)
+
+
+def checkfor(args, rv=0):
+    """
+    Make sure that a program necessary for using this script is available.
+    Exits the program is the requirement cannot be found.
+
+    Arguments:
+        args: String or list of strings of commands. A single string may
+            not contain spaces.
+        rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
         if ' ' in args:
@@ -43,11 +62,33 @@ def checkfor(args, rv=0):
         sys.exit(1)
 
 
-def convert(fname):
-    """Start a tiff2pdf process for the file fname.
+def mapprocs(lst, fn):
+    """
+    Map a process starting function over a list of filenames.
 
-    :param fname: name of the tiff file to convert.
-    :returns: a 3-tuple (Popen object, input filename, output filename)
+    Arguments:
+        lst: List of filenames.
+        fn: function that starts a process.
+    """
+    procs = []
+    maxprocs = cpu_count()
+    for fname in lst:
+        while len(procs) == maxprocs:
+            manageprocs(procs)
+        procs.append(fn(fname))
+    while len(procs) > 0:
+        manageprocs(procs)
+
+
+def convert(fname):
+    """
+    Start a tiff2pdf process for the file fname.
+
+    Arguments:
+        name: Name of the tiff file to convert.
+
+    Returns:
+        A 3-tuple (Popen object, input filename, output filename).
     """
     try:
         args = ['tiffinfo', fname]
@@ -87,10 +128,12 @@ def convert(fname):
 
 
 def manageprocs(proclist):
-    """Manage a list of subprocesses.
+    """
+    Manage a list of subprocesses.
 
-    :param proclist: a list of 3-tuples
-    (Popen, input filename, output filename)
+    Arguments:
+        proclist: a list of 3-tuples (Popen, input filename, output
+        filename)
     """
     print('# of conversions running: {}\r'.format(len(proclist)), end='')
     sys.stdout.flush()
@@ -102,32 +145,6 @@ def manageprocs(proclist):
             print('Conversion of {} to {} finished.'.format(ifn, ofn))
             proclist.remove(p)
     sleep(0.5)
-
-
-def mapprocs(lst, fn):
-    procs = []
-    maxprocs = cpu_count()
-    for fname in lst:
-        while len(procs) == maxprocs:
-            manageprocs(procs)
-        procs.append(fn(fname))
-    while len(procs) > 0:
-        manageprocs(procs)
-
-
-def main(argv):
-    """Main program.
-
-    :param argv: command line arguments
-    """
-    if len(argv) == 1:
-        binary = os.path.basename(argv[0])
-        print("{} version {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
-        sys.exit(0)
-    checkfor('tiffinfo', 255)
-    checkfor(['tiff2pdf', '-v'])
-    mapprocs(argv[1:], convert)
 
 
 if __name__ == '__main__':

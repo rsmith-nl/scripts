@@ -2,7 +2,7 @@
 # Sets the resolution of pictures to the provided value.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-15 17:32:23 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to 'setres'. This work is published from the
