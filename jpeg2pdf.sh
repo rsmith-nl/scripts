@@ -2,7 +2,7 @@
 # Converts a list of JPEG files to a PDF file.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-15 18:39:47 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to jpeg2pdf. This work is published from the

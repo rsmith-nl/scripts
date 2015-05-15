@@ -2,7 +2,7 @@
 # Make an index jpg of all pictures given as arguments.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-15 18:40:52 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkindexpic. This work is published from the

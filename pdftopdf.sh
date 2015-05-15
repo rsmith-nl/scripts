@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-27 00:15:14 +0100
-# Modified: $Date$
+# Last modified: 2015-05-15 18:42:22 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to pdftopdf. This work is published

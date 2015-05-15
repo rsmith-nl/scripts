@@ -2,7 +2,7 @@
 # Select consecutive pages from a PDF document
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-15 18:41:46 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to pdfselect. This work is published from the
@@ -35,7 +35,7 @@ if [ ! -f $3 ]; then
     exit 1;
 fi
 
-if [ ${N} -eq ${M} ];  then
+if [ ${N} -eq ${M} ]; then
     OUTNAME=page${N}.pdf
 else
     OUTNAME=page${N}-${M}.pdf
