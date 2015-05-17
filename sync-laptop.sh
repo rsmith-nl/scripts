@@ -8,7 +8,7 @@
 # $Date$
 # $Revision$
 
-usage="Usage: tolaptop [-h][[-f] <dir>]"
+usage="Usage: sync-laptop [-h][[-f] <dir>]"
 args=`getopt fh $*`
 if [ $? -ne 0 ]; then
     echo $usage
