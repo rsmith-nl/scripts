@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-15 17:27:42 +0200
+# Last modified: 2015-05-21 16:24:51 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -93,9 +93,10 @@ def convert(fname):
     try:
         args = ['tiffinfo', fname]
         with open(os.devnull, 'w') as bb:
-            txt = subprocess.check_output(args, stderr=bb).split()
+            txt = subprocess.check_output(args, stderr=bb).decode('utf-8')
+            txt = txt.split()
         if 'Width:' not in txt:
-            raise ValueError
+            raise ValueError('no width in TIF')
         index = txt.index('Width:')
         width = float(txt[index + 1])
         length = float(txt[index + 4])
