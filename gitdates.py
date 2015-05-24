@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-14 22:55:42 +0200
+# Last modified: 2015-05-24 12:28:45 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
@@ -12,11 +12,18 @@
 """For each file in a directory managed by git, get the short hash and
 data of the most recent commit of that file."""
 
+from __future__ import print_function
 from multiprocessing import Pool
 import os
 import subprocess
 import sys
 import time
+
+# Suppres annoying command prompts on ms-windows.
+startupinfo = None
+if os.name == 'nt':
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
 
 def main():
@@ -31,7 +38,7 @@ def main():
         print('This directory is not managed by git.')
         sys.exit(0)
     exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
-    exc = subprocess.check_output(exargs).split()
+    exc = subprocess.check_output(exargs, startupinfo=startupinfo).split()
     for root, dirs, files in os.walk('.'):
         for d in ['.git', '__pycache__']:
             try:
@@ -68,7 +75,8 @@ def checkfor(args, rv=0):
         args = [args]
     try:
         with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
+            rc = subprocess.call(args, stdout=bb, stderr=bb,
+                                 startupinfo=startupinfo)
         if rc != rv:
             raise OSError
     except OSError as oops:
