@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2015-05-25 13:15:16 +0200
+# Last modified: 2015-05-25 13:24:51 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -19,6 +19,12 @@ import argparse
 import os
 import subprocess
 import sys
+
+# Suppres annoying command prompts on ms-windows.
+startupinfo = None
+if os.name == 'nt':
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
 
 def main(argv):
@@ -86,7 +92,8 @@ def checkfor(args, rv=0):
         args = [args]
     try:
         with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
+            rc = subprocess.call(args, stdout=bb, stderr=bb,
+                                 startupinfo=startupinfo)
         if rc != rv:
             raise OSError
     except OSError as oops:
@@ -108,7 +115,8 @@ def getpdfbb(fn):
     """
     gsopts = ['gs', '-q', '-dFirstPage=1', '-dLastPage=1', '-dNOPAUSE',
               '-dBATCH', '-sDEVICE=bbox', fn]
-    gsres = subprocess.check_output(gsopts, stderr=subprocess.STDOUT)
+    gsres = subprocess.check_output(gsopts, stderr=subprocess.STDOUT,
+                                    startupinfo=startupinfo)
     bbs = gsres.decode().splitlines()[0]
     return bbs.split(' ')[1:]
 
@@ -123,7 +131,8 @@ def getpicwidth(fn):
         Width of the image in points.
     """
     idargs = ['identify', '-verbose', fn]
-    idres = subprocess.check_output(idargs, stderr=subprocess.STDOUT)
+    idres = subprocess.check_output(idargs, stderr=subprocess.STDOUT,
+                                    startupinfo=startupinfo)
     lines = idres.decode().splitlines()
     data = {}
     for ln in lines:
