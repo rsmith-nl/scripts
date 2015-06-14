@@ -1,14 +1,13 @@
 #!/bin/sh
 # file: sync-laptop
 # vim:fileencoding=utf-8:ft=sh
-# Use rsync to syncronize a directory to my laptop.
+# Use rsync to syncronize a directory to/from my laptop.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# $Date$
-# $Revision$
+# Last modified: 2015-06-14 19:28:00 +0200
 
-usage="Usage: sync-laptop [-h][[-f] <dir>]"
+usage="Usage: sync-laptop [-h][[-f][-r] <dir>]"
 args=`getopt fh $*`
 if [ $? -ne 0 ]; then
     echo $usage
@@ -16,6 +15,7 @@ if [ $? -ne 0 ]; then
 fi
 set -- $args
 FORCE=""
+REVERSE=""
 while true; do
     case "$1" in
         -h)
@@ -24,6 +24,10 @@ while true; do
             ;;
         -f)
             FORCE='yes'
+            shift
+            ;;
+        -r)
+            REVERSE='yes'
             shift
             ;;
         --)
@@ -45,4 +49,8 @@ OPTS='-avn'
 if [ $FORCE ]; then
     OPTS='-av'
 fi
-rsync ${OPTS} --delete /home/${USER}/${DIR}/ rfs::home/${USER}/${DIR}
+if [ $REVERSE ]; then
+    rsync ${OPTS} --delete rfs::home/${USER}/${DIR}/ /home/${USER}/${DIR}
+else
+    rsync ${OPTS} --delete /home/${USER}/${DIR}/ rfs::home/${USER}/${DIR}
+fi
