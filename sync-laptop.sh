@@ -5,10 +5,10 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2015-06-14 19:28:00 +0200
+# Last modified: 2015-06-14 23:05:54 +0200
 
 usage="Usage: sync-laptop [-h][[-f][-r] <dir>]"
-args=`getopt fh $*`
+args=`getopt fhr $*`
 if [ $? -ne 0 ]; then
     echo $usage
     exit 1
