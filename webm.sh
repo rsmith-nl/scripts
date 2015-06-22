@@ -5,13 +5,13 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2015-06-21 20:27:12 +0200
+# Last modified: 2015-06-21 23:15:53 +0200
 
 if [ $# -lt 2 ]; then
-    echo "Usage: webm <vod|cq|bq> file";
+    echo "Usage: webm <vod|crq|bq> file";
     echo "where;";
     echo "- vod means video on demand,";
-    echo "- cq means constant quality and";
+    echo "- crq means constrained rate quality and";
     echo "- bq means best quality.";
     echo "\nConstant quality gives small file size.";
     exit 1;
@@ -27,9 +27,9 @@ case $1 in
     vod) echo "Encoding for video on demand.";
         FP="-c:v libvpx-vp9 -pass 1 -b:v 1000K -threads 8 -speed 4 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm -y /dev/null";
          SP="-c:v libvpx-vp9 -pass 2 -b:v 1000K -threads 8 -speed 1 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libopus -b:a 64k -f webm -y";;
-    cq) echo "Encoding for constant quality.";
-         FP="-c:v libvpx-vp9 -pass 1 -b:v 0 -crf 33 -threads 8 -speed 4 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm -y /dev/null";
-        SP="-c:v libvpx-vp9 -pass 2 -b:v 0 -crf 33 -threads 8 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libopus -b:a 64k -f webm -y";;
+    crq) echo "Encoding for constrained quality.";
+         FP="-c:v libvpx-vp9 -pass 1 -b:v 1400k -crf 33 -threads 8 -speed 4 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm -y /dev/null";
+        SP="-c:v libvpx-vp9 -pass 2 -b:v 1400k -crf 33 -threads 8 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libopus -b:a 64k -f webm -y";;
     bq) echo "Encoding for best quality.";
          FP="-c:v libvpx-vp9 -pass 1 -b:v 1000K -threads 1 -speed 4 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -an -f webm -y /dev/null";
         SP="-c:v libvpx-vp9 -pass 2 -b:v 1000K -threads 1 -speed 0 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 64k -f webm -y";;
