@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2015-06-21 23:15:53 +0200
+# Last modified: 2015-07-12 12:47:30 +0200
 
 if [ $# -lt 2 ]; then
     echo "Usage: webm <vod|crq|bq> file";
@@ -19,7 +19,7 @@ fi
 
 INP=$2
 FILEBASE=`basename $2|sed -E -e 's/(.*)(\..*)/\1/g'`
-FF=ffmpeg26
+FF=ffmpeg
 
 # Settings from:
 # https://sites.google.com/a/webmproject.org/wiki/ffmpeg/vp9-encoding-guide
