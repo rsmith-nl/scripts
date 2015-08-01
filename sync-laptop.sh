@@ -5,12 +5,23 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2015-06-14 23:05:54 +0200
+# Last modified: 2015-08-01 17:41:28 +0200
 
-usage="Usage: sync-laptop [-h][[-f][-r] <dir>]"
+
+usage="Usage: sync-laptop [-h][[-f][-r] <dir>]
+
+Uses rsync to syncronize files between my desktop and laptop.
+
+Options:
+  -h: help
+  -r: Transfer from laptop to desktop.
+  -f: Really sync files. the default is to perform a dry run.
+"
+
+
 args=`getopt fhr $*`
 if [ $? -ne 0 ]; then
-    echo $usage
+    echo "$usage"
     exit 1
 fi
 set -- $args
@@ -19,7 +30,7 @@ REVERSE=""
 while true; do
     case "$1" in
         -h)
-            echo $usage
+            echo "$usage"
             exit 1
             ;;
         -f)
@@ -36,7 +47,7 @@ while true; do
         esac
 done
 if [ ! $1 ]; then
-    echo $usage
+    echo "$usage"
     exit 1
 fi
 DIR=$(pwd)/${1%%/}
