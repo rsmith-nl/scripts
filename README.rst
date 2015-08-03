@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-08-03 14:20:26 +0200
+.. Last modified: 2015-08-03 17:38:42 +0200
 
 Introduction
 ============
@@ -20,6 +20,17 @@ on different files.
 All the functions in the python scripts come with documentation strings to
 explain what they do. The shell scripts have comments where necessary. They
 use basic ``sh`` syntax and to not use ``bash`` extensions.
+
+All these programs are tested and in use on the FreeBSD operating system. The
+shell-scripts use the plain old ``sh`` that comes with FreeBSD, but should
+work with ``bash``. Most of it should work on other BSD systems, Linux or OS-X
+without major problems.
+
+The Python_ scripts are written in for Python 3. A lot of them will work on
+version 2.7 with small changes. The Python scripts should work on other BSD
+systems, Linux and OS-X. They *might* work on MS-windows as well, provided
+that the external programs and modules they use are available.  *This is not
+tested, however*. Patches welcome.
 
 
 License
