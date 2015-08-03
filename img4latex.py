@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2015-05-25 13:24:51 +0200
+# Last modified: 2015-08-02 22:59:00 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -13,12 +13,13 @@
 """Program to check a PDF, PNG or JPEG file and return
    a suitable LaTeX figure environment for it."""
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 import argparse
 import os
 import subprocess
 import sys
+from wand.image import Image
 
 # Suppres annoying command prompts on ms-windows.
 startupinfo = None
@@ -34,7 +35,6 @@ def main(argv):
         argv: All command line arguments.
     """
     checkfor(['gs', '-v'])
-    checkfor(['identify', '-version'])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-w', '--width',
                         default=160,
@@ -130,26 +130,18 @@ def getpicwidth(fn):
     Returns:
         Width of the image in points.
     """
-    idargs = ['identify', '-verbose', fn]
-    idres = subprocess.check_output(idargs, stderr=subprocess.STDOUT,
-                                    startupinfo=startupinfo)
-    lines = idres.decode().splitlines()
-    data = {}
-    for ln in lines:
-        k, v = ln.strip().split(':', 1)
-        data[k] = v.strip()
-    if data['Units'] != 'Undefined':
-        res = float(data['Resolution'].split('x')[0])
-    else:
-        res = 300
-    size = int(data['Geometry'].split('+')[0].split('x')[0])
-    # Convert pixels to points
     factor = {
-        'PixelsPerInch': 72,
-        'PixelsPerCentimeter': 28.35,
-        'Undefined': 72
+        'pixelsperinch': 72,
+        'pixelspercentimeter': 28.35,
+        'undefined': 72
     }
-    return size / res * factor[data['Units']]
+    with Image(filename=fn) as img:
+        if img.units is not 'undefined':
+            res, _ = img.resolution
+        else:
+            res = 300
+        return img.width / res * factor[img.units]
+    return None
 
 
 def output_figure(fn, options=""):
