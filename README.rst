@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-05-15 18:30:01 +0200
+.. Last modified: 2015-08-03 14:20:26 +0200
 
 Introduction
 ============
@@ -86,6 +86,12 @@ The blank area removal is based on the image size of a Philips flat detector.
 The image goes from 2048x2048 pixels to 1574x2048 pixels."""
 
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
+
+Since version 1.1.0, this program requires the py-wand_ library, which in turn
+requires the ImageMagick_ shared library ``libMagickWand-6``.
+Previous versions used the ``convert`` program from ImageMagick directly.
+
+.. _py-wand: http://docs.wand-py.org/
 
 
 ffmutt.sh
@@ -234,6 +240,12 @@ environment for it.
 
 .. _figure: http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions#Figures
 
+Since version 1.2.0, this program requires the py-wand_ library, which in turn
+requires the ImageMagick_ shared library ``libMagickWand-6``.
+Previous versions used the ``identify`` program from ImageMagick directly.
+
+This program also requires the ghostscript_ interpreter to determine the size
+of PDF files.
 
 ips.sh
 ------
@@ -319,9 +331,9 @@ Renames a directory by prefixing the name with ``old-``, unless that directory
 already exists. If the directory name starts with a period, it removes the
 period and prefixes it with ``old-dot``.
 
+
 open.py
 -------
-
 
 This Python script is a small helper to open files from the command line. It
 was inspired by a OS X utility of the same name.
