@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:01:35 +0200
+# Last modified: 2015-08-04 13:45:07 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -11,85 +11,46 @@
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
-from PIL import Image
-from PIL.ExifTags import TAGS
 from datetime import datetime
-from multiprocessing import Pool, Lock
+from functools import partial
+from multiprocessing import Pool
 from os import utime
 from time import mktime
 import argparse
-import os
-import subprocess
+import logging
 import sys
-
-globallock = Lock()
-
-
-def report(s, prefix=None):
-    globallock.acquire()
-    if prefix:
-        s = ': '.join([prefix, s])
-    print(s)
-    globallock.release()
+from wand.image import Image
 
 
-def checkfor(args, rv=0):
-    """Make sure that a program necessary for using this script is
-    available.
-
-    :param args: String or list of strings of commands. A single string may
-    not contain spaces.
-    :param rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
+def processfile(name, newwidth):
+    logging.info("Starting file '{}'.".format(name))
+    with Image(filename=name) as img:
+        w, h = img.size
+        scale = newwidth / w
+        exif = {k[5:]: v for k, v in img.metadata.items()
+                if k.startswith('exif:')}
+        img.units = 'pixelsperinch'
+        img.resolution = (300, 300)
+        img.resize(width=newwidth, height=round(scale*h))
+        img.strip()
+        img.compression_quality = 80
+        img.unsharp_mask(radius=2, sigma=0.5, amount=0.7, threshold=0)
+        img.save(filename=name)
+    want = set(['DateTime', 'DateTimeOriginal', 'DateTimeDigitized'])
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
-        if rc != rv:
-            raise OSError
-    except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
-        sys.exit(1)
-
-
-def processfile(args):
-    name, width = args
-    try:
-        img = Image.open(name)
-        ld = {}
-        for tag, value in img._getexif().items():
-            decoded = TAGS.get(tag, tag)
-            ld[decoded] = value
-        want = set(['DateTime', 'DateTimeOriginal', 'CreateDate',
-                    'DateTimeDigitized'])
-        available = list(want.intersection(set(ld.keys()))).sort()
-        fields = ld[available[0]].replace(' ', ':').split(':')
+        available = list(want.intersection(set(exif.keys())))
+        available.sort()
+        fields = exif[available[0]].replace(' ', ':').split(':')
         dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]),
                       int(fields[3]), int(fields[4]), int(fields[5]))
     except:
-        ed = {}
-        cds = '{}:{}:{} {}:{}:{}'
         dt = datetime.today()
-        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, dt.hour,
-                                      dt.minute, dt.second)
-    args = ['mogrify', '-strip', '-resize', str(width), '-units',
-            'PixelsPerInch', '-density', '300', '-unsharp', '2x0.5+0.7+0',
-            '-quality', '90', name]
-    rv = subprocess.call(args)
-    errstr = "code {} when processing file '{}'"
-    if rv != 0:
-        report(errstr.format(rv, name), 'ERROR')
-        return
     modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
                       0, 0, -1))
     utime(name, (modtime, modtime))
-    report("File '{}' processed".format(name))
+    logging.info("File '{}' processed.".format(name))
 
 
 def main(argv):
@@ -103,18 +64,24 @@ def main(argv):
                         default=886,
                         type=int,
                         help='width of the images in pixels (default 886)')
+    parser.add_argument('--log', default='warning',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help="logging level (defaults to 'warning')")
     parser.add_argument('-v', '--version',
                         action='version',
                         version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
+    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
+                        format='%(levelname)s: %(message)s')
+    logging.debug('Command line arguments = {}'.format(argv))
+    logging.debug('Parsed arguments = {}'.format(args))
     if not args.file:
         parser.print_help()
         sys.exit(0)
-    checkfor('mogrify', rv=1)
     p = Pool()
-    mapargs = [(fn, args.width) for fn in args.file]
-    p.map(processfile, mapargs)
+    pfp = partial(processfile, newwidth=args.width)
+    p.map(pfp, args.file)
     p.close()
 
 
