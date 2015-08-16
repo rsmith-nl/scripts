@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2015-07-12 12:47:30 +0200
+# Last modified: 2015-08-16 02:41:14 +0200
 
 if [ $# -lt 2 ]; then
     echo "Usage: webm <vod|crq|bq> file";
@@ -13,7 +13,7 @@ if [ $# -lt 2 ]; then
     echo "- vod means video on demand,";
     echo "- crq means constrained rate quality and";
     echo "- bq means best quality.";
-    echo "\nConstant quality gives small file size.";
+    echo "Constrained quality gives small file size.";
     exit 1;
 fi
 
