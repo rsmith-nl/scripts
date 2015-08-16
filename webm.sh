@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2015-08-16 12:39:11 +0200
+# Last modified: 2015-08-16 17:33:54 +0200
 
 if [ $# -lt 2 ]; then
     echo "Usage: webm <vod|crq|con|bq> file";
@@ -33,8 +33,8 @@ case $1 in
          FP="-c:v libvpx-vp9 -pass 1 -b:v 1400k -crf 33 -threads 8 -speed 4 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm -y /dev/null";
         SP="-c:v libvpx-vp9 -pass 2 -b:v 1400k -crf 33 -threads 8 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
     con) echo "Encoding for constant quality.";
-         FP="-c:v libvpx-vp9 -pass 1 -b:v 0 -crf 20 -threads 8 -speed 4 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm -y /dev/null";
-        SP="-c:v libvpx-vp9 -pass 2 -b:v 0 -crf 20 -threads 8 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
+         FP="-c:v libvpx-vp9 -pass 1 -b:v 0 -crf 25 -threads 8 -speed 4 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm -y /dev/null";
+        SP="-c:v libvpx-vp9 -pass 2 -b:v 0 -crf 25 -threads 8 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
     bq) echo "Encoding for best quality.";
          FP="-c:v libvpx-vp9 -pass 1 -b:v 1000K -threads 1 -speed 4 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -an -f webm -y /dev/null";
         SP="-c:v libvpx-vp9 -pass 2 -b:v 1000K -threads 1 -speed 0 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libvorbis -q:a 3 -f webm -y";;
@@ -43,11 +43,12 @@ esac
 
 echo -n "First pass... "
 FPSTART=`date "+%s"`
-$FF -i ${INP} $FP >/dev/null 2>&1
+$FF -i $INP -passlogfile $FILEBASE $FP >/dev/null 2>&1
 FPEND=`date "+%s"`
 echo "done ($(($FPEND-$FPSTART)) seconds)"
 echo -n "Second pass... "
 SPSTART=`date "+%s"`
-$FF -i ${INP} $SP ${FILEBASE}.webm >/dev/null 2>&1
+$FF -i $INP -passlogfile $FILEBASE $SP ${FILEBASE}.webm >/dev/null 2>&1
 SPEND=`date "+%s"`
+rm -f ${FILEBASE}*.log
 echo "done ($(($SPEND-$SPSTART)) seconds)"
