@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2015-05-15 15:03:03 +0200
+# Last modified: 2015-08-30 16:26:28 +0200
 #
 # To the extent possible under law, <rsmith@xs4all.nl> has waived all
 # copyright and related or neighboring rights to open.py. This work is
@@ -28,10 +28,10 @@ filetypes = {
     '\.html$': ['firefox', '-new-tab'],
     '\.xcf$': ['gimp'],
     '\.(e)?ps$': ['gv'],
-    '\.(jp(e)?g|png|gif|tif(f)?)$': ['gpicview'],
+    '\.(jp(e)?g|png|gif|tif(f)?|p(abgp)m|svg)$': ['gpicview'],
     '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
     '\.(tar\.|t)(z|gz|bz(2)?|xz)$': ['tar', 'tf'],
-    '\.(mp4|mkv|avi|flv|mpg|mov)$': ['mpv']
+    '\.(mp4|mkv|avi|flv|mpg|movi|m4v)$': ['mpv']
 }
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
