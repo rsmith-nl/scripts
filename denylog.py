@@ -1,9 +1,14 @@
+#!/usr/bin/env python3
 # file: denylog.py
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-09-03 03:04:01 +0200
-# Last modified: 2015-09-05 13:37:33 +0200
+# Last modified: 2015-09-05 19:02:16 +0200
+#
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to denylog.py. This work is published
+# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Summarize the deny log messages from ipfw.  Use the given file names, or
 /var/log/security if no filenames are given.  This program can handle
@@ -15,7 +20,7 @@ import logging
 import re
 import sys
 
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 
 
 def services(filename='/etc/services'):
