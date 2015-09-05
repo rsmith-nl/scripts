@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-08-03 17:38:42 +0200
+.. Last modified: 2015-09-05 19:24:53 +0200
 
 Introduction
 ============
@@ -89,6 +89,22 @@ csv2tbl.py
 
 Convert a CSV file to a LaTeX table.
 
+
+denylog.py
+----------
+
+This script reads `/var/log/security` or any other file that contains ipfw_
+log messages, and makes an overview of incoming packages that have been
+logged.
+
+.. _ipfw: https://www.freebsd.org/doc/en/books/handbook/firewalls-ipfw.html
+
+This of course requires that blocked packets are logged!
+
+If you are writing your own firewall script, make sure to use ``deny log``
+instead of just ``deny``.
+
+
 dicom2png.py
 ------------
 
@@ -131,6 +147,14 @@ It requires the ghostscript_ software.
 
 .. _PostScript: http://en.wikipedia.org/wiki/PostScript
 .. _ghostscript: http://www.ghostscript.com/
+
+
+foto4lb.py
+----------
+
+Scales fotos for including them into LaTeX documents. The standard
+configuration makes it possible to use two photos next to each other on an A4
+page.
 
 
 genbackup.sh
@@ -257,14 +281,6 @@ Previous versions used the ``identify`` program from ImageMagick directly.
 
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.
-
-ips.sh
-------
-
-Script to start a new IPython_ session in a urxvt_ terminal.
-
-.. _IPython: http://ipython.org/
-
 
 jpeg2pdf.sh
 -----------
@@ -458,3 +474,12 @@ Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
 .. _x264: http://www.videolan.org/developers/x264.html
 .. _AAC: http://en.wikipedia.org/wiki/Advanced_Audio_Coding
 .. _MP4: http://en.wikipedia.org/wiki/MPEG-4_Part_14
+
+
+webm.sh
+-------
+
+Convert video files to VP9_ video and Vorbis_ audio streams in a WebM_ container.
+
+.. _VP9: https://en.wikipedia.org/wiki/VP9
+.. _WebM: https://en.wikipedia.org/wiki/WebM
