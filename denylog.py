@@ -3,9 +3,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-09-03 03:04:01 +0200
-# Last modified: 2015-09-05 00:46:50 +0200
+# Last modified: 2015-09-05 13:37:33 +0200
 
-"""Summarize the deny log messages from ipfw in /var/log/security"""
+"""Summarize the deny log messages from ipfw.  Use the given file names, or
+/var/log/security if no filenames are given.  This program can handle
+compressed files like /var/log/security.?.bz2."""
 
 import argparse
 import bz2
@@ -13,17 +15,32 @@ import logging
 import re
 import sys
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
+
+
+def services(filename='/etc/services'):
+    """Generate a dictionary of the available services from /etc/services.
+
+    Arguments:
+        filename: Name of the services file.
+
+    Returns:
+        A dict in the form of {25: 'smtp', 80: 'http', ...}
+    """
+    with open(filename) as serv:
+        data = serv.read()
+    matches = re.findall('\n(\S+)\s+(\d+)/', data)
+    return {int(num): name for name, num in set(matches)}
 
 
 def parselogfile(filename):
-    """Extract deny rules from file and parse them
+    """Extract deny rules for incoming packets from file and parse them.
 
     Arguments:
         filename: Name of the file to read.
 
     Returns:
-        A tuple of (rule, IP, port) tuples
+        A tuple of (rule, source IP, port) tuples
     """
     if filename.endswith('.bz2'):
         df = bz2.open(filename, 'rt')
@@ -31,7 +48,7 @@ def parselogfile(filename):
         df = open(filename)
     data = df.read()
     df.close()
-    patt = 'ipfw: (\d+) Deny (?:TCP|UDP) ' \
+    patt = 'ipfw: (\d+) Deny (?:\S+) ' \
            '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in'
     return tuple(set(re.findall(patt, data)))
 
@@ -57,7 +74,8 @@ def main(argv):
                         format='%(levelname)s: %(message)s')
     if not args.files:
         args.files = ['/var/log/security']
-    reps = '  IP: {:16s} port: {:6s} rule: {}'
+    reps = '  IP: {:16s} port: {:10s} rule: {}'
+    serv = services()
     for f in args.files:
         print('File:', f)
         try:
@@ -69,7 +87,7 @@ def main(argv):
             print('  Nothing to report.')
             continue
         for rule, IP, port in matches:
-            print(reps.format(IP+',', port+',', rule))
+            print(reps.format(IP+',', serv[int(port)]+',', rule))
 
 
 if __name__ == '__main__':
