@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-09-05 19:24:53 +0200
+.. Last modified: 2015-09-06 14:18:19 +0200
 
 Introduction
 ============
@@ -410,6 +410,43 @@ py-ver.py
 
 List or set the ``__version__`` string in all Python files given on the
 command line or recursively in all directories given on the command line.
+
+
+rename.py
+---------
+
+Renames files given on the command line to <prefix><number>, keeping the
+extension of the original file. Example:
+
+.. code-block:: console
+
+    > ls
+    img_3240.jpg  img_3246.jpg  img_3252.jpg  img_3258.jpg  img_3264.jpg
+    img_3271.jpg  img_3277.jpg  img_3241.jpg  img_3247.jpg  img_3253.jpg
+    img_3259.jpg  img_3265.jpg  img_3272.jpg  img_3278.jpg  img_3242.jpg
+    img_3248.jpg  img_3254.jpg  img_3260.jpg  img_3266.jpg  img_3273.jpg
+    img_3279.jpg  img_3243.jpg  img_3249.jpg  img_3255.jpg  img_3261.jpg
+    img_3267.jpg  img_3274.jpg  img_3280.jpg  img_3244.jpg  img_3250.jpg
+    img_3256.jpg  img_3262.jpg  img_3269.jpg  img_3275.jpg  img_3245.jpg
+    img_3251.jpg  img_3257.jpg  img_3263.jpg  img_3270.jpg  img_3276.jpg
+
+    >rename -p holiday2014- -w 3 img_32*
+
+    > ls
+    holiday2014-001.jpg  holiday2014-009.jpg  holiday2014-017.jpg
+    holiday2014-025.jpg  holiday2014-033.jpg  holiday2014-002.jpg
+    holiday2014-010.jpg  holiday2014-018.jpg  holiday2014-026.jpg
+    holiday2014-034.jpg  holiday2014-003.jpg  holiday2014-011.jpg
+    holiday2014-019.jpg  holiday2014-027.jpg  holiday2014-035.jpg
+    holiday2014-004.jpg  holiday2014-012.jpg  holiday2014-020.jpg
+    holiday2014-028.jpg  holiday2014-036.jpg  holiday2014-005.jpg
+    holiday2014-013.jpg  holiday2014-021.jpg  holiday2014-029.jpg
+    holiday2014-037.jpg  holiday2014-006.jpg  holiday2014-014.jpg
+    holiday2014-022.jpg  holiday2014-030.jpg  holiday2014-038.jpg
+    holiday2014-007.jpg  holiday2014-015.jpg  holiday2014-023.jpg
+    holiday2014-031.jpg  holiday2014-039.jpg  holiday2014-008.jpg
+    holiday2014-016.jpg  holiday2014-024.jpg  holiday2014-032.jpg
+    holiday2014-040.jpg
 
 
 serve-git.sh
