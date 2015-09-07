@@ -7,7 +7,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2008-05-26 22:59:14 +0200
-# Last modified: 2015-05-14 20:10:14 +0200
+# Last modified: 2015-09-07 19:13:25 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to backup-local. This work is published
@@ -51,3 +51,4 @@ __mkbackup() { # 1=origin 2=dest
 __mkbackup / /mnt/bk/root
 __mkbackup /usr /mnt/bk/usr
 __mkbackup /var /mnt/bk/var
+__mkbackup /home /mnt/bk/home
