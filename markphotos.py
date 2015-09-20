@@ -3,22 +3,20 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:08:32 +0200
+# Last modified: 2015-09-20 12:06:46 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
-from multiprocessing import Pool, Lock
+from multiprocessing import Pool
 from os import utime
 from time import mktime
 import os.path
 import subprocess
 import sys
-
-globallock = Lock()
 
 
 def checkfor(args, rv=0):
@@ -58,12 +56,7 @@ def processfile(name):
                           int(fields[3][3:]), int(fields[4]), int(fields[5]),
                           0, 0, -1)))
     utime(name, (modtime, modtime))
-    globallock.acquire()
-    if rv == 0:
-        print("File '{}' processed.".format(name))
-    else:
-        print("Error when processing file '{}'".format(name))
-    globallock.release()
+    return name, rv
 
 
 def main(argv):
@@ -79,7 +72,11 @@ def main(argv):
         sys.exit(0)
     checkfor(['exiftool', '-ver'])
     p = Pool()
-    p.map(processfile, argv[1:])
+    for name, rv in p.imap_unordered(processfile, argv[1:]):
+        if rv == 0:
+            print("File '{}' processed.".format(name))
+        else:
+            print("Error when processing file '{}'".format(name))
     p.close()
 
 
