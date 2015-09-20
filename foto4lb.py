@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-08-04 13:45:07 +0200
+# Last modified: 2015-09-20 12:07:11 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -11,7 +11,7 @@
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 from datetime import datetime
 from functools import partial
@@ -25,7 +25,7 @@ from wand.image import Image
 
 
 def processfile(name, newwidth):
-    logging.info("Starting file '{}'.".format(name))
+    #  logging.info("Starting file '{}'.".format(name))
     with Image(filename=name) as img:
         w, h = img.size
         scale = newwidth / w
@@ -50,7 +50,7 @@ def processfile(name, newwidth):
     modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
                       0, 0, -1))
     utime(name, (modtime, modtime))
-    logging.info("File '{}' processed.".format(name))
+    return name
 
 
 def main(argv):
@@ -81,7 +81,8 @@ def main(argv):
         sys.exit(0)
     p = Pool()
     pfp = partial(processfile, newwidth=args.width)
-    p.map(pfp, args.file)
+    for fn in p.imap_unordered(pfp, args.file):
+        logging.info("File '{}' processed.".format(fn))
     p.close()
 
 
