@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-20 12:06:55 +0200
+# Last modified: 2015-09-21 23:34:14 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -12,21 +12,12 @@
 areas. The blank area removal is based on the image size of a Philips flat
 detector. The image goes from 2048x2048 pixels to 1574x2048 pixels."""
 
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 from multiprocessing import Pool
 import os
 import sys
 from wand.image import Image
-
-
-def report(s, prefix=None):
-    """Print status report, using proper locking."""
-    if prefix:
-        s = ': '.join([prefix, s])
-    globallock.acquire()
-    print(s, flush=True)
-    globallock.release()
 
 
 def convert(filename):
