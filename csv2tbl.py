@@ -2,16 +2,17 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:00:08 +0200
+# Last modified: 2015-09-21 23:07:25 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to csv2tbl.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Convert a CSV file to a LaTeX table"""
+"""Convert a CSV file to a LaTeX table."""
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
+from collections import Counter
 from datetime import date
 import os.path
 import sys
@@ -20,55 +21,58 @@ import sys
 def readlines(filename):
     """Read a file and return the contents as a list of lines.
 
-    :param filename: name of the file to read
+    Arguments:
+        filename name of the file to read
+
+    Returns:
+        A list of stripped lines.
     """
     with open(filename) as infile:
         lines = infile.readlines()
-    lines = [l.strip() for l in lines]
-    return lines
+    return [l.strip() for l in lines]
 
 
 def csvsep(lines, separators=',\t;:'):
-    """Determine and return the separator used in the lines of csv data.
+    """Determine the separator used in the lines of csv data.
 
-    :param lines: csv data
-    :param separator: string of separators
+    Arguments:
+        lines: CSV data as a list of strings.
+        separator: String of separators.
+
+    Returns:
+        The most occuring separator character.
     """
-    mx = 0
-    sep = ''
-    for c in separators:
-        n = lines[1].count(c)
-        if n > mx:
-            mx = n
-            sep = c
-    return sep
+    letters, sep = Counter(), Counter()
+    for ln in lines:
+        letters.update(ln)
+    for s in ',\t;:':
+        sep[s] = letters[s]
+    return sep.most_common()[0][0]
 
 
 def fmtcsv(line, sep):
     """Format a single line of CSV data as a LaTeX table cells.
 
-    Keyword arguments:
-    line -- the string of CSV data to convert
-    sep  -- the separator to use
+    Arguments:
+        line: The string of CSV data to convert
+        sep: The separator to use.
     """
     # Skip empty lines.
     if len(line) == line.count(sep):
         return
-    items = line.split(sep)
-    outs = '    '
-    for it in items:
-        outs += it + r' & '
-    outs = outs[:-3]
-    outs += r'\\'
-    outs = outs.replace(r' & \\', r'\\')
+    if line.endswith(sep):
+        line = line[:-len(sep)]
+    # Escape existing ampersands.
+    line = line.replace(r'&', r'\&')
+    outs = '    ' + line.replace(sep, r' & ') + r'\\'
     print(outs)
 
 
 def main(argv):
     """Main program.
 
-    Keyword arguments:
-    argv -- command line arguments
+    Arguments:
+        argv: Command line arguments.
     """
     binary = os.path.basename(argv[0])
     if len(argv) < 2:
@@ -88,7 +92,7 @@ def main(argv):
     columns = len(lines[1].split(sep))
     columns = 'l' * columns
     # Print the output.
-    print('% Generated from ' + str(shortname))
+    print('% Generated from ' + str(argv[1]))
     print('% by csv2tbl.py on ' + str(date.today()))
     print(r'\begin{table}[!htbp]')
     print(r'  \centering')
