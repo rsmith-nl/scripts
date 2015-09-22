@@ -4,12 +4,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-28 13:36:38 +0100
-# Last modified: 2015-05-15 16:46:57 +0200
+# Last modified: 2015-09-22 22:25:20 +0200
 #
-# To the extent possible under law, <rsmith@xs4all.nl> has waived all
-# copyright and related or neighboring rights to sha256.py. This work is
-# published from the Netherlands. See
-# http://creativecommons.org/publicdomain/zero/1.0/
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to sha256.py. This work is published from the
+# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """A utility to calculate the SHA256 checksum of files, for systems that don't
 come with such a utility."""
@@ -19,7 +18,7 @@ from os.path import isfile
 from sys import argv, exit
 import argparse
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 def main(argv):
