@@ -4,12 +4,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2015-08-30 16:26:28 +0200
+# Last modified: 2015-09-22 22:00:12 +0200
 #
-# To the extent possible under law, <rsmith@xs4all.nl> has waived all
-# copyright and related or neighboring rights to open.py. This work is
-# published from the Netherlands. See
-# http://creativecommons.org/publicdomain/zero/1.0/
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to open.py. This work is published from the
+# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Opens the file(s) given on the command line in the appropriate program.
 Some of the programs are X11 programs."""
@@ -21,14 +20,14 @@ from sys import argv, exit, stderr
 import argparse
 import logging
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
     '\.html$': ['firefox', '-new-tab'],
     '\.xcf$': ['gimp'],
     '\.(e)?ps$': ['gv'],
-    '\.(jp(e)?g|png|gif|tif(f)?|p(abgp)m|svg)$': ['gpicview'],
+    '\.(jp(e)?g|png|gif|tif(f)?|p[abgp]m|svg)$': ['gpicview'],
     '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
     '\.(tar\.|t)(z|gz|bz(2)?|xz)$': ['tar', 'tf'],
     '\.(mp4|mkv|avi|flv|mpg|movi|m4v)$': ['mpv']
