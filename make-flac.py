@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2015-05-15 14:42:29 +0200
+# Last modified: 2015-09-23 01:13:04 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-flac.py. This work is published from
@@ -62,8 +62,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
     except OSError as oops:
@@ -130,8 +130,8 @@ def startflac(tinfo):
     args = ['flac', '--best', '--totally-silent', '-TARTIST=' + artist,
             '-TALBUM=' + album, '-TTITLE=' + title,
             '-TTRACKNUM={:02d}'.format(num), '-o', ofname, ifname]
-    with open(os.devnull, 'w') as bb:
-        p = subprocess.Popen(args, stdout=bb, stderr=bb)
+    p = subprocess.Popen(args, stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
     print('Start processing "{}" as {}'.format(title, ofname))
     return (ofname, p)
 

@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-21 16:24:51 +0200
+# Last modified: 2015-09-23 01:17:28 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -52,8 +52,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
     except OSError as oops:
@@ -92,9 +92,8 @@ def convert(fname):
     """
     try:
         args = ['tiffinfo', fname]
-        with open(os.devnull, 'w') as bb:
-            txt = subprocess.check_output(args, stderr=bb).decode('utf-8')
-            txt = txt.split()
+        txt = subprocess.check_output(args, stderr=subprocess.DEVNULL)
+        txt = txt.decode('utf-8').split()
         if 'Width:' not in txt:
             raise ValueError('no width in TIF')
         index = txt.index('Width:')
@@ -119,9 +118,9 @@ def convert(fname):
         else:
             args = ['tiff2pdf', '-o', outname, '-z', '-p', 'A4', '-F', fname]
             print("No resolution in {}. Fitting to A4.".format(fname))
-        with open(os.devnull, 'w') as bitbucket:
-            p = subprocess.Popen(args, stdout=bitbucket, stderr=bitbucket)
-            print("Conversion of {} to {} started.".format(fname, outname))
+        p = subprocess.Popen(args, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+        print("Conversion of {} to {} started.".format(fname, outname))
         return (p, fname, outname)
     except Exception as e:
         print("Starting conversion of {} failed: {}".format(fname, str(e)))

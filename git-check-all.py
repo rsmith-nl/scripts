@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-14 22:30:11 +0200
+# Last modified: 2015-09-23 01:08:05 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to <script>. This work is published from the
@@ -46,8 +46,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
     except OSError as oops:
@@ -96,8 +96,8 @@ def gitcmd(cmds, output=False):
     if output:
         rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT).decode()
     else:
-        with open(os.devnull, 'w') as bb:
-            rv = subprocess.call(cmds, stdout=bb, stderr=bb)
+        rv = subprocess.call(cmds, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
     return rv
 
 

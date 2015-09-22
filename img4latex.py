@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2015-08-02 22:59:00 +0200
+# Last modified: 2015-09-23 01:06:18 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -91,9 +91,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb,
-                                 startupinfo=startupinfo)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
     except OSError as oops:

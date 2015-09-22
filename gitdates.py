@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-24 12:28:45 +0200
+# Last modified: 2015-09-23 01:09:21 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
@@ -74,9 +74,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb,
-                                 startupinfo=startupinfo)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
     except OSError as oops:
