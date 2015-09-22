@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-12-11 22:58:53 +0100
-# Last modified: 2015-05-15 13:06:15 +0200
+# Last modified: 2015-09-22 21:50:48 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genpw.py. This work is published
@@ -17,7 +17,7 @@ from os import urandom
 import argparse
 import sys
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 
 def main(argv):
@@ -70,7 +70,7 @@ def genpw(length):
 def roundup(characters):
     """
     Rounds up the number of characters so that you don't end up with '='
-    af the end of the base64 encoded string.
+    at the end of the base64 encoded string.
 
     Arguments:
         characters: The number of requested (8-bit) characters.

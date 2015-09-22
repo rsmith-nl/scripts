@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-15 18:04:52 +0200
+# Last modified: 2015-09-22 21:45:05 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -11,7 +11,7 @@
 """Convert all video files given on the command line to H.264/AAC streams in
 an MP4 container."""
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 from multiprocessing import cpu_count
 from time import sleep
@@ -23,7 +23,7 @@ import sys
 
 def main(argv):
     """
-    Entry proint for vid2mp4.
+    Entry point for vid2mp4.
 
     Arguments:
         argv: All command line arguments.
@@ -35,10 +35,10 @@ def main(argv):
         sys.exit(0)
     logging.basicConfig(level="INFO", format='%(levelname)s: %(message)s')
     checkfor(['ffmpeg', '-version'])
-    avis = argv[1:]
+    vids = argv[1:]
     procs = []
     maxprocs = cpu_count()
-    for ifile in avis:
+    for ifile in vids:
         while len(procs) == maxprocs:
             manageprocs(procs)
         procs.append(startencoder(ifile))
@@ -104,8 +104,9 @@ def manageprocs(proclist):
     Check a list of subprocesses tuples for processes that have ended and
     remove them from the list.
 
-    :param proclist: a list of (process, input filename, output filename)
-    tuples.
+    Arguments:
+        proclist: a list of (process, input filename, output filename)
+                  tuples.
     """
     nr = '# of conversions running: {}\r'.format(len(proclist))
     logging.info(nr, end='')
