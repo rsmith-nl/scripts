@@ -1,11 +1,11 @@
 Miscellaneous short utilities
 #############################
 
-:date: 2015-05-15
+:date: 2015-09-22
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-09-06 14:18:19 +0200
+.. Last modified: 2015-09-22 22:47:02 +0200
 
 Introduction
 ============
@@ -23,8 +23,8 @@ use basic ``sh`` syntax and to not use ``bash`` extensions.
 
 All these programs are tested and in use on the FreeBSD operating system. The
 shell-scripts use the plain old ``sh`` that comes with FreeBSD, but should
-work with ``bash``. Most of it should work on other BSD systems, Linux or OS-X
-without major problems.
+work with ``bash``. Bug reports and patches welcome. Most of it should work on
+other BSD systems, Linux or OS-X without major problems.
 
 The Python_ scripts are written in for Python 3. A lot of them will work on
 version 2.7 with small changes. The Python scripts should work on other BSD
@@ -154,7 +154,7 @@ foto4lb.py
 
 Scales fotos for including them into LaTeX documents. The standard
 configuration makes it possible to use two photos next to each other on an A4
-page.
+page with a 160 mm wide text block.
 
 
 genbackup.sh
@@ -173,6 +173,7 @@ These parts are separated by dashes, and the file gets the ``.tar`` extension.
 It requires the ``tar`` program. Tested with FreeBSD's tar. Should work with
 GNU tar as long as you don't use the ``-x`` option; the exclude syntax is
 different between BSD tar and GNU tar.
+
 
 genotp.py
 ---------
@@ -282,6 +283,7 @@ Previous versions used the ``identify`` program from ImageMagick directly.
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.
 
+
 jpeg2pdf.sh
 -----------
 
@@ -316,7 +318,7 @@ make-mp3.py
 -----------
 
 Works like ``make-flac.py`` but uses lame_ to encode to variable bitrate MP3
-files.
+files. It uses the same ``titles`` file as make-flac.
 
 .. _lame: http://lame.sourceforge.net/
 
@@ -376,9 +378,12 @@ program like it in Python.
 
 .. _OS X open: https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/open.1.html
 
-The result is ``open.py``. Note that it is pretty simple. This is by design. It
-has no options and it only opens files and directories. I have no intention of
-it becoming like OS X's open or plan9's plumb_.
+The result is ``open.py``. Note that it is pretty simple. and the programs
+that is uses to open files a geared towards common use. So text files are
+opened in an editor, while photos and most other types are opened in a viewer.
+This simplicity by design. It has no options and it only opens files and
+directories. I have no intention of it becoming like OS X's open or plan9's
+plumb_.
 
 .. _plumb: http://swtch.com/plan9port/man/man1/plumb.html
 
@@ -516,7 +521,8 @@ Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
 webm.sh
 -------
 
-Convert video files to VP9_ video and Vorbis_ audio streams in a WebM_ container.
+Convert video files to VP9_ video and Vorbis_ audio streams in a WebM_
+container, using a 2-pass process.
 
 .. _VP9: https://en.wikipedia.org/wiki/VP9
 .. _WebM: https://en.wikipedia.org/wiki/WebM
