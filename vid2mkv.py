@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-15 18:04:34 +0200
+# Last modified: 2015-09-22 22:33:28 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
@@ -104,8 +104,9 @@ def manageprocs(proclist):
     Check a list of subprocesses tuples for processes that have ended and
     remove them from the list.
 
-    :param proclist: a list of (process, input filename, output filename)
-    tuples.
+    Arguments:
+        proclist: A list of (process, input filename, output filename)
+                  tuples.
     """
     nr = '# of conversions running: {}\r'.format(len(proclist))
     logging.info(nr, end='')
