@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-23 01:20:34 +0200
+# Last modified: 2015-10-05 22:28:08 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -11,7 +11,7 @@
 """Convert all video files given on the command line to H.264/AAC streams in
 an MP4 container."""
 
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 from multiprocessing import cpu_count
 from time import sleep
@@ -33,7 +33,7 @@ def main(argv):
         print("{} version {}".format(binary, __version__), file=sys.stderr)
         print("Usage: {} [file ...]".format(binary), file=sys.stderr)
         sys.exit(0)
-    logging.basicConfig(level="INFO", format='%(levelname)s: %(message)s')
+    logging.basicConfig(level="WARNING", format='%(levelname)s: %(message)s')
     checkfor(['ffmpeg', '-version'])
     vids = argv[1:]
     procs = []
@@ -82,7 +82,8 @@ def startencoder(fname):
         A 3-tuple of a Process, input path and output path.
     """
     basename, ext = os.path.splitext(fname)
-    known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv']
+    known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
+             '.mkv', '.webm']
     if ext.lower() not in known:
         ls = "File {} has unknown extension, ignoring it.".format(fname)
         logging.warning(ls)
@@ -109,7 +110,7 @@ def manageprocs(proclist):
                   tuples.
     """
     nr = '# of conversions running: {}\r'.format(len(proclist))
-    logging.info(nr, end='')
+    logging.info(nr)
     sys.stdout.flush()
     for p in proclist:
         pr, ifn, ofn = p
