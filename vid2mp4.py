@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-06 21:32:19 +0200
+# Last modified: 2015-10-07 23:36:24 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -11,11 +11,10 @@
 """Convert all video files given on the command line to H.264/AAC streams in
 an MP4 container."""
 
-__version__ = '1.2.0'
+__version__ = '1.3.0'
 
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from multiprocessing import cpu_count
-from time import sleep
 import argparse
 import logging
 import os
@@ -52,15 +51,12 @@ def main(argv):
     logging.info('command line arguments = {}'.format(argv))
     logging.info('parsed arguments = {}'.format(args))
     checkfor(['ffmpeg', '-version'])
-    starter = partial(startencoder, crf=args.crf, preset=args.preset)
-    procs = []
-    maxprocs = cpu_count()
-    for ifile in args.files:
-        while len(procs) == maxprocs:
-            manageprocs(procs)
-        procs.append(starter(ifile))
-    while len(procs) > 0:
-        manageprocs(procs)
+    starter = partial(runencoder, crf=args.crf, preset=args.preset)
+    with ThreadPoolExecutor() as tp:
+        convs = tp.map(starter, args.files)
+    convs = [(fn, rv) for fn, rv in convs if rv != 0]
+    for fn, rv in convs:
+        print('Conversion of {} failed, return code {}'.format(fn, rv))
 
 
 def checkfor(args, rv=0):
@@ -87,7 +83,7 @@ def checkfor(args, rv=0):
         sys.exit(1)
 
 
-def startencoder(fname, crf, preset):
+def runencoder(fname, crf, preset):
     """
     Use ffmpeg to convert a video file to H.264/AAC streams in an MP4
     container.
@@ -98,7 +94,7 @@ def startencoder(fname, crf, preset):
         preset: Encoding preset. See ffmpeg docs.
 
     Returns:
-        A 3-tuple of a Process, input path and output path.
+        (fname, return value)
     """
     basename, ext = os.path.splitext(fname)
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
@@ -106,40 +102,16 @@ def startencoder(fname, crf, preset):
     if ext.lower() not in known:
         ls = "File {} has unknown extension, ignoring it.".format(fname)
         logging.warning(ls)
-        return (None, fname, None)
+        return (fname, 0)
     ofn = basename + '.mp4'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libx264', '-crf', str(crf),
             '-preset', preset, '-flags',  '+aic+mv4', '-c:a', 'libfaac',
             '-sn', '-y', ofn]
-    try:
-        p = subprocess.Popen(args, stdout=subprocess.DEVNULL,
-                             stderr=subprocess.DEVNULL)
-        logging.info("Conversion of {} to {} started.".format(fname, ofn))
-    except:
-        logging.error("Starting conversion of {} failed.".format(fname))
-    return (p, fname, ofn)
-
-
-def manageprocs(proclist):
-    """
-    Check a list of subprocesses tuples for processes that have ended and
-    remove them from the list.
-
-    Arguments:
-        proclist: a list of (process, input filename, output filename)
-                  tuples.
-    """
-    nr = '# of conversions running: {}\r'.format(len(proclist))
-    logging.info(nr)
-    sys.stdout.flush()
-    for p in proclist:
-        pr, ifn, ofn = p
-        if pr is None:
-            proclist.remove(p)
-        elif pr.poll() is not None:
-            logging.info('Conversion of {} to {} finished.'.format(ifn, ofn))
-            proclist.remove(p)
-    sleep(0.5)
+    logging.info('Starting conversion of "{}" to "{}"'.format(fname, ofn))
+    rv = subprocess.call(args, stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
+    logging.info('Finished "{}"'.format(ofn))
+    return fname, rv
 
 
 if __name__ == '__main__':
