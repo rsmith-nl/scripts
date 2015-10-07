@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 01:33:05 +0200
+# Last modified: 2015-10-08 01:36:58 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -43,7 +43,7 @@ def main(argv):
     parser.add_argument('-v', '--version',
                         action='version',
                         version=__version__)
-    parser.add_argument("files", metavar='file', nargs='*',
+    parser.add_argument("files", metavar='file', nargs='+',
                         help="one or more files to process")
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
