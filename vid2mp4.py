@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-07 23:36:24 +0200
+# Last modified: 2015-10-08 00:02:10 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -52,7 +52,7 @@ def main(argv):
     logging.info('parsed arguments = {}'.format(args))
     checkfor(['ffmpeg', '-version'])
     starter = partial(runencoder, crf=args.crf, preset=args.preset)
-    with ThreadPoolExecutor() as tp:
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         convs = tp.map(starter, args.files)
     convs = [(fn, rv) for fn, rv in convs if rv != 0]
     for fn, rv in convs:
