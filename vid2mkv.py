@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 00:15:53 +0200
+# Last modified: 2015-10-08 01:35:10 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
@@ -98,16 +98,16 @@ def runencoder(fname, vq, aq):
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
              '.mkv', '.webm']
     if ext.lower() not in known:
-        ls = "File {} has unknown extension, ignoring it.".format(fname)
+        ls = 'file "{}" has unknown extension, ignoring it.'.format(fname)
         logging.warning(ls)
         return (fname, 0)
     ofn = basename + '.mkv'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libtheora', '-q:v', str(vq),
             '-c:a', 'libvorbis', '-q:a', str(aq), '-sn', '-y', ofn]
-    logging.info('Starting conversion of "{}" to "{}"'.format(fname, ofn))
+    logging.info('starting conversion of "{}" to "{}"'.format(fname, ofn))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
-    logging.info('Finished "{}"'.format(ofn))
+    logging.info('finished "{}"'.format(ofn))
     return fname, rv
 
 

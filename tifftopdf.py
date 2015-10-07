@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 01:02:16 +0200
+# Last modified: 2015-10-08 01:25:22 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -36,13 +36,13 @@ def main(argv):
     parser.add_argument('-v', '--version',
                         action='version',
                         version=__version__)
-    parser.add_argument("files", metavar='file', nargs='*',
+    parser.add_argument("files", metavar='file', nargs='+',
                         help="one or more files to process")
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%(levelname)s: %(message)s')
-    logging.info('command line arguments = {}'.format(argv))
-    logging.info('parsed arguments = {}'.format(args))
+    logging.debug('command line arguments = {}'.format(argv))
+    logging.debug('parsed arguments = {}'.format(args))
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
@@ -66,12 +66,12 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
-    logging.info('checking for required program "{}"'.format(args[0]))
     try:
         rc = subprocess.call(args, stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
         outs = 'required program "{}" not found: {}.'
         logging.error(outs.format(args[0], oops.strerror))
@@ -113,7 +113,7 @@ def tiffconv(fname):
             args = ['tiff2pdf', '-o', outname, '-z', '-p', 'A4', '-F', fname]
             ls = "no resolution in {}. Fitting to A4"
             logging.warning(ls.format(fname))
-        ls = 'conversion of "{}" to "{}" started'
+        ls = 'starting conversion of "{}" to "{}"'
         logging.info(ls.format(fname, outname))
         rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL)

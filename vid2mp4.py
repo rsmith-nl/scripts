@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 00:02:10 +0200
+# Last modified: 2015-10-08 01:33:05 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -48,8 +48,8 @@ def main(argv):
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%(levelname)s: %(message)s')
-    logging.info('command line arguments = {}'.format(argv))
-    logging.info('parsed arguments = {}'.format(args))
+    logging.debug('command line arguments = {}'.format(argv))
+    logging.debug('parsed arguments = {}'.format(args))
     checkfor(['ffmpeg', '-version'])
     starter = partial(runencoder, crf=args.crf, preset=args.preset)
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
@@ -77,6 +77,7 @@ def checkfor(args, rv=0):
                              stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
         outs = "required program '{}' not found: {}."
         logging.error(outs.format(args[0], oops.strerror))
@@ -100,17 +101,17 @@ def runencoder(fname, crf, preset):
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
              '.mkv', '.webm']
     if ext.lower() not in known:
-        ls = "File {} has unknown extension, ignoring it.".format(fname)
+        ls = 'file "{}" has unknown extension, ignoring it.'.format(fname)
         logging.warning(ls)
-        return (fname, 0)
+        return fname, 0
     ofn = basename + '.mp4'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libx264', '-crf', str(crf),
             '-preset', preset, '-flags',  '+aic+mv4', '-c:a', 'libfaac',
             '-sn', '-y', ofn]
-    logging.info('Starting conversion of "{}" to "{}"'.format(fname, ofn))
+    logging.info('starting conversion of "{}" to "{}"'.format(fname, ofn))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
-    logging.info('Finished "{}"'.format(ofn))
+    logging.info('finished "{}"'.format(ofn))
     return fname, rv
 
 
