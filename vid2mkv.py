@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 00:03:08 +0200
+# Last modified: 2015-10-08 00:15:53 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
@@ -11,7 +11,7 @@
 """Convert all video files given on the command line to Theora/Vorbis streams
 in a Matroska container using ffmpeg."""
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
@@ -102,8 +102,8 @@ def runencoder(fname, vq, aq):
         logging.warning(ls)
         return (fname, 0)
     ofn = basename + '.mkv'
-    args = ['ffmpeg', '-i', fname, '-c:v', 'libtheora', '-q:v', vq, '-c:a',
-            'libvorbis', '-q:a', aq, '-sn', '-y', ofn]
+    args = ['ffmpeg', '-i', fname, '-c:v', 'libtheora', '-q:v', str(vq),
+            '-c:a', 'libvorbis', '-q:a', str(aq), '-sn', '-y', ofn]
     logging.info('Starting conversion of "{}" to "{}"'.format(fname, ofn))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
