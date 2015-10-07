@@ -1,11 +1,11 @@
 Miscellaneous short utilities
 #############################
 
-:date: 2015-09-22
+:date: 2015-10-07
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-09-22 22:47:02 +0200
+.. Last modified: 2015-10-08 00:10:46 +0200
 
 Introduction
 ============
@@ -498,7 +498,8 @@ vid2mkv.py
 ----------
 
 Convert all video files given on the command line to Theora_ / Vorbis_ streams
-in a `Matroška`_ container using ffmpeg_.
+in a `Matroška`_ container using ffmpeg_. This uses ``os.cpu_count()`` so it
+requires Python 3.4+. As of 3452c8a it uses a ``ThreadPoolExecutor``.
 
 .. _Theora: http://www.theora.org/
 .. _Vorbis: http://www.vorbis.com/
@@ -510,7 +511,7 @@ vid2mp4.py
 ----------
 
 Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
-/ AAC_ streams in an MP4_ container.
+/ AAC_ streams in an MP4_ container. It also requires Python 3.4+.
 
 .. _H.264: http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC
 .. _x264: http://www.videolan.org/developers/x264.html
