@@ -1,7 +1,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-23 01:04:14 +0200
+# Last modified: 2015-10-08 20:13:09 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to checkfor.py This work
@@ -10,6 +10,7 @@
 
 from __future__ import division, print_function
 
+import logging
 import os
 import subprocess
 import sys
@@ -34,7 +35,8 @@ def checkfor(args, rv=0):
                              stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
+        outs = "required program '{}' not found: {}."
+        logging.error(outs.format(args[0], oops.strerror))
         sys.exit(1)
