@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-23 01:09:21 +0200
+# Last modified: 2015-10-08 22:12:13 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
@@ -12,7 +12,6 @@
 """For each file in a directory managed by git, get the short hash and
 data of the most recent commit of that file."""
 
-from __future__ import print_function
 from multiprocessing import Pool
 import os
 import subprocess
@@ -62,11 +61,11 @@ def main():
 def checkfor(args, rv=0):
     """
     Make sure that a program necessary for using this script is available.
-    Calls sys.exit when this is not the case.
+    If the required utility is not found, this function will exit the program.
 
     Arguments:
-        args: String or list of strings of commands. A single string may
-            not contain spaces.
+        args: String or list of strings of commands. A single string may not
+            contain spaces.
         rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
@@ -78,9 +77,10 @@ def checkfor(args, rv=0):
                              stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
+        outs = 'required program "{}" not found: {}.'
+        logging.error(outs.format(args[0], oops.strerror))
         sys.exit(1)
 
 

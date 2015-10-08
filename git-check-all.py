@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-23 01:08:05 +0200
+# Last modified: 2015-10-08 22:08:45 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to <script>. This work is published from the
@@ -14,6 +14,7 @@ git, and run ``git gc`` on them unless they have uncommitted changes."""
 import os
 import subprocess
 import sys
+import logging
 
 
 def main(args):
@@ -50,9 +51,10 @@ def checkfor(args, rv=0):
                              stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
+        outs = "required program '{}' not found: {}."
+        logging.error(outs.format(args[0], oops.strerror))
         sys.exit(1)
 
 
