@@ -3,29 +3,61 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-23 01:25:38 +0200
+# Last modified: 2015-10-08 23:26:59 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
-from multiprocessing import Pool
+from concurrent.futures import ThreadPoolExecutor
 from os import utime
 from time import mktime
+import argparse
+import logging
 import os.path
 import subprocess
 import sys
 
 
-def checkfor(args, rv=0):
-    """Make sure that a program necessary for using this script is
-    available.
+def main(argv):
+    """Main program.
 
-    :param args: String or list of strings of commands. A single string may
-    not contain spaces.
-    :param rv: Expected return value from evoking the command.
+    Arguments:
+        argv: Command line arguments.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--log', default='warning',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help="logging level (defaults to 'warning')")
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version=__version__)
+    parser.add_argument("files", metavar='file', nargs='+',
+                        help="one or more files to process")
+    args = parser.parse_args(argv)
+    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
+                        format='%(levelname)s: %(message)s')
+    logging.debug('command line arguments = {}'.format(argv))
+    logging.debug('parsed arguments = {}'.format(args))
+    checkfor(['exiftool', '-ver'])
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        res = tp.map(processfile, args.files)
+    res = [(name, rv) for name, rv in res if rv != 0]
+    for name, rv in res:
+        logging.error('Error processing "{}": {}'.format(name, rv))
+
+
+def checkfor(args, rv=0):
+    """
+    Make sure that a program necessary for using this script is available.
+    If the required utility is not found, this function will exit the program.
+
+    Arguments:
+        args: String or list of strings of commands. A single string may not
+            contain spaces.
+        rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
         if ' ' in args:
@@ -36,13 +68,15 @@ def checkfor(args, rv=0):
                              stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
+        outs = 'required program "{}" not found: {}.'
+        logging.error(outs.format(args[0], oops.strerror))
         sys.exit(1)
 
 
 def processfile(name):
+    logging.info('processing "{}"'.format(name))
     args = ['exiftool', '-CreateDate', name]
     createdate = subprocess.check_output(args).decode()
     fields = createdate.split(":")
@@ -56,29 +90,9 @@ def processfile(name):
                           int(fields[3][3:]), int(fields[4]), int(fields[5]),
                           0, 0, -1)))
     utime(name, (modtime, modtime))
+    logging.info('done with "{}"'.format(name))
     return name, rv
 
 
-def main(argv):
-    """Main program.
-
-    Keyword arguments:
-    argv -- command line arguments
-    """
-    if len(argv) == 1:
-        binary = os.path.basename(argv[0])
-        print("{} version {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
-        sys.exit(0)
-    checkfor(['exiftool', '-ver'])
-    p = Pool()
-    for name, rv in p.imap_unordered(processfile, argv[1:]):
-        if rv == 0:
-            print("File '{}' processed.".format(name))
-        else:
-            print("Error when processing file '{}'".format(name))
-    p.close()
-
-
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])
