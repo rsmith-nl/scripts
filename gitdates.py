@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 22:12:13 +0200
+# Last modified: 2015-10-08 22:33:37 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
@@ -12,32 +12,28 @@
 """For each file in a directory managed by git, get the short hash and
 data of the most recent commit of that file."""
 
-from multiprocessing import Pool
+from concurrent.futures import ThreadPoolExecutor
+import logging
 import os
 import subprocess
 import sys
 import time
-
-# Suppres annoying command prompts on ms-windows.
-startupinfo = None
-if os.name == 'nt':
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
 
 def main():
     """
     Entry point for gitdates.
     """
+    logging.basicConfig(level='WARNING', format='%(levelname)s: %(message)s')
     checkfor(['git', '--version'])
     # Get a list of all files
     allfiles = []
     # Get a list of excluded files.
     if '.git' not in os.listdir('.'):
-        print('This directory is not managed by git.')
+        logging.error('This directory is not managed by git.')
         sys.exit(0)
     exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
-    exc = subprocess.check_output(exargs, startupinfo=startupinfo).split()
+    exc = subprocess.check_output(exargs).split()
     for root, dirs, files in os.walk('.'):
         for d in ['.git', '__pycache__']:
             try:
@@ -46,11 +42,10 @@ def main():
                 pass
         tmp = [os.path.join(root, f) for f in files if f not in exc]
         allfiles += tmp
-    # Gather the files' data using a Pool.
-    p = Pool()
-    filedata = [res for res in p.imap_unordered(filecheck, allfiles)
-                if res is not None]
-    p.close()
+    # Gather the files' data using a ThreadPoolExecutor.
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        res = tp.map(filecheck, allfiles)
+    filedata = [r for r in res if r is not None]
     # Sort the data (latest modified first) and print it
     filedata.sort(key=lambda a: a[2], reverse=True)
     dfmt = '%Y-%m-%d %H:%M:%S %Z'
@@ -99,11 +94,12 @@ def filecheck(fname):
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
-        b = subprocess.check_output(args, startupinfo=startupinfo)
+        b = subprocess.check_output(args)
         data = b.decode()[:-1]
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
     except (subprocess.CalledProcessError, ValueError):
+        logging.error('git log failed for "{}"'.format(fname))
         return None
     return out
 
