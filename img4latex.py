@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2015-10-08 22:13:02 +0200
+# Last modified: 2015-10-10 19:59:05 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -16,6 +16,7 @@
 __version__ = '1.2.0'
 
 import argparse
+import logging
 import os
 import subprocess
 import sys
