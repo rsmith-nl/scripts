@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-10-08 00:10:46 +0200
+.. Last modified: 2015-10-18 23:05:22 +0200
 
 Introduction
 ============
@@ -477,6 +477,15 @@ sha256.py
 
 A utility written in pure Python_ to calculate the SHA-256 checksum of files,
 for systems that don't come with such a utility.
+
+
+texfonts.sh
+-----------
+
+This small shell script find Opentype fonts in my TeXlive installation and
+installs symbolic links to those font files in a single directory. This
+directory is then scanned by fc-cache to make the fonts available to all
+programs that use fontconfig.
 
 
 tifftopdf.py
