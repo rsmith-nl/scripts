@@ -3,18 +3,18 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 23:26:59 +0200
+# Last modified: 2015-10-20 00:35:38 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
-from concurrent.futures import ThreadPoolExecutor
 from os import utime
 from time import mktime
 import argparse
+import concurrent.futures as cf
 import logging
 import os.path
 import subprocess
@@ -42,11 +42,13 @@ def main(argv):
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     checkfor(['exiftool', '-ver'])
-    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        res = tp.map(processfile, args.files)
-    res = [(name, rv) for name, rv in res if rv != 0]
-    for name, rv in res:
-        logging.error('Error processing "{}": {}'.format(name, rv))
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(processfile, fn) for fn in args.files]
+        for fut in cf.as_completed(fl):
+            fn, rv = fut.result()
+            logging.info('file "{}" processed.'.format(fn))
+            if rv != 0:
+                logging.error('error processing "{}": {}'.format(fn, rv))
 
 
 def checkfor(args, rv=0):
@@ -76,7 +78,6 @@ def checkfor(args, rv=0):
 
 
 def processfile(name):
-    logging.info('processing "{}"'.format(name))
     args = ['exiftool', '-CreateDate', name]
     createdate = subprocess.check_output(args).decode()
     fields = createdate.split(":")
@@ -85,12 +86,12 @@ def processfile(name):
     cmt = "Copyright © {} {}".format(year, cr)
     args = ['exiftool', '-Copyright="Copyright (C) {} {}"'.format(year, cr),
             '-Comment="{}"'.format(cmt), '-overwrite_original', '-q', name]
-    rv = subprocess.call(args)
+    rv = subprocess.call(args, stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
     modtime = int(mktime((year, int(fields[2]), int(fields[3][:2]),
                           int(fields[3][3:]), int(fields[4]), int(fields[5]),
                           0, 0, -1)))
     utime(name, (modtime, modtime))
-    logging.info('done with "{}"'.format(name))
     return name, rv
 
 
