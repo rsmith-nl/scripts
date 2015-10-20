@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-10-20 20:26:22 +0200
+.. Last modified: 2015-10-20 23:29:15 +0200
 
 Introduction
 ============
@@ -312,16 +312,24 @@ make-flac.py
 ------------
 
 Encodes WAV files from cdparanoia to FLAC format. Processing is done in
-parallel using as many subprocesses as the machine has cores. Title and song
-information is gathered from a text file called ``titles``.
+parallel using as many subprocesses as the machine has cores. Album
+information is gathered from a text file called ``album.json``.
 
 This file has the following format::
 
-      album title
-      artist
-      01 title of 1st song
-      ..
-      14 title of 14th song
+    {
+        "title": "title of the album",
+        "artist": "name of the artist",
+        "year": 1985,
+        "genre": "rock",
+        "tracks": [
+            "foo",
+            "bar",
+            "spam",
+            "eggs"
+        ]
+    }
+
 
 .. _cdparanoia: https://www.xiph.org/paranoia/
 .. _FLAC: https://xiph.org/flac/
@@ -331,7 +339,7 @@ make-mp3.py
 -----------
 
 Works like ``make-flac.py`` but uses lame_ to encode to variable bitrate MP3
-files. It uses the same ``titles`` file as make-flac.
+files. It uses the same ``album.json`` file as make-flac.
 
 .. _lame: http://lame.sourceforge.net/
 
