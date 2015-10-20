@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2015-10-08 22:16:42 +0200
+# Last modified: 2015-10-20 19:49:07 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-flac.py. This work is published from
@@ -15,10 +15,10 @@ cores. Title and song information is gathered from a text file called
 titles.
 """
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 from collections import namedtuple
-from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures as cf
 import argparse
 import os
 import logging
@@ -49,11 +49,15 @@ def main(argv):
     checkfor('flac')
     procs = []
     tracks = trackdata()
-    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        convs = tp.map(runflac, tracks)
-    convs = [(tr, rv) for tr, rv in convs if rv != 0]
-    for fn, rv in convs:
-        print('Conversion of {} failed, return code {}'.format(fn, rv))
+    errmsg = 'conversion of {} failed, return code {}'
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(runflac, t) for t in tracks]
+        for fut in cf.as_completed(fl):
+            tr, rv = fut.result()
+            if rv == 0:
+                logging.info('finished "{}"'.format(tr.ofname))
+            else:
+                logging.error(errmsg.format(tr.ifname, rv))
 
 
 def checkfor(args, rv=0):
@@ -138,12 +142,10 @@ def runflac(tinfo):
     """
     args = ['flac', '--best', '--totally-silent', '-TARTIST=' + tinfo.artist,
             '-TALBUM=' + tinfo.album, '-TTITLE=' + tinfo.title,
-            '-TTRACKNUM={:02d}'.format(num), '-o', tinfo.ofname, tinfo.ifname]
-    logging.info('started conversion of "{}" to "{}"'.format(tinfo.title,
-                                                             tinfo.ofname))
+            '-TTRACKNUM={:02d}'.format(tinfo.num), '-o', tinfo.ofname,
+            tinfo.ifname]
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
-    logging.info('finished "{}"'.format(tinfo.ofname))
     return (tinfo, rv)
 
 

@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 22:17:23 +0200
+# Last modified: 2015-10-20 19:03:12 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -11,11 +11,11 @@
 """Convert all video files given on the command line to H.264/AAC streams in
 an MP4 container."""
 
-__version__ = '1.3.0'
+__version__ = '1.4.0'
 
-from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import argparse
+import concurrent.futures as cf
 import logging
 import os
 import subprocess
@@ -52,11 +52,18 @@ def main(argv):
     logging.debug('parsed arguments = {}'.format(args))
     checkfor(['ffmpeg', '-version'])
     starter = partial(runencoder, crf=args.crf, preset=args.preset)
-    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        convs = tp.map(starter, args.files)
-    convs = [(fn, rv) for fn, rv in convs if rv != 0]
-    for fn, rv in convs:
-        print('Conversion of {} failed, return code {}'.format(fn, rv))
+    errmsg = 'conversion of {} failed, return code {}'
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(starter, t) for t in args.files]
+        for fut in cf.as_completed(fl):
+            fn, rv = fut.result()
+            if rv == 0:
+                logging.info('finished "{}"'.format(fn))
+            elif rv < 0:
+                ls = 'file "{}" has unknown extension, ignoring it.'
+                logging.warning(ls.format(fname))
+            else:
+                logging.error(errmsg.format(fn, rv))
 
 
 def checkfor(args, rv=0):
@@ -102,17 +109,13 @@ def runencoder(fname, crf, preset):
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
              '.mkv', '.webm']
     if ext.lower() not in known:
-        ls = 'file "{}" has unknown extension, ignoring it.'.format(fname)
-        logging.warning(ls)
-        return fname, 0
+        return fname, -1
     ofn = basename + '.mp4'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libx264', '-crf', str(crf),
             '-preset', preset, '-flags',  '+aic+mv4', '-c:a', 'libfaac',
             '-sn', '-y', ofn]
-    logging.info('starting conversion of "{}" to "{}"'.format(fname, ofn))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
-    logging.info('finished "{}"'.format(ofn))
     return fname, rv
 
 

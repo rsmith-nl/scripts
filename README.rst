@@ -1,11 +1,11 @@
 Miscellaneous short utilities
 #############################
 
-:date: 2015-10-07
+:date: 2015-10-20
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-10-18 23:05:22 +0200
+.. Last modified: 2015-10-20 20:26:22 +0200
 
 Introduction
 ============
@@ -26,11 +26,24 @@ shell-scripts use the plain old ``sh`` that comes with FreeBSD, but should
 work with ``bash``. Bug reports and patches welcome. Most of it should work on
 other BSD systems, Linux or OS-X without major problems.
 
-The Python_ scripts are written in for Python 3. A lot of them will work on
-version 2.7 with small changes. The Python scripts should work on other BSD
-systems, Linux and OS-X. They *might* work on MS-windows as well, provided
-that the external programs and modules they use are available.  *This is not
-tested, however*. Patches welcome.
+The following scripts use Python_ 3.5 specific features (like
+``os.cpu_count``, ``subprocess.DEVNULL``);
+
+* checkfor.py
+* git-check-all.py
+* gitdates.py
+* img4latex.py
+* make-flac.py
+* make-mp3.py
+* tifftopdf.py
+* vid2mkv.py
+* vid2mp4.py
+
+Other Python scripts are written for Python 3 but could be usable on Python
+2.x with some changes. The Python scripts should work on other BSD systems,
+Linux and OS-X. They *might* work on MS-windows as well, provided that the
+external programs and modules they use are available.  *This has not been
+tested, however*.  Patches welcome.
 
 
 License
@@ -507,8 +520,8 @@ vid2mkv.py
 ----------
 
 Convert all video files given on the command line to Theora_ / Vorbis_ streams
-in a `Matroška`_ container using ffmpeg_. This uses ``os.cpu_count()`` so it
-requires Python 3.4+. As of 3452c8a it uses a ``ThreadPoolExecutor``.
+in a `Matroška`_ container using ffmpeg_. As of 3452c8a it uses
+a ``ThreadPoolExecutor``.
 
 .. _Theora: http://www.theora.org/
 .. _Vorbis: http://www.vorbis.com/
@@ -520,7 +533,7 @@ vid2mp4.py
 ----------
 
 Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
-/ AAC_ streams in an MP4_ container. It also requires Python 3.4+.
+/ AAC_ streams in an MP4_ container.
 
 .. _H.264: http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC
 .. _x264: http://www.videolan.org/developers/x264.html

@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 01:25:22 +0200
+# Last modified: 2015-10-20 18:55:52 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -11,10 +11,10 @@
 """Convert TIFF files to PDF format using the utilities tiffinfo and tiff2pdf
 from the libtiff package."""
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
-from concurrent.futures import ThreadPoolExecutor
 import argparse
+import concurrent.futures as cf
 import logging
 import os
 import re
@@ -45,11 +45,15 @@ def main(argv):
     logging.debug('parsed arguments = {}'.format(args))
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])
-    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        convs = tp.map(tiffconv, args.files)
-    convs = [(fn, rv) for fn, rv in convs if rv != 0]
-    for fn, rv in convs:
-        print('Conversion of {} failed, return code {}'.format(fn, rv))
+    errmsg = 'conversion of {} failed, return code {}'
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(tiffconv, t) for t in args.files]
+        for fut in cf.as_completed(fl):
+            fn, rv = fut.result()
+            if rv == 0:
+                logging.info('finished "{}"'.format(fn))
+            else:
+                logging.error(errmsg.format(fn, rv))
 
 
 def checkfor(args, rv=0):

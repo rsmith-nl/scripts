@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 22:17:49 +0200
+# Last modified: 2015-10-20 19:03:25 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
@@ -11,11 +11,11 @@
 """Convert all video files given on the command line to Theora/Vorbis streams
 in a Matroska container using ffmpeg."""
 
-__version__ = '1.2.1'
+__version__ = '1.3.0'
 
-from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import argparse
+import concurrent.futures as cf
 import logging
 import os
 import subprocess
@@ -50,11 +50,18 @@ def main(argv):
     checkfor(['ffmpeg', '-version'])
     starter = partial(runencoder, vq=args.videoquality,
                       aq=args.audioquality)
-    with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        convs = tp.map(starter, args.files)
-    convs = [(fn, rv) for fn, rv in convs if rv != 0]
-    for fn, rv in convs:
-        print('Conversion of {} failed, return code {}'.format(fn, rv))
+    errmsg = 'conversion of {} failed, return code {}'
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(starter, t) for t in args.files]
+        for fut in cf.as_completed(fl):
+            fn, rv = fut.result()
+            if rv == 0:
+                logging.info('finished "{}"'.format(fn))
+            elif rv < 0:
+                ls = 'file "{}" has unknown extension, ignoring it.'
+                logging.warning(ls.format(fname))
+            else:
+                logging.error(errmsg.format(fn, rv))
 
 
 def checkfor(args, rv=0):
@@ -100,16 +107,12 @@ def runencoder(fname, vq, aq):
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
              '.mkv', '.webm']
     if ext.lower() not in known:
-        ls = 'file "{}" has unknown extension, ignoring it.'.format(fname)
-        logging.warning(ls)
-        return (fname, 0)
+        return (fname, -1)
     ofn = basename + '.mkv'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libtheora', '-q:v', str(vq),
             '-c:a', 'libvorbis', '-q:a', str(aq), '-sn', '-y', ofn]
-    logging.info('starting conversion of "{}" to "{}"'.format(fname, ofn))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
-    logging.info('finished "{}"'.format(ofn))
     return fname, rv
 
 
