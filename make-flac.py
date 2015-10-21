@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2015-10-20 22:50:11 +0200
+# Last modified: 2015-10-21 22:46:28 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-flac.py. This work is published from
@@ -14,7 +14,7 @@ Processing is done in parallel using as many subprocesses as the machine has
 cores.
 
 Information w.r.t. artist, song titles et cetera is gathered from a text file
-called “album.json”, which should have the following info;
+called “album.json”, which should have the following format;
 
     {
         "title": "title of the album",
@@ -30,7 +30,7 @@ called “album.json”, which should have the following info;
     }
 """
 
-__version__ = '2.0.0'
+__version__ = '2.1.0'
 
 import argparse
 import concurrent.futures as cf
@@ -67,6 +67,10 @@ def main(argv):
         if key not in keys:
             logging.error(errmsg.format(key, tfn))
             sys.exit(1)
+    logging.info('album name: {}'.format(data['title']))
+    logging.info('artist: {}'.format(data['artist']))
+    logging.info('year: {}'.format(data['year']))
+    logging.info('genre: {}'.format(data['genre']))
     errmsg = 'conversion of track {} failed, return code {}'
     okmsg = 'finished track {}, "{}"'
     num = len(data['tracks'])
