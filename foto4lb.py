@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-30 21:43:46 +0100
+# Last modified: 2015-10-31 19:27:52 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -13,17 +13,19 @@
 
 __version__ = '2.0.0'
 
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 from os import cpu_count, mkdir, scandir, sep, utime
 from os.path import exists
 from time import mktime
 import argparse
-from concurrent.futures import ProcessPoolExecutor, as_completed
 import logging
 import sys
 
-from wand.image import Image
 from wand.exceptions import MissingDelegateError
+from wand.image import Image
+
+outdir = 'foto4lb'
 
 
 def main(argv):
@@ -54,12 +56,11 @@ def main(argv):
         sys.exit(0)
 
     pairs = []
-    subdir = 'foto4lb'
     count = 0
     for path in args.path:
-        if exists(path+sep+subdir):
+        if exists(path + sep + outdir):
             fs = '"{}" already exists in "{}", skipping this path.'
-            logging.warning(fs.format(subdir, path))
+            logging.warning(fs.format(outdir, path))
             continue
         files = [f.name for f in scandir(path) if f.is_file()]
         count += len(files)
@@ -72,7 +73,7 @@ def main(argv):
     logging.info('found {} files.'.format(count))
     logging.info('creating output directories.')
     for dirname, _ in pairs:
-            mkdir(dirname + sep + subdir)
+            mkdir(dirname + sep + outdir)
     with ProcessPoolExecutor(max_workers=cpu_count()) as tp:
         fl = [tp.submit(processfile, p, fn, newwidth=args.width)
               for p, fl in pairs for fn in fl]
@@ -98,8 +99,8 @@ def processfile(path, name, newwidth):
         Status 0 indicates a succesful conversion, status 1 means that the
         input file was not a recognized image format.
     """
-    fname = path + sep + name
-    oname = path + sep + 'foto4lb' + sep + name
+    fname = sep.join([path, name])
+    oname = sep.join([path, outdur, name])
     try:
         with Image(filename=fname) as img:
             w, h = img.size
