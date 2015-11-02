@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-03 22:10:01 +0200
+# Last modified: 2015-11-02 09:38:35 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
@@ -47,6 +47,8 @@ def genrecords(lol):
     Keyword arguments:
     lol -- list of lines
     """
+    specials = {'_': '\_', '#': '\#', '%': '\%', '$': '\$',
+                '{': '\{', '}': '\}'}
     rv = ''
     for ln in lol:
         if ln.startswith('commit'):
@@ -71,6 +73,8 @@ def genrecords(lol):
         else:
             ln = ln.lstrip(None)
             if len(ln):
+                for a, b in specials.items():
+                    ln = ln.replace(a, b)
                 rv += '  & ' + ln + '\\\\\n'
     if rv:
         rv += endtable + '% EOF\n'
