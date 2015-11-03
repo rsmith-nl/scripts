@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-11-03 14:35:48 +0100
+# Last modified: 2015-11-03 14:42:56 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
@@ -17,14 +17,8 @@ import sys
 
 # The following texts determine how the commits are generated. Change them to
 # suit your preferences.
-header = r"""% -*- latex -*-
+header = r"""% vim:fileencoding=utf-8:ft=tex
 % Automatisch gegenereerd door tools/mkhistory.py
-
-\chapter{Wijzigingen}
-
-Dit hoofdstuk wordt automatisch gegenereerd uit het \texttt{git}
-revisiecontrolesysteem. De meest recente wijzigingen staan bovenaan.
-Voor meer gedetaileerde infomatie, raadpleeg het revisiecontrolesysteem zelf.
 
 """
 
