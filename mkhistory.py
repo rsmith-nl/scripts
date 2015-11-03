@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-11-03 14:07:18 +0100
+# Last modified: 2015-11-03 14:35:48 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
@@ -40,6 +40,9 @@ def fmtlog(txt):
     lines = txt.split('\n')
     # Remove reference to HEAD
     lines[0] = re.sub('\(.*\) ', '', lines[0])
+    # Use typewriter font for the commit id.
+    lines = [r'\texttt{' + re.sub(' ', r'} ', ln, count=1)
+             for ln in lines if ln]
     return '\\\\\n'.join(lines)
 
 
@@ -55,7 +58,7 @@ def main(argv):
         sys.exit(0)
     fn = argv[1]
     try:
-        args = ['git', 'log', '--pretty=oneline']
+        args = ['git', 'log', '--oneline']
         txt = subprocess.check_output(args).decode()
     except subprocess.CalledProcessError:
         print("Git not found! Stop.")
