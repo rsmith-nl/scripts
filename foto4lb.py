@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-31 19:27:52 +0100
+# Last modified: 2015-11-13 17:03:20 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -10,8 +10,6 @@
 
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
-
-__version__ = '2.0.0'
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
@@ -25,6 +23,7 @@ import sys
 from wand.exceptions import MissingDelegateError
 from wand.image import Image
 
+__version__ = '2.0.0'
 outdir = 'foto4lb'
 
 
@@ -100,7 +99,7 @@ def processfile(path, name, newwidth):
         input file was not a recognized image format.
     """
     fname = sep.join([path, name])
-    oname = sep.join([path, outdur, name])
+    oname = sep.join([path, outdir, name])
     try:
         with Image(filename=fname) as img:
             w, h = img.size
