@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-11-13 17:03:20 +0100
+# Last modified: 2015-11-13 20:46:45 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -25,6 +25,7 @@ from wand.image import Image
 
 __version__ = '2.0.0'
 outdir = 'foto4lb'
+extensions = ('.jpg', '.jpeg', '.raw')
 
 
 def main(argv):
@@ -44,7 +45,7 @@ def main(argv):
     parser.add_argument('-v', '--version',
                         action='version',
                         version=__version__)
-    parser.add_argument('path', nargs='*')
+    parser.add_argument('path', nargs='*', help='directory in which to work')
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%(levelname)s: %(message)s')
@@ -61,7 +62,8 @@ def main(argv):
             fs = '"{}" already exists in "{}", skipping this path.'
             logging.warning(fs.format(outdir, path))
             continue
-        files = [f.name for f in scandir(path) if f.is_file()]
+        files = [f.name for f in scandir(path) if f.is_file() and
+                 f.name.lower().endswith(extensions)]
         count += len(files)
         pairs.append((path, files))
         logging.debug('Path: "{}"'.format(path))
@@ -94,12 +96,12 @@ def processfile(path, name, newwidth):
         newwidth: Desired width of the output file.
 
     Returns:
-        A 3-tuple (input file name, status).
-        Status 0 indicates a succesful conversion, status 1 means that the
-        input file was not a recognized image format.
+        A 2-tuple (input file name, status).
+        Status 0 indicates a succesful conversion,
+        status 1 means that the input file was not a recognized image format.
     """
     fname = sep.join([path, name])
-    oname = sep.join([path, outdir, name])
+    oname = sep.join([path, outdir, name.lower()])
     try:
         with Image(filename=fname) as img:
             w, h = img.size
