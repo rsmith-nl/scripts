@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-10-20 23:29:15 +0200
+.. Last modified: 2015-11-30 00:16:21 +0100
 
 Introduction
 ============
@@ -295,17 +295,6 @@ Previous versions used the ``identify`` program from ImageMagick directly.
 
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.
-
-
-jpeg2pdf.sh
------------
-
-Converts a list of JPEG files to a PDF file. It uses jpeg2ps_, ps2pdf_ and
-pdftk_.
-
-.. _jpeg2ps: https://www.ctan.org/tex-archive/support/jpeg2ps
-.. _ps2pdf: http://ghostscript.com/doc/current/Ps2pdf.htm
-.. _pdftk: https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/
 
 
 make-flac.py
