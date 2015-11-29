@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-11-30 00:16:21 +0100
+.. Last modified: 2015-11-30 00:20:01 +0100
 
 Introduction
 ============
@@ -352,9 +352,7 @@ the files given on the command-line.
 mkpdf.sh
 --------
 
-Uses jpeg2ps_ and epspdf_ to convert scanned images to PDF files.
-
-.. _epspdf: http://tex.aanhet.net/epspdf/
+Use ``convert`` from the ImageMagick_ suite to convert scanned images to PDF files.
 
 
 nospaces.py
