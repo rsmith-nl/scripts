@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2015-10-10 19:59:05 +0200
+# Last modified: 2016-01-06 21:43:52 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -13,8 +13,6 @@
 """Program to check a PDF, PNG or JPEG file and return
    a suitable LaTeX figure environment for it."""
 
-__version__ = '1.2.0'
-
 import argparse
 import logging
 import os
@@ -22,11 +20,7 @@ import subprocess
 import sys
 from wand.image import Image
 
-# Suppres annoying command prompts on ms-windows.
-startupinfo = None
-if os.name == 'nt':
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+__version__ = '1.3.0'
 
 
 def main(argv):
@@ -35,25 +29,29 @@ def main(argv):
     Arguments:
         argv: All command line arguments.
     """
-    checkfor(['gs', '-v'])
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-w', '--width',
-                        default=160,
-                        type=float,
+    parser.add_argument('-w', '--width', default=160, type=float,
                         help='width of the text block in mm. (default 160)')
+    parser.add_argument('--log', default='warning',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help="logging level (defaults to 'warning')")
     parser.add_argument('-v', '--version',
                         action='version',
                         version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
+    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
+                        format='%% %(levelname)s: %(message)s')
+    logging.debug('command line arguments = {}'.format(argv))
+    logging.debug('parsed arguments = {}'.format(args))
     args.width *= 72 / 25.4  # convert to points
-    del args.file[0]
+    checkfor(['gs', '-v'])
     if not args.file:
         parser.print_help()
         sys.exit(0)
     for filename in args.file:
         if not os.path.exists(filename):
-            print('File "{}" does not exist.'.format(filename))
+            logging.error('file "{}" does not exist.'.format(filename))
             continue
         if filename.endswith(('.ps', '.PS', '.eps', '.EPS', '.pdf', '.PDF')):
             bbox = getpdfbb(filename)
@@ -70,8 +68,8 @@ def main(argv):
             if width > args.width:
                 opts = '[scale={:.3f}]'.format(args.width / width)
         else:
-            fskip = 'File "{}" has an unrecognized format. Skipping...'
-            print(fskip.format(filename))
+            fskip = 'file "{}" has an unrecognized format. Skipping...'
+            logging.error(fskip.format(filename))
             continue
         output_figure(filename, opts)
     print()
@@ -116,8 +114,7 @@ def getpdfbb(fn):
     """
     gsopts = ['gs', '-q', '-dFirstPage=1', '-dLastPage=1', '-dNOPAUSE',
               '-dBATCH', '-sDEVICE=bbox', fn]
-    gsres = subprocess.check_output(gsopts, stderr=subprocess.STDOUT,
-                                    startupinfo=startupinfo)
+    gsres = subprocess.check_output(gsopts, stderr=subprocess.STDOUT)
     bbs = gsres.decode().splitlines()[0]
     return bbs.split(' ')[1:]
 
@@ -164,4 +161,4 @@ def output_figure(fn, options=""):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])
