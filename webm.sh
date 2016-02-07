@@ -5,7 +5,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2016-02-07 17:53:56 +0100
+# Last modified: 2016-02-07 20:18:58 +0100
 
 if [ $# -lt 2 ]; then
     echo "Usage: webm <vod|crq|con|bq> file";
@@ -27,14 +27,14 @@ FF=ffmpeg
 # But using Vorbis instead of Opus.
 case $1 in
     vod) echo "Encoding for video on demand.";
-        FP="-c:v libvpx-vp9 -threads 8 -pass 1 -b:v 1000K -g 250 -speed 4 -tile-columns 6 -frame-parallel 1 -an -f webm -y /dev/null";
-         SP="-c:v libvpx-vp9 -threads 8 -pass 2 -b:v 1000K -g 250 -speed 1 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
+        FP="-c:v libvpx-vp9 -threads 8 -pass 1 -b:v 1000K -g 250 -speed 4 -tile-columns 6 -an -f webm -y /dev/null";
+         SP="-c:v libvpx-vp9 -threads 8 -pass 2 -b:v 1000K -g 250 -speed 1 -tile-columns 6 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
     crq) echo "Encoding for constrained rate quality.";
-         FP="-c:v libvpx-vp9 -threads 8 -pass 1 -b:v 1400k -crf 33 -g 250 -speed 4 -tile-columns 6 -frame-parallel 1 -an -f webm -y /dev/null";
-        SP="-c:v libvpx-vp9 -threads 8 -pass 2 -b:v 1400k -crf 33 -g 250 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
+         FP="-c:v libvpx-vp9 -threads 8 -pass 1 -b:v 1400k -crf 33 -g 250 -speed 4 -tile-columns 6 -an -f webm -y /dev/null";
+        SP="-c:v libvpx-vp9 -threads 8 -pass 2 -b:v 1400k -crf 33 -g 250 -speed 2 -tile-columns 6 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
     con) echo "Encoding for constant quality.";
-         FP="-c:v libvpx-vp9 -threads 8 -pass 1 -b:v 0 -crf 25 -g 250 -speed 4 -tile-columns 6 -frame-parallel 1 -an -f webm -y /dev/null";
-        SP="-c:v libvpx-vp9 -threads 8 -pass 2 -b:v 0 -crf 25 -g 250 -speed 2 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
+         FP="-c:v libvpx-vp9 -threads 8 -pass 1 -b:v 0 -crf 25 -g 250 -speed 4 -tile-columns 6 -an -f webm -y /dev/null";
+        SP="-c:v libvpx-vp9 -threads 8 -pass 2 -b:v 0 -crf 25 -g 250 -speed 2 -tile-columns 6 -auto-alt-ref 1 -lag-in-frames 25 -c:a libvorbis -q:a 3 -f webm -y";;
     bq) echo "Encoding for best quality.";
          FP="-c:v libvpx-vp9 -threads 1 -pass 1 -b:v 1000K -g 250 -speed 4 -tile-columns 0 -lag-in-frames 25 -g 9999 -aq-mode 0 -an -f webm -y /dev/null";
         SP="-c:v libvpx-vp9 -threads 1 -pass 2 -b:v 1000K -g 250 -speed 0 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libvorbis -q:a 3 -f webm -y";;
