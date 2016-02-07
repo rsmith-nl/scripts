@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2015-12-06 15:21:55 +0100
+# Last modified: 2016-02-07 22:52:54 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -13,14 +13,14 @@
 """Opens the file(s) given on the command line in the appropriate program.
 Some of the programs are X11 programs."""
 
-from os.path import basename, isdir, isfile
+from os.path import isdir, isfile
 from re import search, IGNORECASE
-from subprocess import Popen, check_output
-from sys import argv, exit, stderr
+from subprocess import Popen, check_output, CalledProcessError
+from sys import argv
 import argparse
 import logging
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
@@ -46,6 +46,7 @@ def main(argv):
     opts = argparse.ArgumentParser(prog='open', description=__doc__)
     opts.add_argument('-v', '--version', action='version',
                       version=__version__)
+    opts.add_argument('-a', '--application', help='application to use')
     opts.add_argument('--log', default='warning',
                       choices=['debug', 'info', 'warning', 'error'],
                       help="logging level (defaults to 'warning')")
@@ -56,21 +57,31 @@ def main(argv):
                         format='%(levelname)s: %(message)s')
     logging.info('command line arguments = {}'.format(argv))
     logging.info('parsed arguments = {}'.format(args))
+    fail = "opening '{}' failed: {}"
     for nm in args.files:
         logging.info("Trying '{}'".format(nm))
-        if isdir(nm):
-            cmds = othertypes['dir'] + [nm]
-        elif isfile(nm):
-            cmds = matchfile(filetypes, othertypes, nm)
+        if not args.application:
+            if isdir(nm):
+                cmds = othertypes['dir'] + [nm]
+            elif isfile(nm):
+                cmds = matchfile(filetypes, othertypes, nm)
+            else:
+                cmds = None
         else:
-            cmds = None
+            cmds = [args.application, nm]
         if not cmds:
             logging.warning("do not know how to open '{}'".format(nm))
             continue
         try:
             Popen(cmds)
         except OSError as e:
-            logging.error("opening '{}' failed: {}".format(nm, e))
+            logging.error(fail.format(nm, e))
+    else:  # No files named
+        if args.application:
+            try:
+                Popen([args.application])
+            except OSError as e:
+                logging.error(fail.format(args.application, e))
 
 
 def matchfile(fdict, odict, fname):
