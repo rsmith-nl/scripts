@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2016-01-06 21:43:52 +0100
+# Last modified: 2016-02-11 20:50:58 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -59,14 +59,18 @@ def main(argv):
             scale = 1.0
             if bbwidth > args.width:
                 scale = args.width / bbwidth
-            fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
-            opts = fs.format(*bbox, s=scale)
+            if scale < 0.999:
+                fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
+                opts = fs.format(*bbox, s=scale)
+            else:
+                opts = ''
         elif filename.endswith(('.png', '.PNG', '.jpg', '.JPG', '.jpeg',
                                 '.JPEG')):
             width = getpicwidth(filename)
-            opts = ''
-            if width > args.width:
-                opts = '[scale={:.3f}]'.format(args.width / width)
+            opts = None
+            scale = args.width / width
+            if scale < 0.999:
+                opts = '[scale={:.3f}]'.format(scale)
         else:
             fskip = 'file "{}" has an unrecognized format. Skipping...'
             logging.error(fskip.format(filename))
@@ -142,7 +146,7 @@ def getpicwidth(fn):
     return None
 
 
-def output_figure(fn, options=""):
+def output_figure(fn, options=None):
     """Print the LaTeX code for the figure.
 
     Arguments:
@@ -153,8 +157,11 @@ def output_figure(fn, options=""):
     fbnodir = fb[fn.rfind('/') + 1:]
     print()
     print(r'\begin{figure}[!htbp]')
-    print(r'  \centerline{\includegraphics' + options + '%')
-    print(r'    {{{}}}}}'.format(fb))
+    if options:
+        print(r'  \centerline{\includegraphics' + options + '%')
+        print(r'    {{{}}}}}'.format(fb))
+    else:
+        print(r'  \centerline{{\includegraphics{{{}}}}}'.format(fb))
     label = fbnodir.replace(' ', '-').replace('_', '-')
     print(r'  \caption{{\label{{fig:{}}}{}}}'.format(label, label))
     print(r'\end{figure}')
