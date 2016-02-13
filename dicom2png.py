@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-21 23:34:14 +0200
+# Last modified: 2016-02-13 10:07:25 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -12,12 +12,12 @@
 areas. The blank area removal is based on the image size of a Philips flat
 detector. The image goes from 2048x2048 pixels to 1574x2048 pixels."""
 
-__version__ = '1.1.2'
-
 from multiprocessing import Pool
 import os
 import sys
 from wand.image import Image
+
+__version__ = '1.1.3'
 
 
 def convert(filename):
@@ -35,7 +35,7 @@ def convert(filename):
         with img.convert('png') as converted:
             converted.units = 'pixelsperinch'
             converted.resolution = (300, 300)
-            converted.crop(left=232, top=0, width=1574, height=2048)
+            converted.crop(left=232, top=0, width=1568, height=2048)
             converted.save(filename=outname)
     return filename, outname
 
