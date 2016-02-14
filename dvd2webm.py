@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-02-14 15:01:35 +0100
+# Last modified: 2016-02-14 15:06:50 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -19,7 +19,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 
 
 def main(argv):
@@ -37,19 +37,17 @@ def main(argv):
                         help="crop (w:h:x:y) to use")
     parser.add_argument('-t', '--subtitle', type=str,
                         help="name of srt file for subtitles")
-    parser.add_argument('files', metavar="file", nargs='+',
-                        help='MPEG files to process')
+    parser.add_argument('fn', metavar='filename', help='MPEG file to process')
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%(levelname)s: %(message)s')
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
-    for fn in args.files:
-        logging.info("processing '{}'".format(fn))
-        if not args.crop:
-            args.crop = cropdetect(fn)
-        logging.info('use cropping {}'.format(args.crop))
-        encode(fn, args.crop, args.start, args.subtitle)
+    logging.info("processing '{}'".format(args.fn))
+    if not args.crop:
+        args.crop = cropdetect(args.fn)
+    logging.info('use cropping {}'.format(args.crop))
+    encode(args.fn, args.crop, args.start, args.subtitle)
 
 
 def cropdetect(fn):
