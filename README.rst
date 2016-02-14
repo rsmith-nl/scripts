@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2015-11-30 00:20:01 +0100
+.. Last modified: 2016-02-14 14:42:27 +0100
 
 Introduction
 ============
@@ -123,7 +123,7 @@ dicom2png.py
 
 Convert DICOM_ files from an x-ray machine to PNG format, remove blank areas.
 The blank area removal is based on the image size of a Philips flat detector.
-The image goes from 2048x2048 pixels to 1574x2048 pixels."""
+The image goes from 2048x2048 pixels to 1568x2048 pixels."""
 
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
@@ -132,6 +132,28 @@ requires the ImageMagick_ shared library ``libMagickWand-6``.
 Previous versions used the ``convert`` program from ImageMagick directly.
 
 .. _py-wand: http://docs.wand-py.org/
+
+
+dvd2webm.py
+-----------
+
+When I buy DVDs, I generally transfer their contents to my computer for easier
+viewing. However, the video and audio format used on DVD is not ver compact.
+So I tend to use ffmpeg_ to convert it to smaller formats without losing
+quality. As of 2016, my favorite storage format is a webm_ container with
+a VP9_ video stream and vorbis_ audio.
+
+.. _VP9: https://en.wikipedia.org/wiki/VP9
+
+Initially I used the simple ``webm.sh`` script mentioned below.
+This had some shortcomings. It does not crop the video and cannot incorporate
+subtitles. It does enable multiple quality setting, but I seldomly used those.
+
+The ``dvd2webm.py`` script performs a 2-pass encoding in `constrained quality`_
+mode. Optionally it also adds subtitles to the video, and starts from an
+offset.
+
+.. _constrained quality: http://wiki.webmproject.org/ffmpeg/vp9-encoding-guide
 
 
 ffmutt.sh
@@ -514,13 +536,13 @@ lower case.
 vid2mkv.py
 ----------
 
-Convert all video files given on the command line to Theora_ / Vorbis_ streams
-in a `Matroška`_ container using ffmpeg_. As of 3452c8a it uses
+Convert all video files given on the command line to theora_ / vorbis_ streams
+in a `matroška`_ container using ffmpeg_. As of 3452c8a it uses
 a ``ThreadPoolExecutor``.
 
-.. _Theora: http://www.theora.org/
-.. _Vorbis: http://www.vorbis.com/
-.. _Matroška: http://www.matroska.org/
+.. _theora: http://www.theora.org/
+.. _vorbis: http://www.vorbis.com/
+.. _matroška: http://www.matroska.org/
 .. _ffmpeg: https://www.ffmpeg.org/
 
 
@@ -539,8 +561,7 @@ Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
 webm.sh
 -------
 
-Convert video files to VP9_ video and Vorbis_ audio streams in a WebM_
+Convert video files to VP9_ video and Vorbis_ audio streams in a webm_
 container, using a 2-pass process.
 
-.. _VP9: https://en.wikipedia.org/wiki/VP9
-.. _WebM: https://en.wikipedia.org/wiki/WebM
+.. _webm: https://en.wikipedia.org/wiki/WebM
