@@ -3,7 +3,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-02-11 19:00:00 +0100
+# Last modified: 2016-02-13 19:39:25 +0100
+#
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to dvd2webm.py. This work is published
+# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Convert an mpeg stream from a DVD to a webm file."""
 
@@ -14,7 +18,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 def main(argv):
@@ -30,6 +34,8 @@ def main(argv):
                         help="time (hh:mm:ss) at which to start encoding")
     parser.add_argument('-c', '--crop', type=str,
                         help="crop (w:h:x:y) to use")
+    parser.add_argument('-t', '--subtitle', type=str,
+                        help="name of srt file for subtitles")
     parser.add_argument('files', metavar="file", nargs='+',
                         help='MPEG files to process')
     args = parser.parse_args(argv)
@@ -42,7 +48,7 @@ def main(argv):
         if not args.crop:
             args.crop = cropdetect(fn)
         logging.info('use cropping {}'.format(args.crop))
-        encode(fn, args.crop, args.start)
+        encode(fn, args.crop, args.start, args.subtitle)
 
 
 def cropdetect(fn):
@@ -55,7 +61,7 @@ def cropdetect(fn):
     return cnt.most_common(1)[0][0]
 
 
-def encode(fn, crop, start):
+def encode(fn, crop, start, subfname):
     basename = fn.rsplit('.', 1)[0]
     args = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
             '-c:v', 'libvpx-vp9', '-threads', '3', '-pass', '1', '-sn',
@@ -69,16 +75,25 @@ def encode(fn, crop, start):
              '-lag-in-frames', '25', '-c:a', 'libvorbis', '-q:a', '3',
              '-f', 'webm', '-map', 'i:0x1e0', '-map', 'i:0x80',
              '-y', '{}.webm'.format(basename)]
+    vf = []
+    if subfname:
+        vf.append('subtitles={}'.format(subfname))
     if crop:
+        vf.append('crop={}'.format(crop))
+    if vf:
+        opts = ','.join(vf)
+        logging.debug('vf options: {}'.format(opts))
         args.insert(-2, '-vf')
         args2.insert(-2, '-vf')
-        args.insert(-2, 'crop={}'.format(crop))
-        args2.insert(-2, 'crop={}'.format(crop))
+        args.insert(-2, opts)
+        args2.insert(-2, opts)
     if start:
         args.insert(3, '-ss')
         args2.insert(3, '-ss')
         args.insert(4, start)
         args2.insert(4, start)
+    logging.debug('first step: ' + ' '.join(args))
+    logging.debug('second step: ' + ' '.join(args2))
     logging.info('running step 1...')
     proc = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     if proc.returncode:
