@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2016-02-14 14:42:27 +0100
+.. Last modified: 2016-02-14 14:50:38 +0100
 
 Introduction
 ============
@@ -381,6 +381,15 @@ nospaces.py
 -----------
 
 Replaces whitespace in filenames with underscores.
+
+
+offsetsrt.py
+------------
+
+Reads an SRT_ file and applies the given offset to all times in the file.
+This time-shifts all subtitles.
+
+.. _SRT: https://en.wikipedia.org/wiki/SubRip#SubRip_text_file_format
 
 
 old.py
