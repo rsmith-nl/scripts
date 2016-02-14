@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 # file: offsetsrt.py
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-14 12:09:34 +0100
-# Last modified: 2016-02-14 14:54:06 +0100
+# Last modified: 2016-02-14 15:01:50 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to offsetsrt.py. This work is published
