@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2015-12-28 14:58:57 +0100
+# Last modified: 2016-03-06 19:21:41 +0100
 
 """Creates a passphrase by picking words from a word list, and adding filler
 characters between the words."""
@@ -11,12 +11,12 @@ characters between the words."""
 import re
 import random
 
-wordfile = '/usr/share/dict/opentaal-210G-basis-gekeurd'
-# wordfile = '/usr/share/dict/words'
+# wordfile = '/usr/share/dict/opentaal-210G-basis-gekeurd'
+wordfile = '/usr/share/dict/words'
 minwordlen = 4
 maxwordlen = 9
 count = 3
-fillchars = '!@#$%&*_-+123456789'
+fillchars = '!@#$%&*_-'
 
 with open(wordfile) as df:
     words = df.readlines()
