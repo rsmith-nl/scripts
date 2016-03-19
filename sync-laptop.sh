@@ -1,12 +1,11 @@
 #!/bin/sh
-# file: sync-laptop
-# vim:fileencoding=utf-8:ft=sh
 # Use rsync to syncronize a directory to/from my laptop.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2015-08-01 17:41:28 +0200
+# Last modified: 2016-03-19 12:37:48 +0100
 
+set -eu
 
 usage="Usage: sync-laptop [-h][[-f][-r] <dir>]
 
