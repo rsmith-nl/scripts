@@ -1,14 +1,15 @@
 #!/bin/sh
-# vim:fileencoding=utf-8
-# Shell script to generate a full backup of the current directory.
+# Generate a full backup of the current directory.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-08-13 22:13:23 +0200
-# Last modified: 2015-05-10 17:05:56 +0200
+# Last modified: 2016-03-19 10:44:48 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genbackup. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+
+set -eu
 
 CURDIR=$(basename $(pwd))
 EXCLUDE=""
@@ -39,7 +40,7 @@ if [ -d .git ]; then
 fi
 # Remove old backups first
 rm -f backup-${OUTNAME}*.tar
-# Use tar for backup. Standard compression with gzip.
+# Use tar for backup. Don't use compression.
 DF=backup-${OUTNAME}${NUM}.tar
 echo "A copy of ${CURDIR} is stored in ${DF}."
 cd .. ; tar cf /tmp/${DF} ${EXCLUDE} ${CURDIR}/

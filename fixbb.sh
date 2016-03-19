@@ -1,8 +1,8 @@
 #!/bin/sh
-# Script to correct the BoundingBox of PostScript files.
+# Correct the BoundingBox of a PostScript file.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-14 21:21:30 +0200
+# Last modified: 2016-03-19 10:43:10 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to fixbb. This work is published from the
@@ -20,14 +20,12 @@ if [ ! -f "$1" ]; then
 fi
 
 # Check for special programs that are used in this script.
-PROGS="gs"
-for P in $PROGS; do
-    which $P >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        echo "$(basename $0): The program \"$P\" cannot be found."
-        exit 1
-    fi
-done
+P=gs
+which $P >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "$(basename $0): The program \"$P\" cannot be found."
+    exit 1
+fi
 
 if ! grep '%%Pages\?:.*1' >/dev/null $1; then
     echo "Sorry, this script only works for single-page documents!"

@@ -1,17 +1,16 @@
 #!/bin/sh
-# file: texfonts.sh
-# vim:fileencoding=utf-8:ft=sh
+# The purpose of this script is to find OpenType fonts from a TeXLive installation
+# and make them useable for other applications via fontconfig.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-10-18 22:12:31 +0200
-# Last modified: 2015-10-18 23:02:09 +0200
+# Last modified: 2016-03-19 10:37:21 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to texfonts.sh. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-# The purpose of this script is to find OpenType fonts from a TeXLive installation
-# and make them useable for other applications via fontconfig.
+set -eu
 
 TEXOTF=/usr/local/texlive/2015/texmf-dist/fonts/opentype
 INSTDIR=/usr/local/share/fonts/texlive

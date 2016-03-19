@@ -1,13 +1,10 @@
 #!/bin/sh
-# file: usr/local/sbin/backup-local
-# vim:fileencoding=utf-8:ft=sh
-#
 # Backs up mount points to other mount points.
 # This script is designed to be run from cron.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2008-05-26 22:59:14 +0200
-# Last modified: 2015-09-07 19:13:25 +0200
+# Last modified: 2016-03-19 10:41:20 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to backup-local. This work is published

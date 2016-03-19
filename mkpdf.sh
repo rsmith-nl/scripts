@@ -1,10 +1,9 @@
 # file: mkpdf.sh
-# vim:fileencoding=utf-8:ft=sh
 # Creates a PDF file from scanned images @ 150 DPI.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-05-14 19:25:57 +0200
-# Last modified: 2015-11-30 00:14:36 +0100
+# Last modified: 2016-03-19 10:31:41 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to mkpdf.sh. This work is published

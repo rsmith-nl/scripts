@@ -1,11 +1,19 @@
 #!/bin/sh
-# file: webm.sh
-# vim:fileencoding=utf-8:ft=sh
 # Two-pass webm encoding
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2016-02-08 00:05:42 +0100
+# Last modified: 2016-03-19 10:40:42 +0100
+
+# Check for non-standard programs that are used in this script.
+FF=ffmpeg
+which $FF >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "$(basename $0): The program \"$FF\" cannot be found."
+    exit 1
+fi
+
+set -eu
 
 if [ $# -lt 2 ]; then
     echo "Usage: webm <vod|crq|con|bq> file";
@@ -20,7 +28,6 @@ fi
 
 INP=$2
 FILEBASE=`basename $2|sed -E -e 's/(.*)(\..*)/\1/g'`
-FF=ffmpeg
 
 # Settings from:
 # http://wiki.webmproject.org/ffmpeg/vp9-encoding-guide

@@ -1,10 +1,9 @@
 #!/bin/sh
 # Re-write a PDF file with ghostscript.
-# vim:fileencoding=utf-8
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-27 00:15:14 +0100
-# Last modified: 2015-05-15 18:42:22 +0200
+# Last modified: 2016-03-19 10:32:37 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to pdftopdf. This work is published
@@ -28,6 +27,7 @@ done
 TMPNAME=$(mktemp)
 INNAME=$1
 
+set -eu
 gs -DNOPAUSE -sDEVICE=pdfwrite \
     -sOutputFile=$TMPNAME $INNAME -c quit >/dev/null 2>&1
 mv $INNAME ${INNAME%.pdf}-orig.pdf
