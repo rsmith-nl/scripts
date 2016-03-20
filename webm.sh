@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2016-03-19 10:40:42 +0100
+# Last modified: 2016-03-20 18:54:43 +0100
 
 # Check for non-standard programs that are used in this script.
 FF=ffmpeg
@@ -13,7 +13,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-set -eu
+set -e
 
 if [ $# -lt 2 ]; then
     echo "Usage: webm <vod|crq|con|bq> file";

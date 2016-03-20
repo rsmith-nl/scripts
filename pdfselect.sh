@@ -2,12 +2,11 @@
 # Select consecutive pages from a PDF document
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-15 18:41:46 +0200
+# Last modified: 2016-03-20 18:52:48 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to pdfselect. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 
 if [ $# -lt 3 ]; then
     echo "Usage: $(basename $0) N M file"

@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-27 00:15:14 +0100
-# Last modified: 2016-03-19 10:32:37 +0100
+# Last modified: 2016-03-20 18:53:22 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to pdftopdf. This work is published
@@ -27,7 +27,7 @@ done
 TMPNAME=$(mktemp)
 INNAME=$1
 
-set -eu
+set -e
 gs -DNOPAUSE -sDEVICE=pdfwrite \
     -sOutputFile=$TMPNAME $INNAME -c quit >/dev/null 2>&1
 mv $INNAME ${INNAME%.pdf}-orig.pdf

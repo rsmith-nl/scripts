@@ -2,7 +2,7 @@
 # Front-end for the POV-ray raytracer.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-03-19 10:34:38 +0100
+# Last modified: 2016-03-20 18:53:44 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to povmake. This work is published from the
@@ -28,7 +28,7 @@ if [ $# -ne 3 ]; then
     exit 1;
 fi
 
-set -eu
+set -e
 # get the filename without the extension
 FILEBASE=`basename $3|sed -E -e 's/(.*)(\..*)/\1/g'`
 #echo $FILEBASE
