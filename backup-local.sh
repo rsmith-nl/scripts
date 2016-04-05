@@ -4,14 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2008-05-26 22:59:14 +0200
-# Last modified: 2016-03-19 10:41:20 +0100
+# Last modified: 2016-04-05 22:16:54 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to backup-local. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 # Check for non-standard programs that are used in this script.
-PROGS="rsync"
+PROGS="/usr/local/bin/rsync"
 for P in $PROGS; do
     which $P >/dev/null 2>&1
     if [ $? -ne 0 ]; then
@@ -21,7 +21,7 @@ for P in $PROGS; do
 done
 
 FLAGS="-axq -H --delete"
-LOG="logger -t 'backup-local'"
+LOG="/usr/bin/logger -t 'backup-local'"
 
 # __mkbackup origin dest
 #
@@ -35,10 +35,10 @@ LOG="logger -t 'backup-local'"
 # Requires:
 #   * rsync
 __mkbackup() { # 1=origin 2=dest
-    mount ${2}
-    if df|grep ${2} >/dev/null; then
-        rsync $FLAGS ${1%/}/ ${2} && $LOG "${1} successfully backed-up."
-        umount ${2}
+    /sbin/mount ${2}
+    if /bin/df|/usr/bin/grep ${2} >/dev/null; then
+        /usr/local/bin/rsync $FLAGS ${1%/}/ ${2} && $LOG "${1} successfully backed-up."
+        /sbin/umount ${2}
     else
         $LOG "Backup for ${1} not mounted! Not backed up."
     fi
