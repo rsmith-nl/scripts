@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2016-02-14 14:50:38 +0100
+.. Last modified: 2016-05-16 00:48:36 +0200
 
 Introduction
 ============
@@ -50,7 +50,13 @@ License
 =======
 
 All of these programs are in the public domain. Use them as you wish.
-These programs come without *any* warranty whatsoever.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 The programs
@@ -118,12 +124,19 @@ If you are writing your own firewall script, make sure to use ``deny log``
 instead of just ``deny``.
 
 
+dicom2jpg.py
+------------
+
+A modification of the ``dicom2png`` program mentioned below to produce JPEG
+output. This is meant for situaties where lossy compression is acceptable.
+
+
 dicom2png.py
 ------------
 
 Convert DICOM_ files from an x-ray machine to PNG format, remove blank areas.
 The blank area removal is based on the image size of a Philips flat detector.
-The image goes from 2048x2048 pixels to 1568x2048 pixels."""
+The image goes from 2048x2048 pixels to 1568x2048 pixels.
 
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
@@ -138,7 +151,7 @@ dvd2webm.py
 -----------
 
 When I buy DVDs, I generally transfer their contents to my computer for easier
-viewing. However, the video and audio format used on DVD is not ver compact.
+viewing. However, the video and audio format used on DVD is not very compact.
 So I tend to use ffmpeg_ to convert it to smaller formats without losing
 quality. As of 2016, my favorite storage format is a webm_ container with
 a VP9_ video stream and vorbis_ audio.
@@ -178,7 +191,7 @@ fixbb.sh
 --------
 
 Corrects the ``BoundingBox`` for single-page PostScript_ documents.
-It requires the ghostscript_ software.
+It requires the ghostscript_ program.
 
 .. _PostScript: http://en.wikipedia.org/wiki/PostScript
 .. _ghostscript: http://www.ghostscript.com/
@@ -188,8 +201,8 @@ foto4lb.py
 ----------
 
 Scales fotos for including them into LaTeX documents. The standard
-configuration makes it possible to use two photos next to each other on an A4
-page with a 160 mm wide text block.
+configuration sets the width to 886 pixels and sets the resolution to 300 dpi.
+This gives an image 75 mm (about 3 in) wide.
 
 
 genbackup.sh
@@ -260,8 +273,8 @@ good;
     Serial correlation coefficient is 0.000771 (totally uncorrelated = 0.0).
 
 According to the manual_ page, Wikipedia_ and other_ sources I could find the
-FreeBSD random device is intended to provide a cryptographically secure
-pseudorandom stream.
+FreeBSD random device is intended to provide cryptographically secure
+pseudorandom data.
 
 .. _manual: https://www.freebsd.org/cgi/man.cgi?query=random&sektion=4
 .. _Wikipedia: http://en.wikipedia.org/?title=/dev/random
@@ -272,8 +285,9 @@ genpw.py
 --------
 
 Generates random passwords. Like ``genotp``, It uses random numbers from the
-operating system via Python's ``os.urandom`` function. On FreeBSD I think this
-is secure enough given the previous section.
+operating system via Python's ``os.urandom`` function and converts them to
+text using base64 encoding. On FreeBSD I think this is secure enough given the
+previous section.
 
 
 git-check-all.py
@@ -426,6 +440,10 @@ plumb_.
 
 .. _plumb: http://swtch.com/plan9port/man/man1/plumb.html
 
+This utility requires the python-magic_ module.
+
+.. _python-magic: https://pypi.python.org/pypi/python-magic
+
 
 pdfselect.sh
 ------------
@@ -474,7 +492,7 @@ extension of the original file. Example:
     img_3256.jpg  img_3262.jpg  img_3269.jpg  img_3275.jpg  img_3245.jpg
     img_3251.jpg  img_3257.jpg  img_3263.jpg  img_3270.jpg  img_3276.jpg
 
-    >rename -p holiday2014- -w 3 img_32*
+    > rename -p holiday2014- -w 3 img_32*
 
     > ls
     holiday2014-001.jpg  holiday2014-009.jpg  holiday2014-017.jpg
