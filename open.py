@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2016-05-01 18:19:38 +0200
+# Last modified: 2016-05-15 21:58:22 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -20,11 +20,11 @@ from sys import argv
 import argparse
 import logging
 
-__version__ = '1.2.0'
+__version__ = '1.3.0'
 
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
-    '\.html$': ['firefox', '-new-tab'],
+    '\.html$': ['chrome', '--incognito'],
     '\.xcf$': ['gimp'],
     '\.e?ps$': ['gv'],
     '\.(jpe?g|png|gif|tiff?|p[abgp]m|svg)$': ['gpicview'],
