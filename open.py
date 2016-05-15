@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2016-05-15 21:58:22 +0200
+# Last modified: 2016-05-15 22:04:21 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -22,6 +22,7 @@ import logging
 
 __version__ = '1.3.0'
 
+# You should adjust the programs called to suit your preferences.
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
     '\.html$': ['chrome', '--incognito'],
@@ -85,7 +86,8 @@ def main(argv):
 
 
 def matchfile(fdict, odict, fname):
-    """For the given filename, returns the matching program.
+    """For the given filename, returns the matching program. It uses the `file`
+    utility commonly find on UNIX.
 
     Arguments:
         fdict: Handlers for files. A dictionary of regex:(commands)
@@ -94,7 +96,7 @@ def matchfile(fdict, odict, fname):
         odict: Handlers for other types. A dictionary of str:(arguments).
         fname: A string containing the name of the file to be opened.
 
-    Returns: A list of commands for subprocess.Open.
+    Returns: A list of commands for subprocess.Popen.
     """
     for k, v in fdict.items():
         if search(k, fname, IGNORECASE) is not None:
