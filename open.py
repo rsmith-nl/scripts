@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2016-05-16 00:17:04 +0200
+# Last modified: 2016-05-16 00:20:57 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -13,13 +13,13 @@
 """Opens the file(s) given on the command line in the appropriate program.
 Some of the programs are X11 programs."""
 
-from magic import from_file
 from os.path import isdir, isfile
 from re import search, IGNORECASE
 from subprocess import Popen
 from sys import argv
 import argparse
 import logging
+from magic import from_file
 
 __version__ = '1.4.0'
 
