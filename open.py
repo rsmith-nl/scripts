@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2016-05-15 22:04:21 +0200
+# Last modified: 2016-05-16 00:17:04 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -13,14 +13,15 @@
 """Opens the file(s) given on the command line in the appropriate program.
 Some of the programs are X11 programs."""
 
+from magic import from_file
 from os.path import isdir, isfile
 from re import search, IGNORECASE
-from subprocess import Popen, check_output, CalledProcessError
+from subprocess import Popen
 from sys import argv
 import argparse
 import logging
 
-__version__ = '1.3.0'
+__version__ = '1.4.0'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
@@ -86,8 +87,7 @@ def main(argv):
 
 
 def matchfile(fdict, odict, fname):
-    """For the given filename, returns the matching program. It uses the `file`
-    utility commonly find on UNIX.
+    """For the given filename, returns the matching program.
 
     Arguments:
         fdict: Handlers for files. A dictionary of regex:(commands)
@@ -101,12 +101,9 @@ def matchfile(fdict, odict, fname):
     for k, v in fdict.items():
         if search(k, fname, IGNORECASE) is not None:
             return v + [fname]
-    try:
-        if b'text' in check_output(['file', fname]):
-            return odict['txt'] + [fname]
-    except CalledProcessError:
-        logging.warning("the command 'file {}' failed.".format(fname))
-        return None
+    if b'text' in from_file(fname):
+        return odict['txt'] + [fname]
+    return None
 
 
 if __name__ == '__main__':
