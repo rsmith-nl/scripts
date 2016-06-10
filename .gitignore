@@ -1,4 +1,5 @@
 .ropeproject/
+.cache/
 __pycache__/
 *.pyc
 *.pyo
