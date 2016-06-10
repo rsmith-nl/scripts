@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-14 22:17:10 +0200
+# Last modified: 2016-06-10 22:48:11 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to genotp.py. This work is published from the
@@ -28,10 +28,10 @@ def otp(n=65):
         n: number of lines in the key
 
     Returns:
-        65 lines of 12 groups of 5 random capital letters.
+        n lines of 12 groups of 5 random capital letters.
     """
     lines = []
-    for num in range(1, 66):
+    for num in range(1, n+1):
         i = ['{:02d} '.format(num)]
         i += [rndcaps(5) for j in range(0, 12)]
         lines.append(' '.join(i))
@@ -48,7 +48,7 @@ def rndcaps(n):
         A string of n random capital letters.
     """
     b = urandom(n)
-    return ''.join([chr(int(round(c / 10.2)) + 65) for c in b])
+    return ''.join([chr(int(c / 9.808) + 65) for c in b])
 
 
 if __name__ == '__main__':
