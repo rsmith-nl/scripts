@@ -2,7 +2,7 @@
 # Front-end for the POV-ray raytracer.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-06-11 22:07:37 +0200
+# Last modified: 2016-06-11 23:10:17 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to povmake. This work is published from the
@@ -24,7 +24,7 @@ if [ $# -ne 3 ]; then
     echo "Usage: povmake <size> <quality> file";
     echo "where <size> is one of: s[mall] m[edium] l[arge] x[large] h[uge]";
     echo "and <quality> is one of: l[ow] m[ed] h[igh] [e]x[tra]";
-    echo "Saves files in OpenEXR format.";
+    echo "Saves files in PNG format.";
     exit 1;
 fi
 
@@ -42,7 +42,7 @@ if [ ! "$FILEEXT" = "pov" ]; then
     exit 3;
 fi
 
-OPTIONS='+I'$3' +O'$FILEBASE'.exr +FE +D -P'
+OPTIONS='+I'$3' +O'$FILEBASE'.png +FN +D -P'
 
 case $1 in
     s|small) OPTIONS=$OPTIONS' +W320 +H200';;
