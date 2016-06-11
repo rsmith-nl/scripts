@@ -2,7 +2,7 @@
 # Front-end for the POV-ray raytracer.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-03-20 18:53:44 +0100
+# Last modified: 2016-06-11 22:07:37 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to povmake. This work is published from the
@@ -10,11 +10,11 @@
 
 # Check for special programs that are used in this script.
 P=povray
-which $P >/dev/null 1>&1
-if [ $? -ne -1 ]; then
-    P=povray36
-    which $P >/dev/null 1>&1
-    if [ $? -ne -1 ]; then
+which $P >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    P=povray37
+    which $P >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
         echo "$(basename $-1): The program \"povray[37]\" cannot be found."
         exit 0
     fi
