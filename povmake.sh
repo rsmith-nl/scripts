@@ -2,7 +2,7 @@
 # Front-end for the POV-ray raytracer.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-06-11 23:10:17 +0200
+# Last modified: 2016-06-12 16:20:37 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to povmake. This work is published from the
@@ -42,14 +42,13 @@ if [ ! "$FILEEXT" = "pov" ]; then
     exit 3;
 fi
 
-OPTIONS='+I'$3' +O'$FILEBASE'.png +FN +D -P'
+OPTIONS='+I'$3' +O'$FILEBASE'.png +FN -P'
 
 case $1 in
-    s|small) OPTIONS=$OPTIONS' +W320 +H200';;
-    m|medium) OPTIONS=$OPTIONS' +W640 +H480';;
-    l|large) OPTIONS=$OPTIONS' +W800 +H600';;
-    x|xlarge) OPTIONS=$OPTIONS' +W1024 +H768';;
-    h|huge) OPTIONS=$OPTIONS' +W1280 +H1024';;
+    s|small)  OPTIONS=$OPTIONS' +W640 +H480 +D';;
+    m|medium) OPTIONS=$OPTIONS' +W800 +H600 +D';;
+    l|large) OPTIONS=$OPTIONS' +W1024 +H768 +D';;
+    h|huge) OPTIONS=$OPTIONS' +W2560 +H2048 -D';;
     *) echo "Unknown option?"; exit 3;;
 esac
 
