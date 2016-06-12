@@ -2,7 +2,7 @@
 # Front-end for the POV-ray raytracer.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-06-12 16:20:37 +0200
+# Last modified: 2016-06-12 16:59:04 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to povmake. This work is published from the
@@ -42,21 +42,22 @@ if [ ! "$FILEEXT" = "pov" ]; then
     exit 3;
 fi
 
-OPTIONS='+I'$3' +O'$FILEBASE'.png +FN -P'
+OPTIONS='+I'$3' +O'$FILEBASE'.png +FN'
 
 case $1 in
-    s|small)  OPTIONS=$OPTIONS' +W640 +H480 +D';;
-    m|medium) OPTIONS=$OPTIONS' +W800 +H600 +D';;
-    l|large) OPTIONS=$OPTIONS' +W1024 +H768 +D';;
-    h|huge) OPTIONS=$OPTIONS' +W2560 +H2048 -D';;
+    s|small)  OPTIONS=$OPTIONS' +W640 +H480 +D +P';;
+    m|medium) OPTIONS=$OPTIONS' +W800 +H600 +D +P';;
+    l|large) OPTIONS=$OPTIONS' +W1024 +H768 +D +P';;
+    x|xlarge) OPTIONS=$OPTIONS' +W1280 +H1024 +D +P';;
+    h|huge) OPTIONS=$OPTIONS' +W2560 +H2048 -D -P';;
     *) echo "Unknown option?"; exit 3;;
 esac
 
 case $2 in
     l|low) OPTIONS=$OPTIONS' +SP16 +EP8 +Q3';;
     m|medium) OPTIONS=$OPTIONS' +SP8 +EP4 +Q7';;
-    h|high) OPTIONS=$OPTIONS' +SP2 +EP2 +A0.05 +R9 +Q9';;
-    x|extra) OPTIONS=$OPTIONS' +SP2 +EP2 +A0.05 +R9 +Q11';;
+    h|high) OPTIONS=$OPTIONS' +SP2 +EP2 +AM2 +A0.05 +R9 +Q9';;
+    x|extra) OPTIONS=$OPTIONS' +SP2 +EP2 +AM2 +A0.05 +R9 +Q11';;
     *) echo "Unknown option?"; exit 4;;
 esac
 
