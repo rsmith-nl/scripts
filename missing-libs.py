@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-01-17 15:00:08 +0100
-# Last modified: 2016-01-17 15:47:41 +0100
+# Last modified: 2016-06-19 10:25:45 +0200
 
 """Check if any of the files in the given directory are executables linked to
 missing shared libraries."""
@@ -15,7 +15,7 @@ import os
 import subprocess as sp
 from enum import Enum
 
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 
 class Ftype(Enum):
@@ -73,12 +73,13 @@ def get_type(path):
 def check_missing_libs(path):
     logging.info("checking {}".format(path))
     try:
-        out = sp.check_output(['ldd', path]).decode('utf-8').splitlines()
-        for ln in out:
-            if 'missing' in ln:
+        rv = sp.run(['ldd', path], stdout=sp.PIPE, stderr=sp.DEVNULL,
+                    universal_newlines=True, check=True)
+        for ln in rv.stdout.splitlines():
+            if 'missing' in ln or 'not found' in ln:
                 print(path, ln)
     except sp.CalledProcessError:
-        logging.info('ldd failed on {}'.format(path))
+        logging.warning('ldd failed on {}'.format(path))
 
 
 if __name__ == '__main__':
