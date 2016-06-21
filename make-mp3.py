@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2015-10-20 23:22:27 +0200
+# Last modified: 2016-06-22 00:17:52 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-mp3.py. This work is published from
@@ -30,8 +30,7 @@ called “album.json”, which should have the following info;
     }
 """
 
-__version__ = '2.0.0'
-
+from functools import partial
 import argparse
 import concurrent.futures as cf
 import json
@@ -39,6 +38,8 @@ import logging
 import os
 import subprocess
 import sys
+
+__version__ = '2.1.0'
 
 
 def main(argv):
@@ -72,9 +73,7 @@ def main(argv):
     okmsg = 'finished track {}, "{}"'
     num = len(data['tracks'])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        fl = [tp.submit(runmp3, t, data) for t in range(num)]
-        for fut in cf.as_completed(fl):
-            idx, rv = fut.result()
+        for idx, rv in tp.map(partial(runmp3, data=data), range(num)):
             if rv == 0:
                 logging.info(okmsg.format(idx+1, data['tracks'][idx]))
             else:

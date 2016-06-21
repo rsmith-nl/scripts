@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-01-17 15:00:08 +0100
-# Last modified: 2016-06-21 22:55:37 +0200
+# Last modified: 2016-06-22 00:29:18 +0200
 
 """Check if any of the executables in the given directory are linked to
 shared libraries that are missing."""
@@ -17,7 +17,7 @@ import os
 import subprocess as sp
 from enum import Enum
 
-__version__ = '2.0.0'
+__version__ = '2.1.0'
 
 
 class Ftype(Enum):
@@ -52,9 +52,7 @@ def main(argv):
     programs = (e.path for d in args.dirs for e in os.scandir(d)
                 if get_type(e.path) == Ftype.executable)
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        fl = [tp.submit(check_missing_libs, path) for path in programs]
-        for fut in cf.as_completed(fl):
-            path, missing = fut.result()
+        for path, missing in tp.map(check_missing_libs, programs):
             for lib in missing:
                 print(path, lib)
 

@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-20 18:55:52 +0200
+# Last modified: 2016-06-22 00:24:16 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -11,8 +11,6 @@
 """Convert TIFF files to PDF format using the utilities tiffinfo and tiff2pdf
 from the libtiff package."""
 
-__version__ = '1.2.0'
-
 import argparse
 import concurrent.futures as cf
 import logging
@@ -20,6 +18,8 @@ import os
 import re
 import subprocess
 import sys
+
+__version__ = '1.3.0'
 
 
 def main(argv):
@@ -47,9 +47,7 @@ def main(argv):
     checkfor(['tiff2pdf', '-v'])
     errmsg = 'conversion of {} failed, return code {}'
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        fl = [tp.submit(tiffconv, t) for t in args.files]
-        for fut in cf.as_completed(fl):
-            fn, rv = fut.result()
+        for fn, rv in tp.map(tiffconv, args.files):
             if rv == 0:
                 logging.info('finished "{}"'.format(fn))
             else:
@@ -117,8 +115,6 @@ def tiffconv(fname):
             args = ['tiff2pdf', '-o', outname, '-z', '-p', 'A4', '-F', fname]
             ls = "no resolution in {}. Fitting to A4"
             logging.warning(ls.format(fname))
-        ls = 'starting conversion of "{}" to "{}"'
-        logging.info(ls.format(fname, outname))
         rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL)
         logging.info('finished "{}"'.format(outname))
