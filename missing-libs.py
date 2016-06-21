@@ -1,24 +1,27 @@
+#!/usr/bin/env python3
 # file: missing-libs.py
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-01-17 15:00:08 +0100
-# Last modified: 2016-06-19 10:25:45 +0200
+# Last modified: 2016-06-21 22:55:37 +0200
 
-"""Check if any of the files in the given directory are executables linked to
-missing shared libraries."""
+"""Check if any of the executables in the given directory are linked to
+shared libraries that are missing."""
 
 import argparse
+import concurrent.futures as cf
 import logging
 import sys
 import os
 import subprocess as sp
 from enum import Enum
 
-__version__ = '1.0.0'
+__version__ = '2.0.0'
 
 
 class Ftype(Enum):
+    """Enum for limited file type information"""
     script = 1
     executable = 2
     other = 3
@@ -46,40 +49,57 @@ def main(argv):
                         format='%(levelname)s: %(message)s')
     logging.debug('Command line arguments = {}'.format(argv))
     logging.debug('Parsed arguments = {}'.format(args))
-    for d in args.dirs:
-        logging.info('examining files in {}'.format(d))
-        data = [get_type(e.path) for e in os.scandir(d)]
-        exe = [a for a, b in data if b == Ftype.executable]
-        for e in exe:
-            check_missing_libs(e)
+    programs = (e.path for d in args.dirs for e in os.scandir(d)
+                if get_type(e.path) == Ftype.executable)
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(check_missing_libs, path) for path in programs]
+        for fut in cf.as_completed(fl):
+            path, missing = fut.result()
+            for lib in missing:
+                print(path, lib)
 
 
 def get_type(path):
-    """Returns a tuple (path, Ftype)"""
+    """
+    Determines the Ftype of a file.
+
+    Returns:
+        The Ftype for the given path.
+    """
     try:
         with open(path, 'rb') as p:
             data = p.read(2)
     except OSError:
         logging.warning("cannot access {}".format(path))
-        return (path, Ftype.unaccessible)
+        return Ftype.unaccessible
     if data == b'#!':
-        return (path, Ftype.script)
+        return Ftype.script
     elif data == b'\x7f\x45':
-        return (path, Ftype.executable)
+        return Ftype.executable
     else:
-        return (path, Ftype.other)
+        return Ftype.other
 
 
 def check_missing_libs(path):
+    """
+    Check if a program has missing libraries, using ldd.
+
+    Arguments:
+        path: String containing the path of a file to query.
+
+    Returns:
+        A tuple of the path and a list of missing libraries.
+    """
     logging.info("checking {}".format(path))
     try:
-        rv = sp.run(['ldd', path], stdout=sp.PIPE, stderr=sp.DEVNULL,
-                    universal_newlines=True, check=True)
-        for ln in rv.stdout.splitlines():
-            if 'missing' in ln or 'not found' in ln:
-                print(path, ln)
+        p = sp.run(['ldd', path], stdout=sp.PIPE, stderr=sp.DEVNULL,
+                   universal_newlines=True, check=True)
+        rv = [ln for ln in p.stdout.splitlines()
+              if 'missing' in ln or 'not found' in ln]
     except sp.CalledProcessError:
         logging.warning('ldd failed on {}'.format(path))
+        rv = []
+    return (path, rv)
 
 
 if __name__ == '__main__':
