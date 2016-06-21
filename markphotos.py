@@ -3,7 +3,7 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-04-17 18:02:23 +0200
+# Last modified: 2016-06-22 00:01:54 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
@@ -43,9 +43,7 @@ def main(argv):
     logging.debug('parsed arguments = {}'.format(args))
     checkfor(['exiftool', '-ver'])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        fl = [tp.submit(processfile, fn) for fn in args.files]
-        for fut in cf.as_completed(fl):
-            fn, rv = fut.result()
+        for fn, rv in tp.map(processfile, args.files):
             logging.info('file "{}" processed.'.format(fn))
             if rv != 0:
                 logging.error('error processing "{}": {}'.format(fn, rv))
