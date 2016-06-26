@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-10 21:43:11 +0100
-# Last modified: 2016-06-26 11:17:51 +0200
+# Last modified: 2016-06-26 11:33:55 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to old.py. This work is published
@@ -13,11 +13,12 @@
 name starts with a period, it removes the period and prefixes it with
 'old-dot'."""
 
+from datetime import datetime
 import logging
 import os
 import sys
 
-__version__ = '1.0.2'
+__version__ = '1.1.0'
 
 
 def main(argv):
@@ -32,15 +33,19 @@ def main(argv):
         print("{} ver. {}".format(binary, __version__), file=sys.stderr)
         print("Usage: {} directory ...".format(binary), file=sys.stderr)
         sys.exit(1)
+    logging.basicConfig(format='%(levelname)s: %(message)s')
     for dirname in argv[1:]:
         if not os.path.isdir(dirname):
-            dn = "'{}' is not an existing directory. Skipping."
+            dn = "'{}' is not a directory. Skipping."
             logging.warning(dn.format(dirname))
             continue
+        if dirname.endswith(os.sep):
+            dirname = dirname[:-1]
+        dt = datetime.now().strftime('-%Y%m%dT%H%M')
         if dirname.startswith('.'):
-            newname = ''.join(['old-dot', dirname[1:]])
+            newname = ''.join(['old-dot', dirname[1:], dt])
         else:
-            newname = ''.join(['old-', dirname])
+            newname = ''.join(['old-', dirname, dt])
         if os.path.exists(newname):
             ren = "'{}' already exists. Skipping rename of '{}'."
             logging.warninf(ren.format(newname, dirname))
