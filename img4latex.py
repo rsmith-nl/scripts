@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2016-02-11 20:50:58 +0100
+# Last modified: 2016-07-12 21:50:56 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -63,7 +63,8 @@ def main(argv):
                 fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
                 opts = fs.format(*bbox, s=scale)
             else:
-                opts = ''
+                fs = '[viewport={} {} {} {},clip]'
+                opts = fs.format(*bbox)
         elif filename.endswith(('.png', '.PNG', '.jpg', '.JPG', '.jpeg',
                                 '.JPEG')):
             width = getpicwidth(filename)
