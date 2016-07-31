@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-02-14 15:06:50 +0100
+# Last modified: 2016-07-31 21:24:21 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -13,6 +13,7 @@
 """Convert an mpeg stream from a DVD to a webm file."""
 
 from collections import Counter
+from datetime import datetime
 import argparse
 import logging
 import re
@@ -60,6 +61,11 @@ def cropdetect(fn):
     return cnt.most_common(1)[0][0]
 
 
+def reporttime(p, start, end):
+    dt = str(end - start)
+    logging.info('pass {} took {}.'.format(p, dt[:-7]))
+
+
 def encode(fn, crop, start, subfname):
     basename = fn.rsplit('.', 1)[0]
     args = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
@@ -94,14 +100,22 @@ def encode(fn, crop, start, subfname):
     logging.debug('first step: ' + ' '.join(args))
     logging.debug('second step: ' + ' '.join(args2))
     logging.info('running step 1...')
+    start = datetime.utcnow()
     proc = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    end = datetime.utcnow()
     if proc.returncode:
         logging.error('pass 1 returned {}'.format(proc.returncode))
         return
+    else:
+        reporttime(1, start, end)
     logging.info('running step 2...')
+    start = datetime.utcnow()
     proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    end = datetime.utcnow()
     if proc.returncode:
         logging.error('pass 2 returned {}'.format(proc.returncode))
+    else:
+        reporttime(2, start, end)
 
 
 if __name__ == '__main__':
