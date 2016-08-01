@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-01 10:22:03 +0200
+# Last modified: 2016-08-01 15:42:08 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -14,11 +14,14 @@
 
 from datetime import datetime
 import argparse
+import json
 import logging
+import math
+import os
 import subprocess as sp
 import sys
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 
 
 def main(argv):
@@ -45,7 +48,16 @@ def main(argv):
     logging.info("processing '{}'".format(args.fn))
     if args.crop:
         logging.info('using cropping {}'.format(args.crop))
-    encode(args.fn, args.crop, args.start, args.subtitle)
+    vdata = vidinfo(args.fn)
+    encode(args.fn, args.crop, args.start, args.subtitle, vdata["width"])
+
+
+def vidinfo(path):
+    args = ['ffprobe', '-hide_banner', '-show_streams', '-select_streams',
+            'v:0', '-of', 'json', path]
+    rv = sp.check_output(args, stderr=sp.DEVNULL, universal_newlines=True)
+    vdata = json.loads(rv)["streams"][0]
+    return vdata
 
 
 def reporttime(p, start, end):
@@ -53,17 +65,20 @@ def reporttime(p, start, end):
     logging.info('pass {} took {}.'.format(p, dt[:-7]))
 
 
-def encode(fn, crop, start, subfname):
+def encode(fn, crop, start, subfname, width):
     basename = fn.rsplit('.', 1)[0]
+    numcolumns = int(math.log2(width/256))
+    numthreads = os.cpu_count() - 1
     args = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
-            '-c:v', 'libvpx-vp9', '-threads', '3', '-pass', '1', '-sn',
+            '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
             '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
-            '-tile-columns', '4', '-an', '-f', 'webm', '-map', 'i:0x1e0',
-            '-map', 'i:0x80', '-y', '/dev/null']
+            '-tile-columns', numcolumns, '-an', '-f', 'webm',
+            '-map', 'i:0x1e0', '-map', 'i:0x80', '-y', '/dev/null']
     args2 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn,
-             '-passlogfile', basename, '-c:v', 'libvpx-vp9', '-threads', '3',
-             '-pass', '2', '-sn', '-b:v', '1400k', '-crf', '33', '-g', '250',
-             '-speed', '2', '-tile-columns', '4', '-auto-alt-ref', '1',
+             '-passlogfile', basename, '-c:v', 'libvpx-vp9',
+             '-threads', numthreads, '-pass', '2', '-sn', '-b:v', '1400k',
+             '-crf', '33', '-g', '250', '-speed', '2',
+             '-tile-columns', numcolumns, '-auto-alt-ref', '1',
              '-lag-in-frames', '25', '-c:a', 'libvorbis', '-q:a', '3',
              '-f', 'webm', '-map', 'i:0x1e0', '-map', 'i:0x80',
              '-y', '{}.webm'.format(basename)]
