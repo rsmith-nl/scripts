@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-07-31 21:24:21 +0200
+# Last modified: 2016-08-01 10:22:03 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -12,15 +12,13 @@
 
 """Convert an mpeg stream from a DVD to a webm file."""
 
-from collections import Counter
 from datetime import datetime
 import argparse
 import logging
-import re
 import subprocess as sp
 import sys
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 
 def main(argv):
@@ -45,20 +43,9 @@ def main(argv):
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'".format(args.fn))
-    if not args.crop:
-        args.crop = cropdetect(args.fn)
-    logging.info('use cropping {}'.format(args.crop))
+    if args.crop:
+        logging.info('using cropping {}'.format(args.crop))
     encode(args.fn, args.crop, args.start, args.subtitle)
-
-
-def cropdetect(fn):
-    args = ['ffmpeg', '-hide_banner', '-ss', '00:08:00', '-i', fn, '-vf',
-            'cropdetect', '-y', '-f', 'avi', '-to', '00:01:00', '/dev/null']
-    proc = sp.run(args, stdout=sp.PIPE, stderr=sp.PIPE, timeout=60)
-    croppings = re.findall('crop=([:0-9]+)', proc.stderr.decode('utf-8'))
-    cnt = Counter(croppings)
-    logging.info('{} croppings detected'.format(len(cnt)))
-    return cnt.most_common(1)[0][0]
 
 
 def reporttime(p, start, end):
@@ -97,9 +84,9 @@ def encode(fn, crop, start, subfname):
         args2.insert(3, '-ss')
         args.insert(4, start)
         args2.insert(4, start)
-    logging.debug('first step: ' + ' '.join(args))
-    logging.debug('second step: ' + ' '.join(args2))
-    logging.info('running step 1...')
+    logging.debug('first pass: ' + ' '.join(args))
+    logging.debug('second pass: ' + ' '.join(args2))
+    logging.info('running pass 1...')
     start = datetime.utcnow()
     proc = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
@@ -108,7 +95,7 @@ def encode(fn, crop, start, subfname):
         return
     else:
         reporttime(1, start, end)
-    logging.info('running step 2...')
+    logging.info('running pass 2...')
     start = datetime.utcnow()
     proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
