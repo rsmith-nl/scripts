@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-02 19:32:31 +0200
+# Last modified: 2016-08-02 21:04:33 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -68,7 +68,7 @@ def reporttime(p, start, end):
 def encode(fn, crop, start, subfname, width):
     basename = fn.rsplit('.', 1)[0]
     numcolumns = str(int(math.log2(width/256)))
-    logging.info('using {} tile-columns'.format(numcolumns))
+    logging.info('using tile-columns flag set to ' + numcolumns)
     numthreads = str(os.cpu_count() - 1)
     logging.info('using {} threads'.format(numthreads))
     args = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
