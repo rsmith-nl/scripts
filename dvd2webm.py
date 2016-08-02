@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-02 00:27:40 +0200
+# Last modified: 2016-08-02 19:32:31 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -21,15 +21,15 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 
 def main(argv):
     """Entry point for dvd2webm.py."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--log', default='warning',
+    parser.add_argument('--log', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
+                        help="logging level (defaults to 'info')")
     parser.add_argument('-v', '--version',
                         action='version',
                         version=__version__)
@@ -68,7 +68,9 @@ def reporttime(p, start, end):
 def encode(fn, crop, start, subfname, width):
     basename = fn.rsplit('.', 1)[0]
     numcolumns = str(int(math.log2(width/256)))
+    logging.info('using {} tile-columns'.format(numcolumns))
     numthreads = str(os.cpu_count() - 1)
+    logging.info('using {} threads'.format(numthreads))
     args = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
             '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
             '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
