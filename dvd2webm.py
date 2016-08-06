@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-02 21:04:33 +0200
+# Last modified: 2016-08-06 18:32:32 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -46,13 +46,23 @@ def main(argv):
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'".format(args.fn))
-    if args.crop:
-        logging.info('using cropping {}'.format(args.crop))
     vdata = vidinfo(args.fn)
-    encode(args.fn, args.crop, args.start, args.subtitle, vdata["width"])
+    a1, a2 = mkargs(args.fn, args.crop, args.start, args.subtitle,
+                    vdata["width"])
+    encode(a1, a2)
 
 
 def vidinfo(path):
+    """
+    Retrieve information from the video stream of a file using ffprobe.
+
+    Argument:
+        path: location of the file to query.
+
+    Returns:
+        The data for the video stream that ffprobe returned in the form of
+        a dictionary.
+    """
     args = ['ffprobe', '-hide_banner', '-show_streams', '-select_streams',
             'v:0', '-of', 'json', path]
     rv = sp.check_output(args, stderr=sp.DEVNULL, universal_newlines=True)
@@ -61,11 +71,33 @@ def vidinfo(path):
 
 
 def reporttime(p, start, end):
+    """
+    Report the amount of time passed between start and end.
+
+    Arguments:
+        start: datetime.datetime instance.
+        end: datetime.datetime instance.
+    """
     dt = str(end - start)
     logging.info('pass {} took {}.'.format(p, dt[:-7]))
 
 
-def encode(fn, crop, start, subfname, width):
+def mkargs(fn, crop, start, subfname, width):
+    """
+    Create argument lists for two-pass constrained rate VP9/Vorbis encoding
+    in a webm container.
+
+    Arguments:
+        fn: Path of the input file.
+        crop: String telling ffmeg how to crop in the format w:h:x:y.
+        start: String telling ffmeg the time when to start encoding.
+        subfname: Path of the SRT subtitles file.
+        width: Width of the video stream in pixels.
+
+    Returns:
+        A tuple (args, args2) which are the argument lists for starting
+        subprocesses for the first and second step respectively.
+    """
     basename = fn.rsplit('.', 1)[0]
     numcolumns = str(int(math.log2(width/256)))
     logging.info('using tile-columns flag set to ' + numcolumns)
@@ -86,8 +118,10 @@ def encode(fn, crop, start, subfname, width):
              '-y', '{}.webm'.format(basename)]
     vf = []
     if subfname:
+        logging.info("using subtitles from '{}'".format(subfname))
         vf.append('subtitles={}'.format(subfname))
     if crop:
+        logging.info('using cropping {}'.format(crop))
         vf.append('crop={}'.format(crop))
     if vf:
         opts = ','.join(vf)
@@ -103,9 +137,21 @@ def encode(fn, crop, start, subfname, width):
         args2.insert(4, start)
     logging.debug('first pass: ' + ' '.join(args))
     logging.debug('second pass: ' + ' '.join(args2))
+    return args, args2
+
+
+def encode(args1, args2):
+    """
+    Run the encoding subprocesses.
+
+    Arguments:
+        args1: Commands to run the first encoding step as a subprocess.
+        args2: Commands to run the second encoding step as a subprocess.
+    """
+
     logging.info('running pass 1...')
     start = datetime.utcnow()
-    proc = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
     if proc.returncode:
         logging.error('pass 1 returned {}'.format(proc.returncode))
