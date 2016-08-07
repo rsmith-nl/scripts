@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-07 01:45:09 +0200
+# Last modified: 2016-08-07 12:29:01 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -21,7 +21,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 
 
 def main(argv):
@@ -46,6 +46,7 @@ def main(argv):
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'".format(args.fn))
+    logging.info("started at " + str(datetime.now())[:-7])
     vdata = vidinfo(args.fn)
     a1, a2 = mkargs(args.fn, args.crop, args.start, args.subtitle,
                     vdata["width"])
