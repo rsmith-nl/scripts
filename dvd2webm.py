@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-06 18:32:32 +0200
+# Last modified: 2016-08-07 01:45:09 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -21,7 +21,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 
 def main(argv):
@@ -148,7 +148,6 @@ def encode(args1, args2):
         args1: Commands to run the first encoding step as a subprocess.
         args2: Commands to run the second encoding step as a subprocess.
     """
-
     logging.info('running pass 1...')
     start = datetime.utcnow()
     proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
@@ -166,6 +165,11 @@ def encode(args1, args2):
         logging.error('pass 2 returned {}'.format(proc.returncode))
     else:
         reporttime(2, start, end)
+    origsize = os.path.getsize(args2[4])
+    newsize = os.path.getsize(args2[-1])
+    percentage = int(100*newsize/origsize)
+    sz = "the size of '{}' is {}% of the size of '{}'"
+    logging.info(sz.format(args2[-1], percentage, args2[4]))
 
 
 if __name__ == '__main__':
