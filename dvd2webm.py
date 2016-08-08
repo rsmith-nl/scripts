@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-08 15:40:07 +0200
+# Last modified: 2016-08-09 00:24:00 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -89,7 +89,8 @@ def findcrop(path, start='00:10:00', duration='00:00:01'):
             '-f', 'rawvideo',  # write raw video output.
             '/dev/null'  # Write output to /dev/null
             ]
-    proc = sp.run(args, universal_newlines=True, stderr=sp.PIPE)
+    proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL,
+                  stderr=sp.PIPE)
     rv = Counter(re.findall('crop=(\d+:\d+:\d+:\d+)', proc.stderr))
     return rv.most_common(1)[0][0]
 
