@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-09 00:24:00 +0200
+# Last modified: 2016-08-10 14:26:48 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -23,7 +23,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 
 
 def main(argv):
@@ -108,7 +108,8 @@ def vidinfo(path):
     """
     args = ['ffprobe', '-hide_banner', '-show_streams', '-select_streams',
             'v:0', '-of', 'json', path]
-    proc = sp.run(args, stdout=sp.PIPE, universal_newlines=True)
+    proc = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL,
+                  universal_newlines=True)
     vdata = json.loads(proc.stdout)["streams"][0]
     return vdata
 
