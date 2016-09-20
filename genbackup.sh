@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-08-13 22:13:23 +0200
-# Last modified: 2016-03-20 18:50:18 +0100
+# Last modified: 2016-09-21 00:34:16 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genbackup. This work is published from the
@@ -26,7 +26,6 @@ while [ "$1" != "" ]; do
                                 EXCLUDE=${EXCLUDE}" --exclude $1"
                                 ;;
     esac
-    shift
 done
 # The base of the name is the last part of the current directory, unless
 # another name was given in the options.
