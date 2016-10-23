@@ -4,8 +4,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-10-08 21:07:58 +0200
-# Last modified: 2016-10-09 11:58:20 +0200
-
+# Last modified: 2016-10-23 16:45:07 +0200
+#
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to lk.py. This work is published
+# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 """
 Lock down files or directories.
 

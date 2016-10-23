@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2016-05-16 00:48:36 +0200
+.. Last modified: 2016-10-23 16:49:36 +0200
 
 Introduction
 ============
@@ -331,6 +331,25 @@ Previous versions used the ``identify`` program from ImageMagick directly.
 
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.
+
+
+lk.py
+-----
+
+Lock down files or directories.
+
+This makes files read-only for the owner and inaccessible for the group and
+others. Then it sets the user immutable and user undeletable flag on the files.
+For directories, it recursively treats the files as mentioned above. It then
+sets the sets the directories to read/execute only for the owner and
+inaccessible for the group and others. Then it sets the user immutable and
+undeletable flag on the directories as well.
+
+Using the -u flag unlocks the files or directories, making them writable for
+the owner only.
+
+As usual, I wrote this to automate and simplify something that I was doing on
+a regular basis; safeguarding important but not often changed files.
 
 
 make-flac.py
