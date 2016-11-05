@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2016-07-12 21:50:56 +0200
+# Last modified: 2016-11-05 19:10:47 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -14,13 +14,14 @@
    a suitable LaTeX figure environment for it."""
 
 import argparse
+import configparser
 import logging
 import os
 import subprocess
 import sys
 from wand.image import Image
 
-__version__ = '1.3.0'
+__version__ = '1.4.0'
 
 
 def main(argv):
@@ -32,6 +33,8 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-w', '--width', default=160, type=float,
                         help='width of the text block in mm. (default 160)')
+    parser.add_argument('-t', '--height', default=270, type=float,
+                        help='height of the text block in mm. (default 270)')
     parser.add_argument('--log', default='warning',
                         choices=['debug', 'info', 'warning', 'error'],
                         help="logging level (defaults to 'warning')")
@@ -39,7 +42,8 @@ def main(argv):
                         action='version',
                         version=__version__)
     parser.add_argument('file', nargs='*')
-    args = parser.parse_args(argv)
+    cfg = from_config()
+    args = parser.parse_args(argv, namespace=cfg)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%% %(levelname)s: %(message)s')
     logging.debug('command line arguments = {}'.format(argv))
@@ -56,9 +60,16 @@ def main(argv):
         if filename.endswith(('.ps', '.PS', '.eps', '.EPS', '.pdf', '.PDF')):
             bbox = getpdfbb(filename)
             bbwidth = float(bbox[2]) - float(bbox[0])
-            scale = 1.0
+            bbheight = float(bbox[3]) - float(bbox[1])
+            hscale = 1.0
+            vscale = 1.0
             if bbwidth > args.width:
                 scale = args.width / bbwidth
+            if bbheight > args.height:
+                scale = args.height / bbheight
+            sinfo = 'hscale: {:.3f}, vscale: {:.3f}'
+            logging.info(sinfo.format(hscale, vscale))
+            scale = min([hscale, vscale])
             if scale < 0.999:
                 fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
                 opts = fs.format(*bbox, s=scale)
@@ -67,9 +78,13 @@ def main(argv):
                 opts = fs.format(*bbox)
         elif filename.endswith(('.png', '.PNG', '.jpg', '.JPG', '.jpeg',
                                 '.JPEG')):
-            width = getpicwidth(filename)
+            width, height = getpicsize(filename)
             opts = None
-            scale = args.width / width
+            hscale = args.width / width
+            vscale = args.height / height
+            sinfo = 'hscale: {:.3f}, vscale: {:.3f}'
+            logging.info(sinfo.format(hscale, vscale))
+            scale = min([hscale, vscale])
             if scale < 0.999:
                 opts = '[scale={:.3f}]'.format(scale)
         else:
@@ -78,6 +93,25 @@ def main(argv):
             continue
         output_figure(filename, opts)
     print()
+
+
+def from_config():
+    """Read configuration data.
+
+    Returns:
+        An Argparse.Namespace object
+    """
+
+    values = argparse.Namespace()
+    config = configparser.ConfigParser()
+    if not config.read(os.environ['HOME'] + os.sep + '.img4latexrc'):
+        # print("DEBUG: no config file found")
+        return None
+    for name in ['width', 'height']:
+        if name in config['size']:
+            values.name = float(config['size'][name])
+            # print("DEBUG: {} = {} from cfg file".format(name, values.name))
+    return values
 
 
 def checkfor(args, rv=0):
@@ -124,14 +158,14 @@ def getpdfbb(fn):
     return bbs.split(' ')[1:]
 
 
-def getpicwidth(fn):
-    """Use ImageMagick to get the width of a bitmapped file.
+def getpicsize(fn):
+    """Use ImageMagick to get the width and height of a bitmapped file.
 
     Arguments:
         fn: Name of the file to check.
 
     Returns:
-        Width of the image in points.
+        Width, hight of the image in points.
     """
     factor = {
         'pixelsperinch': 72,
@@ -140,10 +174,12 @@ def getpicwidth(fn):
     }
     with Image(filename=fn) as img:
         if img.units is not 'undefined':
-            res, _ = img.resolution
+            hres, vres = img.resolution
+            logging.info('resolution: {}x{} {}'.format(hres, vres, img.units))
         else:
-            res = 300
-        return img.width / res * factor[img.units]
+            hres, vres = 300, 300
+        return (img.width / hres * factor[img.units],
+                img.height / vres * factor[img.units])
     return None
 
 

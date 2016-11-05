@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2016-10-23 16:49:36 +0200
+.. Last modified: 2016-11-05 16:18:54 +0100
 
 Introduction
 ============
@@ -325,12 +325,22 @@ environment for it.
 
 .. _figure: http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions#Figures
 
-Since version 1.2.0, this program requires the py-wand_ library, which in turn
+Since version 1.2, this program requires the py-wand_ library, which in turn
 requires the ImageMagick_ shared library ``libMagickWand-6``.
 Previous versions used the ``identify`` program from ImageMagick directly.
 
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.
+
+As of version 1.4 it reads the default image width and height in mm from
+an INI-style configuration file named ``~/.img4latexrc``.
+A valid example is shown below.
+
+.. code-block:: ini
+
+    [size]
+    width = 100
+    height = 200
 
 
 lk.py
