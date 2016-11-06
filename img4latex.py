@@ -4,14 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2016-11-05 19:10:47 +0100
+# Last modified: 2016-11-05 19:43:29 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Program to check a PDF, PNG or JPEG file and return
-   a suitable LaTeX figure environment for it."""
+"""Program to check a PDF, PNG or JPEG file and return a suitable LaTeX
+figure environment for it."""
 
 import argparse
 import configparser
@@ -30,7 +30,20 @@ def main(argv):
     Arguments:
         argv: All command line arguments.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
+    after = """
+The width and height arguments can also be set in a configuration file
+called ~/.img4latexrc. It should look like this:
+
+    [size]
+    width = 125
+    height = 280
+
+Command-line arguments override settings in the configuration file.
+If neither is given, the defaults apply.
+"""
+    raw = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=raw,
+                                     epilog=after)
     parser.add_argument('-w', '--width', default=160, type=float,
                         help='width of the text block in mm. (default 160)')
     parser.add_argument('-t', '--height', default=270, type=float,
