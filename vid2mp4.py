@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-20 19:03:12 +0200
+# Last modified: 2016-12-18 11:35:17 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -11,8 +11,6 @@
 """Convert all video files given on the command line to H.264/AAC streams in
 an MP4 container."""
 
-__version__ = '1.4.0'
-
 from functools import partial
 import argparse
 import concurrent.futures as cf
@@ -20,6 +18,8 @@ import logging
 import os
 import subprocess
 import sys
+
+__version__ = '1.5.0'
 
 
 def main(argv):
@@ -61,7 +61,7 @@ def main(argv):
                 logging.info('finished "{}"'.format(fn))
             elif rv < 0:
                 ls = 'file "{}" has unknown extension, ignoring it.'
-                logging.warning(ls.format(fname))
+                logging.warning(ls.format(fn))
             else:
                 logging.error(errmsg.format(fn, rv))
 
@@ -107,7 +107,7 @@ def runencoder(fname, crf, preset):
     """
     basename, ext = os.path.splitext(fname)
     known = ['.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv',
-             '.mkv', '.webm']
+             '.mkv', '.webm', '.gif']
     if ext.lower() not in known:
         return fname, -1
     ofn = basename + '.mp4'
