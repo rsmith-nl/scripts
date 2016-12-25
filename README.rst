@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2016-11-05 16:18:54 +0100
+.. Last modified: 2016-12-26 00:33:33 +0100
 
 Introduction
 ============
@@ -396,13 +396,6 @@ Works like ``make-flac.py`` but uses lame_ to encode to variable bitrate MP3
 files. It uses the same ``album.json`` file as make-flac.
 
 .. _lame: http://lame.sourceforge.net/
-
-
-mkdistinfo.sh
--------------
-
-Makes a ``distinfo`` file for a FreeBSD port. Does the same as the ``make
-makesum`` port rules, but outside of the ports tree.
 
 
 mkindexpic.sh
