@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2016-05-16 00:20:57 +0200
+# Last modified: 2016-12-26 13:25:12 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -21,12 +21,12 @@ import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
-    '\.html$': ['chrome', '--incognito'],
+    '\.html$': ['firefox'],
     '\.xcf$': ['gimp'],
     '\.e?ps$': ['gv'],
     '\.(jpe?g|png|gif|tiff?|p[abgp]m|svg)$': ['gpicview'],
