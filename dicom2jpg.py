@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-01 22:20:13 +0100
+# Last modified: 2017-01-01 22:21:40 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -18,7 +18,7 @@ import sys
 
 from wand.image import Image
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 
 def convert(filename):
@@ -36,7 +36,7 @@ def convert(filename):
         with img.convert('jpg') as converted:
             converted.units = 'pixelsperinch'
             converted.resolution = (300, 300)
-            converted.crop(left=232, top=0, width=1568, height=2048)
+            converted.crop(left=232, top=0, width=1574, height=2048)
             converted.save(filename=outname)
     return filename, outname
 
