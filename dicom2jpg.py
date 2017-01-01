@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-02-13 10:50:37 +0100
+# Last modified: 2017-01-01 22:20:13 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -10,18 +10,19 @@
 
 """Convert DICOM files from an X-ray machine to JPG format, remove blank
 areas. The blank area removal is based on the image size of a Philips flat
-detector. The image goes from 2048x2048 pixels to 1568x2048 pixels."""
+detector. The image goes from 2048x2048 pixels to 1574x2048 pixels."""
 
 import concurrent.futures as cf
 import os
 import sys
+
 from wand.image import Image
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def convert(filename):
-    """Convert a DICOM file to a PNG file, removing the blank areas from the
+    """Convert a DICOM file to a JPEG file, removing the blank areas from the
     Philips detector.
 
     Arguments:
