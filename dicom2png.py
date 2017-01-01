@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-02-13 10:07:25 +0100
+# Last modified: 2017-01-01 22:14:13 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -12,7 +12,7 @@
 areas. The blank area removal is based on the image size of a Philips flat
 detector. The image goes from 2048x2048 pixels to 1574x2048 pixels."""
 
-from multiprocessing import Pool
+import concurrent.futures as cf
 import os
 import sys
 from wand.image import Image
@@ -35,13 +35,13 @@ def convert(filename):
         with img.convert('png') as converted:
             converted.units = 'pixelsperinch'
             converted.resolution = (300, 300)
-            converted.crop(left=232, top=0, width=1568, height=2048)
+            converted.crop(left=232, top=0, width=1574, height=2048)
             converted.save(filename=outname)
     return filename, outname
 
 
 def main(argv):
-    """Main program.
+    """Entry point for dicom2png.py.
 
     Arguments:
         argv: command line arguments
@@ -54,9 +54,11 @@ def main(argv):
         sys.exit(0)
     del argv[0]  # Remove the name of the script from the arguments.
     es = 'Finished conversion of {} to {}'
-    p = Pool()
-    for infn, outfn in p.imap_unordered(convert, argv):
-        print(es.format(infn, outfn))
+    with cf.ProcessPoolExecutor(max_workers=os.cpu_count()) as tp:
+        fl = [tp.submit(convert, fn) for fn in argv]
+        for fut in cf.as_completed(fl):
+            infn, outfn = fut.result()
+            print(es.format(infn, outfn))
 
 if __name__ == '__main__':
     main(sys.argv)
