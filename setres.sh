@@ -2,7 +2,7 @@
 # Sets the resolution of pictures to the provided value.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-03-19 10:36:09 +0100
+# Last modified: 2017-01-08 14:27:45 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to 'setres'. This work is published from the
@@ -15,7 +15,7 @@ if [ $# -lt 2 ]; then
 fi
 
 # Check for special programs that are used in this script.
-PROGS="convert"
+PROGS="mogrify"
 for P in $PROGS; do
     which $P >/dev/null 2>&1
     if [ $? -ne 0 ]; then
@@ -29,5 +29,5 @@ shift
 
 set -e
 for f in $@; do
-    convert -units PixelsPerInch -density $RES $f $f
+    mogrify -units PixelsPerInch -density $RES $f
 done
