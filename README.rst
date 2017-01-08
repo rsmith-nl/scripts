@@ -1,11 +1,10 @@
 Miscellaneous short utilities
 #############################
 
-:date: 2015-10-20
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-01-08 13:42:47 +0100
+.. Last modified: 2017-01-08 14:48:27 +0100
 
 Introduction
 ============
@@ -130,7 +129,7 @@ dicom2png.py
 
 Convert DICOM_ files from an x-ray machine to PNG format, remove blank areas.
 The blank area removal is based on the image size of a Philips flat detector.
-The image goes from 2048x2048 pixels to 1568x2048 pixels.
+The image goes from 2048x2048 pixels to 1574x2048 pixels.
 
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
@@ -139,6 +138,11 @@ requires the ImageMagick_ shared library ``libMagickWand-6``.
 Previous versions used the ``convert`` program from ImageMagick directly.
 
 .. _py-wand: http://docs.wand-py.org/
+
+Multiple images are processed in parallel using a ``ProcessPoolExecutor`` from
+the ``concurrent.futures`` module, using as many worker processes as your CPU
+has cores. This number is determined by the ``os.cpu_count`` function, so this
+program requires at least Python 3.4.
 
 
 dvd2webm.py
@@ -198,6 +202,9 @@ Scales fotos for including them into LaTeX documents. The standard
 configuration sets the width to 886 pixels and sets the resolution to 300 dpi.
 This gives an image 75 mm (about 3 in) wide.
 
+For my own use, I have retired this program in favor of ``img4latex.py`` shown
+below.
+
 
 genbackup.sh
 ------------
@@ -221,10 +228,26 @@ genotp.py
 ---------
 
 Generates an old-fashioned one-time pad; 65 lines of 12 groups of 5 random
-capital letters. It was inspired by reading Neal Stephenson's Cryptonomicon.
+capital letters. Each pad has a header line containing a random identifier.
+It was inspired by reading Neal Stephenson's Cryptonomicon.
 
 It uses random numbers from the operating system via Python's ``os.urandom``
 function.
+
+A partial example::
+
+    +++++ KWSNKYJLFF +++++
+    01  WAGGB HJVHQ TTQPD LQUMD KFRFS GGCKA SVLLA WEUCS HTXNI DITNW RBZKM SEGGW
+    02  GDSBB XECBL AUVLQ TUDPO DTXKW MWGAV DLRXT NRYAH HTGII YXEJJ JLNRC BIVDX
+    03  JDQUJ QPAUT CUEHN RHIHT QYBGV WOVAQ MKVZQ WPRGL QJAVA RPLRS AXIII FKLEP
+    04  WXYAD JNSAQ LBRXE QLCUX ZCLIE WPHSO OZBNH ZQLVN FAUEZ IDAJY VPQJN WVCAD
+    05  BEYRE WORKU CPEGE JKKWZ XUVYU WSZXQ NOULH QOFDQ PREMG YJBIT GMOAM USKLV
+    06  ZVATP YSRWH EEQDV LIPVQ FVYSY CIICG JKMOA RFJYE RUDJG HHJXI NNPNU VERMN
+    07  WAHFD WGGGN GHIUM BCJNN CVBCK QXYGZ PEYLW XOGMT SJFQJ NWEBE BFBPJ IDHDB
+    08  NPPEG HNONE YCJTG BFSFA NFYUR CMCGD XSKRO NSRBX WSDDX MEMLX BBMLC IMDJL
+    09  PZNAK OCOXA PEGNL UAWQW YCVDM WBNZZ YQICH MTLBG LDQTW TQMCS KUYBN RUNXT
+    ...
+
 
 Testing /dev/random on FreeBSD
 ++++++++++++++++++++++++++++++
@@ -283,6 +306,13 @@ operating system via Python's ``os.urandom`` function and converts them to
 text using base64 encoding. On FreeBSD I think this is secure enough given the
 previous section.
 
+An example:
+
+.. code-block:: console
+
+    > python3 genpw.py -l 24 -g 4
+    BU_7 7RcI jjce zAKo 83v8 RAk_
+
 
 git-check-all.py
 ----------------
@@ -296,6 +326,7 @@ git-origdate.py
 
 For all command-line arguments, print out when they were first checked into
 ``git``.
+
 
 gitdates.py
 -----------
@@ -326,7 +357,7 @@ Previous versions used the ``identify`` program from ImageMagick directly.
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.
 
-As of version 1.4 it reads the default image width and height in mm from
+As of version 1.4 it reads the text block width and height in mm from
 an INI-style configuration file named ``~/.img4latexrc``.
 A valid example is shown below.
 
@@ -335,6 +366,9 @@ A valid example is shown below.
     [size]
     width = 100
     height = 200
+
+The image is scaled so that it fits within the text block. If a bitmapped
+image does not have a defined resolution, 300 pixels/inch is assumed.
 
 
 lk.py
@@ -354,6 +388,9 @@ the owner only.
 
 As usual, I wrote this to automate and simplify something that I was doing on
 a regular basis; safeguarding important but not often changed files.
+
+The `os.chflags` function that is used in this script is only available on
+UNIX-like operating systems. So this doesn't work on ms-windows.
 
 
 make-flac.py
@@ -406,6 +443,8 @@ mkpdf.sh
 
 Use ``convert`` from the ImageMagick_ suite to convert scanned images to PDF files.
 
+It assumes that images are scanned at 150 PPI, and the target page is A4.
+
 
 nospaces.py
 -----------
@@ -448,7 +487,7 @@ program like it in Python.
 .. _OS X open: https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/open.1.html
 
 The result is ``open.py``. Note that it is pretty simple. and the programs
-that is uses to open files a geared towards common use. So text files are
+that is uses to open files are geared towards common use. So text files are
 opened in an editor, while photos and most other types are opened in a viewer.
 This simplicity by design. It has no options and it only opens files and
 directories. I have no intention of it becoming like OS X's open or plan9's
@@ -459,6 +498,9 @@ plumb_.
 This utility requires the python-magic_ module.
 
 .. _python-magic: https://pypi.python.org/pypi/python-magic
+
+The ``filetypes`` and ``othertypes`` dictionaries in the beginning of this
+script should be changed to suit your preferences.
 
 
 pdfselect.sh
@@ -527,11 +569,19 @@ extension of the original file. Example:
     holiday2014-040.jpg
 
 
+scripts-tests.py
+----------------
+
+This is just a collection of tests for functions from the different Python
+scripts.
+
+
 serve-git.sh
 ------------
 
 Start a ``git daemon`` for every directory under the current working directory
 that is under git_ control.
+
 
 set-title.sh
 ------------
@@ -539,11 +589,13 @@ set-title.sh
 Set the title of the current terminal window to the hostname or to the first
 argument given on the command line.
 
+
 setres.sh
 ---------
 
 Sets the resolution of pictures to the provided value in dots per inch.
-Uses the ``convert`` program from the ImageMagick_ suite.
+Uses the ``mogrify`` program from the ImageMagick_ suite.
+
 
 sha256.py
 ---------
@@ -564,10 +616,11 @@ programs that use fontconfig.
 tifftopdf.py
 ------------
 
-Convert TIFF files to PDF format using the utilities from the libtiff
-package.
+Convert TIFF files to PDF format using the utilities ``tiffinfo`` and
+``tiff2pdf`` from the libtiff package.
 
 .. _libtiff: http://www.remotesensing.org/libtiff/
+
 
 tolower.sh
 ----------
