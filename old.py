@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-10 21:43:11 +0100
-# Last modified: 2016-06-26 11:33:55 +0200
+# Last modified: 2017-01-08 14:15:01 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to old.py. This work is published
@@ -48,7 +48,7 @@ def main(argv):
             newname = ''.join(['old-', dirname, dt])
         if os.path.exists(newname):
             ren = "'{}' already exists. Skipping rename of '{}'."
-            logging.warninf(ren.format(newname, dirname))
+            logging.warning(ren.format(newname, dirname))
             continue
         os.rename(dirname, newname)
 
