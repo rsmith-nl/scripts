@@ -5,7 +5,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2016-12-26 00:33:33 +0100
+.. Last modified: 2017-01-08 13:42:47 +0100
 
 Introduction
 ============
@@ -49,14 +49,8 @@ tested, however*.  Patches welcome.
 License
 =======
 
-All of these programs are in the public domain. Use them as you wish.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+All of these programs are in the public domain. Use them as you wish. See
+LICENSE.txt for the full text of the license.
 
 
 The programs
