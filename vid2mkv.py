@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-12-18 11:35:26 +0100
+# Last modified: 2017-01-15 15:41:48 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
@@ -46,8 +46,8 @@ def main(argv):
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%(levelname)s: %(message)s')
-    logging.info('command line arguments = {}'.format(argv))
-    logging.info('parsed arguments = {}'.format(args))
+    logging.debug('command line arguments = {}'.format(argv))
+    logging.debug('parsed arguments = {}'.format(args))
     checkfor(['ffmpeg', '-version'])
     starter = partial(runencoder, vq=args.videoquality,
                       aq=args.audioquality)
