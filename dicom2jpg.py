@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-01 22:21:40 +0100
+# Last modified: 2017-01-15 15:18:43 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
@@ -13,12 +13,15 @@ areas. The blank area removal is based on the image size of a Philips flat
 detector. The image goes from 2048x2048 pixels to 1574x2048 pixels."""
 
 import concurrent.futures as cf
+from datetime import datetime
+import argparse
+import logging
 import os
 import sys
 
 from wand.image import Image
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 
 def convert(filename):
@@ -47,19 +50,29 @@ def main(argv):
     Arguments:
         argv: command line arguments
     """
-    if len(argv) == 1:
-        binary = os.path.basename(argv[0])
-        print("{} ver. {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} [file ...]\n".format(binary), file=sys.stderr)
-        print(__doc__)
-        sys.exit(0)
-    del argv[0]  # Remove the name of the script from the arguments.
-    es = 'Finished conversion of {} to {}'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--log', default='warning',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help="logging level (defaults to 'warning')")
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version=__version__)
+    parser.add_argument('fn', nargs='*', metavar='filename',
+                        help='DICOM files to process')
+    args = parser.parse_args(argv[1:])
+    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
+                        format='%(levelname)s: %(message)s')
+    logging.debug('command line arguments = {}'.format(argv))
+    logging.debug('parsed arguments = {}'.format(args))
+    if not args.fn:
+        logging.error('no files to process')
+        sys.exit(1)
+    logging.info('started at {}.'.format(str(datetime.now())[:-7]))
+    es = 'finished conversion of {} to {}'
     with cf.ProcessPoolExecutor(max_workers=os.cpu_count()) as tp:
-        fl = [tp.submit(convert, fn) for fn in argv]
-        for fut in cf.as_completed(fl):
-            infn, outfn = fut.result()
-            print(es.format(infn, outfn))
+        for infn, outfn in tp.map(convert, args.fn):
+            logging.info(es.format(infn, outfn))
+    logging.info('completed at {}.'.format(str(datetime.now())[:-7]))
 
 
 if __name__ == '__main__':
