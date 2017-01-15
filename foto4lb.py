@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-11-13 20:46:45 +0100
+# Last modified: 2017-01-15 11:59:39 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -77,7 +77,7 @@ def main(argv):
             mkdir(dirname + sep + outdir)
     with ProcessPoolExecutor(max_workers=cpu_count()) as tp:
         fl = [tp.submit(processfile, p, fn, newwidth=args.width)
-              for p, fl in pairs for fn in fl]
+              for p, filelist in pairs for fn in filelist]
         for fut in as_completed(fl):
             fn, rv = fut.result()
             if rv == 0:

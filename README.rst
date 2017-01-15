@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-01-08 15:42:17 +0100
+.. Last modified: 2017-01-15 11:56:00 +0100
 
 Introduction
 ============
@@ -206,9 +206,6 @@ foto4lb.py
 Scales fotos for including them into LaTeX documents. The standard
 configuration sets the width to 886 pixels and sets the resolution to 300 dpi.
 This gives an image 75 mm (about 3 in) wide.
-
-For my own use, I have retired this program in favor of ``img4latex.py`` shown
-below.
 
 
 genbackup.sh
