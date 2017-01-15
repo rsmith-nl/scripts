@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-15 11:59:39 +0100
+# Last modified: 2017-01-15 14:52:48 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -11,7 +11,7 @@
 """Shrink fotos to a size suitable for use in my logbook and other
    documents."""
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from os import cpu_count, mkdir, scandir, sep, utime
 from os.path import exists
@@ -76,10 +76,8 @@ def main(argv):
     for dirname, _ in pairs:
             mkdir(dirname + sep + outdir)
     with ProcessPoolExecutor(max_workers=cpu_count()) as tp:
-        fl = [tp.submit(processfile, p, fn, newwidth=args.width)
-              for p, filelist in pairs for fn in filelist]
-        for fut in as_completed(fl):
-            fn, rv = fut.result()
+        agen = ((p, fn, args.width) for p, flist in pairs for fn in flist)
+        for fn, rv in tp.map(processfile, agen):
             if rv == 0:
                 fps = "file '{}' processed."
             elif rv == 1:
@@ -87,19 +85,18 @@ def main(argv):
             logging.info(fps.format(fn))
 
 
-def processfile(path, name, newwidth):
+def processfile(packed):
     """Read an image file and write a smaller version.
 
     Arguments:
-        path: Directory where the input file can be found.
-        name: Name of the input file.
-        newwidth: Desired width of the output file.
+        packed: A 3-tuple of (path, filename, output width)
 
     Returns:
         A 2-tuple (input file name, status).
         Status 0 indicates a succesful conversion,
         status 1 means that the input file was not a recognized image format.
     """
+    path, name, newwidth = packed
     fname = sep.join([path, name])
     oname = sep.join([path, outdir, name.lower()])
     try:
