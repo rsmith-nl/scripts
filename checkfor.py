@@ -1,7 +1,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 22:09:41 +0200
+# Last modified: 2017-01-24 23:55:07 +0100
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to checkfor.py This work
@@ -9,7 +9,6 @@
 # http://creativecommons.org/publicdomain/zero/1.0/
 
 import logging
-import os
 import subprocess
 import sys
 

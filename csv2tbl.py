@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-09-21 23:07:25 +0200
+# Last modified: 2017-01-29 10:37:40 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to csv2tbl.py. This work is published from
@@ -10,12 +10,12 @@
 
 """Convert a CSV file to a LaTeX table."""
 
-__version__ = '1.1.0'
-
 from collections import Counter
 from datetime import date
 import os.path
 import sys
+
+__version__ = '1.1.0'
 
 
 def readlines(filename):
@@ -85,7 +85,6 @@ def main(argv):
     sep = csvsep(lines)
     # Get the filename and remove the extension.
     fname = os.path.basename(argv[1])
-    shortname = fname[:]
     if fname.endswith(('.csv', '.CSV')):
         fname = fname[:-4]
     # Create a format definition for the tabular environment.
