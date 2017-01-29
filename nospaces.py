@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-15 14:59:25 +0200
+# Last modified: 2017-01-29 10:48:40 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to nospaces.py. This work is published from the
@@ -11,10 +11,10 @@
 """Rename files mentioned on the command line, removing spaces from
 their names and replacing them with underscores."""
 
-__version__ = '1.0.1'
-
 import os
 import sys
+
+__version__ = '1.0.1'
 
 
 def main(argv):

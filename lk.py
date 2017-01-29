@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-10-08 21:07:58 +0200
-# Last modified: 2016-10-23 16:45:07 +0200
+# Last modified: 2017-01-29 10:49:44 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to lk.py. This work is published
@@ -49,7 +49,7 @@ def unlock_path(root, name, mode):
     os.chmod(p, mode)
 
 
-def main(argv):
+def main(argv):  # noqa
     """
     Entry point for lck.py.
 
