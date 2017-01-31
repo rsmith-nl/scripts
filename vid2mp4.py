@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-12-18 11:35:17 +0100
+# Last modified: 2017-01-31 15:56:44 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
@@ -112,8 +112,9 @@ def runencoder(fname, crf, preset):
         return fname, -1
     ofn = basename + '.mp4'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libx264', '-crf', str(crf),
-            '-preset', preset, '-flags',  '+aic+mv4', '-c:a', 'libfaac',
+            '-preset', preset, '-flags',  '+aic+mv4', '-c:a', 'aac',
             '-sn', '-y', ofn]
+    logging.debug(' '.join(args))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
     return fname, rv
