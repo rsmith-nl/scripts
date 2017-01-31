@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-15 15:41:48 +0100
+# Last modified: 2017-01-31 20:13:37 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
@@ -20,7 +20,7 @@ import os
 import subprocess
 import sys
 
-__version__ = '1.4.0'
+__version__ = '1.4.1'
 
 
 def main(argv):
@@ -112,6 +112,8 @@ def runencoder(fname, vq, aq):
     ofn = basename + '.mkv'
     args = ['ffmpeg', '-i', fname, '-c:v', 'libtheora', '-q:v', str(vq),
             '-c:a', 'libvorbis', '-q:a', str(aq), '-sn', '-y', ofn]
+    logging.debug(' '.join(args))
+    logging.info('starting conversion of "{}".'.format(fname))
     rv = subprocess.call(args, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
     return fname, rv
