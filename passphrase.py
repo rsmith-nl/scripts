@@ -3,14 +3,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2016-03-06 20:02:04 +0100
+# Last modified: 2017-04-02 17:50:26 +0200
 
 """Creates a passphrase by picking words from a word list, and adding filler
 characters between the words."""
 
 import argparse
 import logging
-import random
+import secrets
 import re
 import sys
 
@@ -28,8 +28,8 @@ parser.add_argument('--log', default='warning',
                     help='logging level (default: warning)')
 parser.add_argument('-w', '--words', type=str, default=wordfile,
                     help='path to words file (default: {})'.format(wordfile))
-parser.add_argument('-c', '--count', type=int, default=3,
-                    help='number of words (default: 3)')
+parser.add_argument('-c', '--count', type=int, default=4,
+                    help='number of words (default: 4)')
 parser.add_argument('-v', '--version', action='version',
                     version=__version__)
 args = parser.parse_args(sys.argv[1:])
@@ -45,7 +45,7 @@ logging.info('{} total words in {}'.format(len(words), args.words))
 words = [w for w in words if minwordlen < len(w) < maxwordlen]
 logging.info('{} words of correct length in {}'.format(len(words), args.words))
 aantal = len(words) + 1
-choices = [words[random.randint(0, aantal)] for _ in range(args.count)]
-filler = random.sample(fillchars, args.count)
+choices = [secrets.choice(words) for _ in range(args.count)]
+filler = [secrets.choice(fillchars) for _ in range(args.count)]
 phrase = ''.join([k for t in zip(choices, filler) for k in t])[:-1]
 print(phrase)
