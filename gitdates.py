@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 22:33:37 +0200
+# Last modified: 2017-04-22 20:09:20 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
@@ -95,6 +95,8 @@ def filecheck(fname):
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
         b = subprocess.check_output(args)
+        if len(b) == 0:
+            return None
         data = b.decode()[:-1]
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
