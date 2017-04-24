@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2016-08-10 14:26:48 +0200
+# Last modified: 2017-04-24 21:24:17 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -140,7 +140,7 @@ def mkargs(fn, crop, start, subfname, width, atrack):
         atrack: number of the audio track (0-based indexing)
 
     Returns:
-        A tuple (args, args2) which are the argument lists for starting
+        A tuple (args1, args2) which are the argument lists for starting
         subprocesses for the first and second step respectively.
     """
     basename = fn.rsplit('.', 1)[0]
@@ -148,11 +148,11 @@ def mkargs(fn, crop, start, subfname, width, atrack):
     logging.info('using tile-columns flag set to ' + numcolumns + '.')
     numthreads = str(os.cpu_count() - 1)
     logging.info('using {} threads.'.format(numthreads))
-    args = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
-            '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
-            '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
-            '-tile-columns', numcolumns, '-an', '-f', 'webm',
-            '-map', '0:v', '-map', '0:a:{}'.format(atrack), '-y', '/dev/null']
+    args1 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
+             '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
+             '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
+             '-tile-columns', numcolumns, '-an', '-f', 'webm',
+             '-map', '0:v', '-map', '0:a:{}'.format(atrack), '-y', '/dev/null']
     args2 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn,
              '-passlogfile', basename, '-c:v', 'libvpx-vp9',
              '-threads', numthreads, '-pass', '2', '-sn', '-b:v', '1400k',
@@ -171,18 +171,19 @@ def mkargs(fn, crop, start, subfname, width, atrack):
     if vf:
         opts = ','.join(vf)
         logging.debug('vf options: {}.'.format(opts))
-        args.insert(-2, '-vf')
+        args1.insert(-2, '-vf')
         args2.insert(-2, '-vf')
-        args.insert(-2, opts)
+        args1.insert(-2, opts)
         args2.insert(-2, opts)
     if start:
-        args.insert(3, '-ss')
+        logging.info("starting encoding at {}.".format(start))
+        args1.insert(3, '-ss')
         args2.insert(3, '-ss')
-        args.insert(4, start)
+        args1.insert(4, start)
         args2.insert(4, start)
-    logging.debug('first pass: ' + ' '.join(args))
+    logging.debug('first pass: ' + ' '.join(args1))
     logging.debug('second pass: ' + ' '.join(args2))
-    return args, args2
+    return args1, args2
 
 
 def encode(args1, args2):
