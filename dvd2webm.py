@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-04-24 21:24:17 +0200
+# Last modified: 2017-04-25 01:12:56 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -211,7 +211,8 @@ def encode(args1, args2):
         logging.error('pass 2 returned {}.'.format(proc.returncode))
     else:
         reporttime(2, start, end)
-    origsize = os.path.getsize(args2[4])
+    oidx = args2.index('-i') + 1
+    origsize = os.path.getsize(args2[oidx])
     newsize = os.path.getsize(args2[-1])
     percentage = int(100*newsize/origsize)
     sz = "the size of '{}' is {}% of the size of '{}'."
