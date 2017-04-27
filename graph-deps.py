@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-27 13:50:28 +0200
-# Last modified: 2017-04-27 15:21:37 +0200
+# Last modified: 2017-04-27 15:25:56 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to graph-deps.py. This work is published
@@ -23,7 +23,7 @@ turned into a PDF rendering of the graph.
 
 import sys
 
-if sys.argv[1] in ('-h', '--help'):
+if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
     print(__doc__)
     exit(0)
 output = ['digraph deps {', 'rankdir=LR;', 'node [shape=box];']
