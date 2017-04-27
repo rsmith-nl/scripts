@@ -3,9 +3,9 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-27 13:50:28 +0200
-# Last modified: 2017-04-27 14:29:56 +0200
+# Last modified: 2017-04-27 15:15:33 +0200
 
-"""Create a graph of FreeBSD package dependencies.
+"""Creates a graph of FreeBSD package dependencies.
 
 Use it like this:
 
@@ -18,6 +18,9 @@ turned into a PDF rendering of the graph.
 
 import sys
 
+if sys.argv[1] in ('-h', '--help'):
+    print(__doc__)
+    exit(0)
 output = ['digraph deps {', 'rankdir=LR;', 'node [shape=box];']
 parent = None
 for ln in sys.stdin:
