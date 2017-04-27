@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-01-15 11:56:00 +0100
+.. Last modified: 2017-04-27 15:20:53 +0200
 
 Introduction
 ============
@@ -335,6 +335,15 @@ gitdates.py
 
 For each file in a directory managed by git, get the short hash and data of
 the most recent commit of that file.
+
+
+graph-deps.py
+-------------
+
+Used with FreeBSD's ``pkg info`` and ``dot`` from the graphviz_ port to graph
+dependencies between packages.
+
+.. _graphviz: http://www.graphviz.org/
 
 
 histdata.py
