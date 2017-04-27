@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-27 13:50:28 +0200
-# Last modified: 2017-04-27 15:25:56 +0200
+# Last modified: 2017-04-27 21:54:23 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to graph-deps.py. This work is published
@@ -28,13 +28,17 @@ if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
     exit(0)
 output = ['digraph deps {', 'rankdir=LR;', 'node [shape=box];']
 parent = None
-for ln in sys.stdin:
-    pkgname = ln.strip()
-    if pkgname.endswith(':'):
-        pkgname = pkgname[:-1]
-    output.append('"{0}" [label="{0}"];'.format(pkgname))
-    if ln[0] not in ' \t':  # parent
-        parent = pkgname
-    else:
-        output.append('"{}" -> "{}";'.format(parent, pkgname))
-print('\n'.join(output)+'}')
+try:
+    for ln in sys.stdin:
+        pkgname = ln.strip()
+        if pkgname.endswith(':'):
+            pkgname = pkgname[:-1]
+        output.append('"{0}" [label="{0}"];'.format(pkgname))
+        if ln[0] not in ' \t':  # parent
+            parent = pkgname
+        else:
+            output.append('"{}" -> "{}";'.format(parent, pkgname))
+except KeyboardInterrupt:
+    print('\n', __doc__)
+else:
+    print('\n'.join(output)+'}')
