@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-04-30 13:57:12 +0200
+# Last modified: 2017-04-30 14:06:45 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -166,14 +166,14 @@ def mkargs(fn, crop, start, subfname, width, atrack):
              '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
              '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
              '-tile-columns', numcolumns, '-an', '-f', 'webm',
-             '-map', '0:v', '-map', '0:a:{}'.format(atrack), '-y', '/dev/null']
+             '-map', '0:v', '-map', '0:{}'.format(atrack), '-y', '/dev/null']
     args2 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn,
              '-passlogfile', basename, '-c:v', 'libvpx-vp9',
              '-threads', numthreads, '-pass', '2', '-sn', '-b:v', '1400k',
              '-crf', '33', '-g', '250', '-speed', '2',
              '-tile-columns', numcolumns, '-auto-alt-ref', '1',
              '-lag-in-frames', '25', '-c:a', 'libvorbis', '-q:a', '3',
-             '-f', 'webm', '-map', '0:v', '-map', '0:a:{}'.format(atrack),
+             '-f', 'webm', '-map', '0:v', '-map', '0:{}'.format(atrack),
              '-y', '{}.webm'.format(basename)]
     vf = []
     if subfname:
@@ -209,6 +209,7 @@ def encode(args1, args2):
         args2: Commands to run the second encoding step as a subprocess.
     """
     logging.info('running pass 1...')
+    logging.debug('pass 1: {}'.format(' '.join(args1)))
     start = datetime.utcnow()
     proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
@@ -218,6 +219,7 @@ def encode(args1, args2):
     else:
         reporttime(1, start, end)
     logging.info('running pass 2...')
+    logging.debug('pass 2: {}'.format(' '.join(args2)))
     start = datetime.utcnow()
     proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
