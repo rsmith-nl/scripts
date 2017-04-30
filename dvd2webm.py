@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-04-30 15:00:37 +0200
+# Last modified: 2017-04-30 16:03:52 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -162,6 +162,9 @@ def mkargs(fn, crop, start, subfname, width, atrack):
     logging.info('using tile-columns flag set to ' + numcolumns + '.')
     numthreads = str(os.cpu_count() - 1)
     logging.info('using {} threads.'.format(numthreads))
+    # TODO: Add ‘--row-mt=1’ to args1 and args2 after libvpx-1.6.2 comes out.
+    # In that case, also test ‘numthreads = str(2*os.cpu_count())’
+    # See https://github.com/Kagami/webm.py/wiki/Notes-on-encoding-settings
     args1 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
              '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
              '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
