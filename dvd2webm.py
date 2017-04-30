@@ -4,13 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-04-25 01:12:56 +0200
+# Last modified: 2017-04-30 13:57:12 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Convert an mpeg stream from a DVD to a webm file."""
+"""Convert an mpeg stream from a DVD to a webm file, using the main video stream
+and audio stream id 0x80 (English)."""
 
 from collections import Counter
 from datetime import datetime
@@ -52,7 +53,20 @@ def main(argv):
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'.".format(args.fn))
     logging.info('started at {}.'.format(str(datetime.now())[:-7]))
-    vdata = vidinfo(args.fn)
+    si = streaminfo(args.fn)
+    sk = si.keys()
+    if "0x1e0" not in sk:
+        logging.error('video stream 0x1e0 not found!')
+        exit(1)
+    elif "width" not in si["0x1e0"].keys():
+        logging.error('video stram 0x1e0 has no width')
+        exit(1)
+    if "0x80" not in sk:
+        logging.error('english audio stream (0x80) not found!')
+        exit(2)
+    logging.info('video stream {}.'.format(si["0x1e0"]))
+    logging.info('audio stream {}.'.format(si["0x80"]))
+    args.audio = si["0x80"]["index"]
     if not args.crop:
         logging.info('looking for cropping.')
         args.crop = findcrop(args.fn)
@@ -61,7 +75,7 @@ def main(argv):
             logging.info('standard format, no cropping necessary.')
             args.crop = None
     a1, a2 = mkargs(args.fn, args.crop, args.start, args.subtitle,
-                    vdata["width"], args.audio)
+                    si["0x1e0"]["width"], args.audio)
     encode(a1, a2)
 
 
@@ -95,23 +109,23 @@ def findcrop(path, start='00:10:00', duration='00:00:01'):
     return rv.most_common(1)[0][0]
 
 
-def vidinfo(path):
-    """
-    Retrieve information from the video stream of a file using ffprobe.
+def streaminfo(path):
+    """Retrieve the stream index and id and the width of video streams.
 
     Argument:
         path: location of the file to query.
 
     Returns:
-        The data for the video stream that ffprobe returned in the form of
-        a dictionary.
+        A dict of dicts. Each containing "index", "id" and possibly "width".
+        The outer dict is keyed by the stream ID.
     """
-    args = ['ffprobe', '-hide_banner', '-show_streams', '-select_streams',
-            'v:0', '-of', 'json', path]
+    args = ['ffprobe', '-hide_banner', '-show_entries', 'stream=index,id,width',
+            '-of', 'json', path]
     proc = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL,
                   universal_newlines=True)
-    vdata = json.loads(proc.stdout)["streams"][0]
-    return vdata
+    streamdata = json.loads(proc.stdout)["streams"]
+    rv = {i["id"]: i for i in streamdata}
+    return rv
 
 
 def reporttime(p, start, end):
