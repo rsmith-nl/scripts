@@ -4,14 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-04-30 14:06:45 +0200
+# Last modified: 2017-04-30 15:00:37 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Convert an mpeg stream from a DVD to a webm file, using the main video stream
-and audio stream id 0x80 (English)."""
+and the main AC-3 audio stream (substream ID 0x80)."""
 
 from collections import Counter
 from datetime import datetime
