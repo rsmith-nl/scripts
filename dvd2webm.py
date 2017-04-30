@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-04-30 16:03:52 +0200
+# Last modified: 2017-04-30 17:37:08 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -59,7 +59,7 @@ def main(argv):
         logging.error('video stream 0x1e0 not found!')
         exit(1)
     elif "width" not in si["0x1e0"].keys():
-        logging.error('video stram 0x1e0 has no width')
+        logging.error('video stream 0x1e0 has no width')
         exit(1)
     if "0x80" not in sk:
         logging.error('english audio stream (0x80) not found!')
