@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-15 14:52:48 +0100
+# Last modified: 2017-05-06 13:39:31 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
@@ -119,7 +119,7 @@ def processfile(packed):
             fields = exif[available[0]].replace(' ', ':').split(':')
             dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]),
                           int(fields[3]), int(fields[4]), int(fields[5]))
-        except:
+        except Exception:
             dt = datetime.today()
         modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute,
                           dt.second, 0, 0, -1))
