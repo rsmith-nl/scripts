@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2016-11-05 19:43:29 +0100
+# Last modified: 2017-05-06 13:28:30 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -21,7 +21,7 @@ import subprocess
 import sys
 from wand.image import Image
 
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 
 
 def main(argv):
@@ -39,15 +39,15 @@ called ~/.img4latexrc. It should look like this:
     height = 280
 
 Command-line arguments override settings in the configuration file.
-If neither is given, the defaults apply.
+Otherwise, the defaults apply.
 """
     raw = argparse.RawDescriptionHelpFormatter
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=raw,
                                      epilog=after)
-    parser.add_argument('-w', '--width', default=160, type=float,
-                        help='width of the text block in mm. (default 160)')
-    parser.add_argument('-t', '--height', default=270, type=float,
-                        help='height of the text block in mm. (default 270)')
+    parser.add_argument('-w', '--width', type=float, default=160,
+                        help='width of the text block in mm. (default=160)')
+    parser.add_argument('-t', '--height', type=float, default=270,
+                        help='height of the text block in mm. (default=270)')
     parser.add_argument('--log', default='warning',
                         choices=['debug', 'info', 'warning', 'error'],
                         help="logging level (defaults to 'warning')")
@@ -59,9 +59,14 @@ If neither is given, the defaults apply.
     args = parser.parse_args(argv, namespace=cfg)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
                         format='%% %(levelname)s: %(message)s')
+    if cfg is None:
+        logging.info('configuration file not found')
+    else:
+        logging.info('from config: {}'.format(cfg))
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     args.width *= 72 / 25.4  # convert to points
+    args.height *= 72 / 25.4  # convert to points
     checkfor(['gs', '-v'])
     if not args.file:
         parser.print_help()
@@ -77,9 +82,9 @@ If neither is given, the defaults apply.
             hscale = 1.0
             vscale = 1.0
             if bbwidth > args.width:
-                scale = args.width / bbwidth
+                hscale = args.width / bbwidth
             if bbheight > args.height:
-                scale = args.height / bbheight
+                vscale = args.height / bbheight
             sinfo = 'hscale: {:.3f}, vscale: {:.3f}'
             logging.info(sinfo.format(hscale, vscale))
             scale = min([hscale, vscale])
@@ -116,14 +121,14 @@ def from_config():
     """
 
     values = argparse.Namespace()
+    d = vars(values)
     config = configparser.ConfigParser()
-    if not config.read(os.environ['HOME'] + os.sep + '.img4latexrc'):
-        # print("DEBUG: no config file found")
+    cfgname = os.environ['HOME'] + os.sep + '.img4latexrc'
+    if not config.read(cfgname):
         return None
     for name in ['width', 'height']:
         if name in config['size']:
-            values.name = float(config['size'][name])
-            # print("DEBUG: {} = {} from cfg file".format(name, values.name))
+            d[name] = float(config['size'][name])
     return values
 
 
