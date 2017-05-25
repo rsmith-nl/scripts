@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-05-20 22:19:26 +0200
+# Last modified: 2017-05-25 20:54:15 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -17,13 +17,12 @@ from collections import Counter
 from datetime import datetime
 import argparse
 import logging
-import math
 import os
 import re
 import subprocess as sp
 import sys
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 
 
 def main(argv):
@@ -102,7 +101,7 @@ def reporttime(p, start, end):
     logging.info('pass {} took {}.'.format(p, dt[:-7]))
 
 
-def mkargs(fn, crop, start, subfname, width):
+def mkargs(fn, crop, start, subfname):
     """
     Create argument lists for two-pass constrained rate VP9/Vorbis encoding
     in a webm container.
@@ -112,15 +111,13 @@ def mkargs(fn, crop, start, subfname, width):
         crop: String telling ffmeg how to crop in the format w:h:x:y.
         start: String telling ffmeg the time when to start encoding.
         subfname: Path of the SRT subtitles file.
-        width: Width of the video stream in pixels.
 
     Returns:
         A tuple (args1, args2) which are the argument lists for starting
         subprocesses for the first and second step respectively.
     """
     basename = fn.rsplit('.', 1)[0]
-    numcolumns = str(int(math.log2(width/256)))
-    logging.info('using tile-columns flag set to ' + numcolumns + '.')
+    numcolumns = '1'
     numthreads = str(os.cpu_count() - 1)
     logging.info('using {} threads.'.format(numthreads))
     # TODO: Add ‘--row-mt=1’ to args1 and args2 after libvpx-1.6.2 comes out.
