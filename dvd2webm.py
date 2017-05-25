@@ -4,14 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-05-25 20:54:15 +0200
+# Last modified: 2017-05-25 23:05:22 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """Convert an mpeg stream from a DVD to a webm file, using the main video stream
-(substream ID 0x1e0) and the main AC-3 audio stream (substream ID 0x80)."""
+and the main AC-3 audio stream (substream ID 0x80)."""
 
 from collections import Counter
 from datetime import datetime
@@ -22,7 +22,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.8.1'
+__version__ = '0.8.2'
 
 
 def main(argv):
@@ -40,6 +40,9 @@ def main(argv):
                         help="crop (w:h:x:y) to use")
     parser.add_argument('-t', '--subtitle', type=str,
                         help="name of srt file for subtitles")
+    ahelp = "number of the audio track to use (default: 0; first audio track)"
+    parser.add_argument('-a', '--audio', type=int, default=0,
+                        help=ahelp)
     parser.add_argument('fn', metavar='filename', help='MPEG file to process')
     args = parser.parse_args(argv)
     logging.basicConfig(level=getattr(logging, args.log.upper(), None),
@@ -48,6 +51,7 @@ def main(argv):
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'.".format(args.fn))
     logging.info('started at {}.'.format(str(datetime.now())[:-7]))
+    logging.info('using audio stream {}.'.format(args.audio))
     if not args.crop:
         logging.info('looking for cropping.')
         args.crop = findcrop(args.fn)
@@ -55,7 +59,7 @@ def main(argv):
         if width in ['720', '704'] and height == '576':
             logging.info('standard format, no cropping necessary.')
             args.crop = None
-    a1, a2 = mkargs(args.fn, args.crop, args.start, args.subtitle)
+    a1, a2 = mkargs(args.fn, args.crop, args.start, args.subtitle, args.audio)
     encode(a1, a2)
 
 
@@ -101,7 +105,7 @@ def reporttime(p, start, end):
     logging.info('pass {} took {}.'.format(p, dt[:-7]))
 
 
-def mkargs(fn, crop, start, subfname):
+def mkargs(fn, crop, start, subfname, atrack):
     """
     Create argument lists for two-pass constrained rate VP9/Vorbis encoding
     in a webm container.
@@ -111,6 +115,7 @@ def mkargs(fn, crop, start, subfname):
         crop: String telling ffmeg how to crop in the format w:h:x:y.
         start: String telling ffmeg the time when to start encoding.
         subfname: Path of the SRT subtitles file.
+        atrack: number of the audio track (0-based indexing)
 
     Returns:
         A tuple (args1, args2) which are the argument lists for starting
@@ -127,14 +132,14 @@ def mkargs(fn, crop, start, subfname):
              '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
              '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
              '-tile-columns', numcolumns, '-an', '-f', 'webm',
-             '-map', '#0x1e0', '-map', '#0x80', '-y', '/dev/null']
+             '-map', '0:v', '-map', '0:{}'.format(atrack), '-y', '/dev/null']
     args2 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn,
              '-passlogfile', basename, '-c:v', 'libvpx-vp9',
              '-threads', numthreads, '-pass', '2', '-sn', '-b:v', '1400k',
              '-crf', '33', '-g', '250', '-speed', '2',
              '-tile-columns', numcolumns, '-auto-alt-ref', '1',
              '-lag-in-frames', '25', '-c:a', 'libvorbis', '-q:a', '3',
-             '-f', 'webm', '-map', '#0x1e0', '-map', '#0x80',
+             '-f', 'webm', '-map', '0:v', '-map', '0:{}'.format(atrack),
              '-y', '{}.webm'.format(basename)]
     vf = []
     if subfname:
