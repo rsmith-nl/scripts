@@ -7,7 +7,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """Script to format a Git log for LaTeX."""
 
 import os
@@ -43,8 +42,9 @@ def fmtlog(txt):
     # Remove reference to HEAD
     lines[0] = re.sub('\(.*\) ', '', lines[0])
     # Use typewriter font for the commit id.
-    lines = [r'\texttt{' + re.sub(' ', r'} ', ln, count=1)
-             for ln in lines if ln]
+    lines = [
+        r'\texttt{' + re.sub(' ', r'} ', ln, count=1) for ln in lines if ln
+    ]
     return '\\\\\n'.join(lines)
 
 
