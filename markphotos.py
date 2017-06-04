@@ -8,7 +8,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -31,17 +30,22 @@ def main(argv):
         argv: Command line arguments.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
-    parser.add_argument("files", metavar='file', nargs='+',
-                        help="one or more files to process")
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        "files",
+        metavar='file',
+        nargs='+',
+        help="one or more files to process")
     args = parser.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     checkfor(['exiftool', '-ver'])
@@ -68,8 +72,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
-                             stderr=subprocess.DEVNULL)
+        rc = subprocess.call(
+            args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
         logging.info('found required program "{}"'.format(args[0]))
@@ -95,13 +99,15 @@ def processfile(name):
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
     cmt = "Copyright © {} {}".format(year, cr)
-    args = ['exiftool', '-Copyright="Copyright (C) {} {}"'.format(year, cr),
-            '-Comment="{}"'.format(cmt), '-overwrite_original', '-q', name]
-    rv = subprocess.call(args, stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL)
-    modtime = int(mktime((year, int(fields[2]), int(fields[3][:2]),
-                          int(fields[3][3:]), int(fields[4]), int(fields[5]),
-                          0, 0, -1)))
+    args = [
+        'exiftool', '-Copyright="Copyright (C) {} {}"'.format(year, cr),
+        '-Comment="{}"'.format(cmt), '-overwrite_original', '-q', name
+    ]
+    rv = subprocess.call(
+        args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    modtime = int(
+        mktime((year, int(fields[2]), int(fields[3][:2]), int(fields[3][3:]),
+                int(fields[4]), int(fields[5]), 0, 0, -1)))
     utime(name, (modtime, modtime))
     return name, rv
 
