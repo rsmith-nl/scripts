@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-06-04 13:23:18 +0200
+# Last modified: 2017-06-04 16:58:16 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -145,7 +145,7 @@ def mkargs(fn, crop, start, subfname, atrack):
         '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
         '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
         '-tile-columns', numcolumns, '-an', '-f', 'webm', '-map', '0:v',
-        '-map', '0:{}'.format(atrack), '-y', '/dev/null'
+        '-map', '0:a:{}'.format(atrack), '-y', '/dev/null'
     ]
     args2 = [
         'ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
@@ -153,7 +153,7 @@ def mkargs(fn, crop, start, subfname, atrack):
         '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '2',
         '-tile-columns', numcolumns, '-auto-alt-ref', '1', '-lag-in-frames',
         '25', '-c:a', 'libvorbis', '-q:a', '3', '-f', 'webm', '-map', '0:v',
-        '-map', '0:{}'.format(atrack), '-y', '{}.webm'.format(basename)
+        '-map', '0:a:{}'.format(atrack), '-y', '{}.webm'.format(basename)
     ]
     vf = []
     if subfname:
