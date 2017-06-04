@@ -3,10 +3,13 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2017-04-02 17:50:26 +0200
+# Last modified: 2017-06-04 12:41:00 +0200
 
-"""Creates a passphrase by picking words from a word list, and adding filler
-characters between the words."""
+"""
+Creates a passphrase.
+
+It picks words from a word list, and adds filler characters between the words.
+"""
 
 import argparse
 import logging
