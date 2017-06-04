@@ -4,10 +4,9 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-01-17 15:00:08 +0100
-# Last modified: 2016-06-22 00:29:18 +0200
+# Last modified: 2017-06-04 13:45:43 +0200
 
-"""Check if any of the executables in the given directory are linked to
-shared libraries that are missing."""
+"""Check executables in the given directory for missing shared libraries."""
 
 import argparse
 import concurrent.futures as cf
@@ -21,7 +20,8 @@ __version__ = '2.1.0'
 
 
 class Ftype(Enum):
-    """Enum for limited file type information"""
+    """Enum for limited file type information."""
+
     script = 1
     executable = 2
     other = 3
@@ -59,7 +59,7 @@ def main(argv):
 
 def get_type(path):
     """
-    Determines the Ftype of a file.
+    Determine the Ftype of a file.
 
     Returns:
         The Ftype for the given path.

@@ -2,15 +2,13 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-04-22 20:09:20 +0200
+# Last modified: 2017-06-04 13:37:47 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to gitdates.py. This
 # work is published from the Netherlands. See
 # http://creativecommons.org/publicdomain/zero/1.0/
-
-"""For each file in a directory managed by git, get the short hash and
-data of the most recent commit of that file."""
+"""Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -21,9 +19,7 @@ import time
 
 
 def main():
-    """
-    Entry point for gitdates.
-    """
+    """Entry point for gitdates."""
     logging.basicConfig(level='WARNING', format='%(levelname)s: %(message)s')
     checkfor(['git', '--version'])
     # Get a list of all files
@@ -55,7 +51,8 @@ def main():
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -81,9 +78,10 @@ def checkfor(args, rv=0):
 
 def filecheck(fname):
     """
-    Start a git process to get file info. Return a string containing the
-    filename, the abbreviated commit hash and the author date in ISO 8601
-    format.
+    Start a git process to get file info.
+
+    Return a string containing the filename, the abbreviated commit hash and the
+    author date in ISO 8601 format.
 
     Arguments:
         fname: Name of the file to check.

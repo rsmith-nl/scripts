@@ -2,14 +2,16 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-06-22 00:24:16 +0200
+# Last modified: 2017-06-04 13:55:21 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+"""
+Convert TIFF files to PDF format.
 
-"""Convert TIFF files to PDF format using the utilities tiffinfo and tiff2pdf
-from the libtiff package."""
+Using the utilities tiffinfo and tiff2pdf from the libtiff package.
+"""
 
 import argparse
 import concurrent.futures as cf
@@ -56,7 +58,8 @@ def main(argv):
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     Exits the program is the requirement cannot be found.
 
     Arguments:
@@ -82,7 +85,7 @@ def checkfor(args, rv=0):
 
 def tiffconv(fname):
     """
-    Start a tiff2pdf process for the file fname.
+    Start a tiff2pdf process for given file.
 
     Arguments:
         name: Name of the tiff file to convert.

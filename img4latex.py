@@ -4,14 +4,12 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2017-05-06 13:28:30 +0200
+# Last modified: 2017-06-04 13:42:02 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
-"""Program to check a PDF, PNG or JPEG file and return a suitable LaTeX
-figure environment for it."""
+"""Create a suitable LaTeX figure environment for image files."""
 
 import argparse
 import configparser
@@ -25,7 +23,8 @@ __version__ = '1.5.0'
 
 
 def main(argv):
-    """Entry point for img4latex.
+    """
+    Entry point for img4latex.
 
     Arguments:
         argv: All command line arguments.
@@ -114,12 +113,12 @@ Otherwise, the defaults apply.
 
 
 def from_config():
-    """Read configuration data.
+    """
+    Read configuration data.
 
     Returns:
         An Argparse.Namespace object
     """
-
     values = argparse.Namespace()
     d = vars(values)
     config = configparser.ConfigParser()
@@ -134,7 +133,8 @@ def from_config():
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -159,8 +159,8 @@ def checkfor(args, rv=0):
 
 
 def getpdfbb(fn):
-    """Use ghostscript to get the BoundingBox of a PostScript or PDF
-    file.
+    """
+    Get the BoundingBox of a PostScript or PDF file.
 
     Arguments:
         fn: Name of the file to get the BoundingBox from.
@@ -177,7 +177,8 @@ def getpdfbb(fn):
 
 
 def getpicsize(fn):
-    """Use ImageMagick to get the width and height of a bitmapped file.
+    """
+    Get the width and height of a bitmapped file.
 
     Arguments:
         fn: Name of the file to check.
@@ -202,7 +203,8 @@ def getpicsize(fn):
 
 
 def output_figure(fn, options=None):
-    """Print the LaTeX code for the figure.
+    r"""
+    Print the LaTeX code for the figure.
 
     Arguments:
         fn: name of the file.

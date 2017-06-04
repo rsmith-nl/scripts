@@ -4,10 +4,9 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-07-12 01:38:08 +0200
-# Last modified: 2015-05-15 01:28:11 +0200
+# Last modified: 2017-06-04 13:39:04 +0200
 
-"""Make a histogram of the bytes in the input files, and calculate their
-entropy."""
+"""Make a histogram and calculate entropy of files."""
 
 import math
 import os.path
@@ -53,7 +52,8 @@ def readdata(name):
 
 
 def entropy(counts, sz):
-    """Calculate the entropy of the data represented by the counts list.
+    """
+    Calculate the entropy of the data represented by the counts list.
 
     Arguments:
         counts: List of counts.
@@ -72,7 +72,8 @@ def entropy(counts, sz):
 
 
 def histogram_gnuplot(counts, sz, name):
-    """Use gnuplot to create a histogram from the data in the form of a PDF file.
+    """
+    Use gnuplot to create a histogram from the data in the form of a PDF file.
 
     Arguments
         counts: List of counts.

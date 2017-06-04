@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-29 10:37:40 +0100
+# Last modified: 2017-06-04 13:12:08 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to csv2tbl.py. This work is published from
@@ -19,7 +19,8 @@ __version__ = '1.1.0'
 
 
 def readlines(filename):
-    """Read a file and return the contents as a list of lines.
+    """
+    Read a file and return the contents as a list of lines.
 
     Arguments:
         filename name of the file to read
@@ -33,7 +34,8 @@ def readlines(filename):
 
 
 def csvsep(lines, separators=',\t;:'):
-    """Determine the separator used in the lines of csv data.
+    """
+    Determine the separator used in the lines of csv data.
 
     Arguments:
         lines: CSV data as a list of strings.
@@ -51,7 +53,8 @@ def csvsep(lines, separators=',\t;:'):
 
 
 def fmtcsv(line, sep):
-    """Format a single line of CSV data as a LaTeX table cells.
+    """
+    Format a single line of CSV data as a LaTeX table cells.
 
     Arguments:
         line: The string of CSV data to convert
@@ -69,7 +72,8 @@ def fmtcsv(line, sep):
 
 
 def main(argv):
-    """Main program.
+    """
+    Entry point for csv2tbl.
 
     Arguments:
         argv: Command line arguments.

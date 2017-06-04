@@ -2,14 +2,13 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-31 20:13:28 +0100
+# Last modified: 2017-06-04 13:57:48 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mp4.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Convert all video files given on the command line to H.264/AAC streams in
-an MP4 container."""
+"""Convert video files to H.264/AAC streams in an MP4 container."""
 
 from functools import partial
 import argparse
@@ -68,7 +67,8 @@ def main(argv):
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -94,8 +94,7 @@ def checkfor(args, rv=0):
 
 def runencoder(fname, crf, preset):
     """
-    Use ffmpeg to convert a video file to H.264/AAC streams in an MP4
-    container.
+    Convert a video file to H.264/AAC streams in an MP4 container.
 
     Arguments:
         fname: Name of the file to convert.

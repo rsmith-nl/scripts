@@ -4,14 +4,13 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-28 23:25:35 +0200
-# Last modified: 2015-05-15 16:39:10 +0200
+# Last modified: 2017-06-04 13:51:48 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to py-ver.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""List or set the __version__ string in all Python files given on the command
-line or recursively in all directories given on the command line."""
+"""Recursively list or set the __version__ string in Python files."""
 
 import argparse
 import os
@@ -23,7 +22,8 @@ _vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
 
 
 def main(argv):
-    """Entry point for py-ver.
+    """
+    Entry point for py-ver.
 
     Arguments:
         argv: List command line argument strings.

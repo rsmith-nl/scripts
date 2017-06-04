@@ -1,7 +1,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-24 23:55:07 +0100
+# Last modified: 2017-06-04 13:10:47 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to checkfor.py This work
@@ -15,7 +15,8 @@ import sys
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:

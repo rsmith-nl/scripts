@@ -4,14 +4,17 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2017-01-29 10:47:50 +0100
+# Last modified: 2017-06-04 13:50:20 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Opens the file(s) given on the command line in the appropriate program.
-Some of the programs are X11 programs."""
+"""
+Open file(s) given on the command line in the appropriate program.
+
+Some of the programs are X11 programs.
+"""
 
 from os.path import isdir, isfile
 from re import search, IGNORECASE
@@ -38,7 +41,7 @@ othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
 
 def main(argv):  # noqa
-    """Entry point for this script.
+    """Entry point for open.
 
     Arguments:
         argv: command line arguments; list of strings.
@@ -87,7 +90,8 @@ def main(argv):  # noqa
 
 
 def matchfile(fdict, odict, fname):
-    """For the given filename, returns the matching program.
+    """
+    Return the matching program for a given filename.
 
     Arguments:
         fdict: Handlers for files. A dictionary of regex:(commands)

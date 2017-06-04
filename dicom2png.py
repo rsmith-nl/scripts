@@ -2,15 +2,18 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-15 15:26:53 +0100
+# Last modified: 2017-06-04 13:20:31 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+"""
+Convert DICOM files from an X-ray machine to PNG format.
 
-"""Convert DICOM files from an X-ray machine to PNG format, remove blank
-areas. The blank area removal is based on the image size of a Philips flat
-detector. The image goes from 2048x2048 pixels to 1574x2048 pixels."""
+During the conversion process, blank areas are removed. The blank area removal
+is based on the image size of a Philips flat detector. The image goes from
+2048x2048 pixels to 1574x2048 pixels.
+"""
 
 import concurrent.futures as cf
 from datetime import datetime
@@ -24,8 +27,10 @@ __version__ = '1.2.0'
 
 
 def convert(filename):
-    """Convert a DICOM file to a PNG file, removing the blank areas from the
-    Philips detector.
+    """
+    Convert a DICOM file to a PNG file.
+
+    Removing the blank areas from the Philips detector.
 
     Arguments:
         filename: name of the file to convert.
@@ -44,7 +49,8 @@ def convert(filename):
 
 
 def main(argv):
-    """Main entry point for dicom2png.py.
+    """
+    Entry point for dicom2png.
 
     Arguments:
         argv: command line arguments

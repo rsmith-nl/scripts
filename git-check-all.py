@@ -2,14 +2,17 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-10-08 22:08:45 +0200
+# Last modified: 2017-06-04 13:33:30 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to <script>. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+"""
+Run ``git gc`` on all the user's git repositories.
 
-"""Find all directories in the user's home directory that are managed with
-git, and run ``git gc`` on them unless they have uncommitted changes."""
+Find all directories in the user's home directory that are managed with
+git, and run ``git gc`` on them unless they have uncommitted changes.
+"""
 
 import os
 import subprocess
@@ -18,7 +21,8 @@ import logging
 
 
 def main(args):
-    """Entry point of git-check-all.
+    """
+    Entry point of git-check-all.
 
     Arguments:
         args: Command line arguments minus the program name.
@@ -34,12 +38,13 @@ def main(args):
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
-    If not, it terminates the program by calling sys.exit.
+    Ensure that a program necessary for using this script is available.
+
+    If the required utility is not found, this function will exit the program.
 
     Arguments:
-        args: String or list of strings of commands. A single string may
-            not contain spaces.
+        args: String or list of strings of commands. A single string may not
+            contain spaces.
         rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
@@ -53,15 +58,16 @@ def checkfor(args, rv=0):
             raise OSError
         logging.info('found required program "{}"'.format(args[0]))
     except OSError as oops:
-        outs = "required program '{}' not found: {}."
+        outs = 'required program "{}" not found: {}.'
         logging.error(outs.format(args[0], oops.strerror))
         sys.exit(1)
 
 
 def runchecks(d, verbose=False):
     """
-    Run git checks in the specified directory. If the repository is
-    clean, do a ligth-weight garbage collection run on it.
+    Run git checks in the specified directory.
+
+    If the repository is clean, do a ligth-weight garbage collection run on it.
 
     Arguments:
         d: Directory to run the checks in.
@@ -80,7 +86,8 @@ def runchecks(d, verbose=False):
 
 
 def gitcmd(cmds, output=False):
-    """Run the specified git command.
+    """
+    Run the specified git command.
 
     Arguments:
         cmds: command string or list of strings of command and arguments.

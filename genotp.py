@@ -2,13 +2,16 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-06-10 22:48:11 +0200
+# Last modified: 2017-06-04 13:27:13 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to genotp.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Generates an old-fashioned one-time pad;
+"""
+Generate an old-fashioned one-time pad.
+
+The format of the one-time pad is:
 65 lines of 12 groups of 5 random capital letters.
 """
 
@@ -16,13 +19,15 @@ from os import urandom
 
 
 def main():
+    """Entry point."""
     ident = '+++++ {} +++++'
     print(ident.format(rndcaps(10)))
     print(otp())
 
 
 def otp(n=65):
-    """Return a one-time pad.
+    """
+    Return a one-time pad.
 
     Arguments:
         n: number of lines in the key
@@ -39,7 +44,8 @@ def otp(n=65):
 
 
 def rndcaps(n):
-    """Generates a string of random capital letters.
+    """
+    Generates a string of random capital letters.
 
     Arguments:
         n: Length of the output string.

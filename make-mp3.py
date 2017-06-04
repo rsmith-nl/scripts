@@ -3,15 +3,16 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2016-06-22 00:17:52 +0200
+# Last modified: 2017-06-04 13:44:09 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-mp3.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+"""
+Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to MP3 format.
 
-"""Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to variable bitrate
-MP3 format.  Processing is done in parallel using as many subprocesses as the
-machine has cores.
+Processing is done in parallel using as many subprocesses as the machine has
+cores.
 
 Information w.r.t. artist, song titles et cetera is gathered from a text file
 called “album.json”, which should have the following info;
@@ -43,9 +44,7 @@ __version__ = '2.1.0'
 
 
 def main(argv):
-    """
-    Entry point for make-mp3.
-    """
+    """Entry point for make-mp3."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--log', default='warning',
                         choices=['debug', 'info', 'warning', 'error'],
@@ -82,7 +81,8 @@ def main(argv):
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -107,7 +107,8 @@ def checkfor(args, rv=0):
 
 
 def runmp3(idx, data):
-    """Use the lame(1) program to convert a music file to MP3 format.
+    """
+    Use the lame(1) program to convert a music file to MP3 format.
 
     Arguments:
         idx: track index (starts from 0)

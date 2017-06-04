@@ -4,14 +4,17 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-28 13:36:38 +0100
-# Last modified: 2015-09-22 22:25:20 +0200
+# Last modified: 2017-06-04 13:54:14 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to sha256.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""A utility to calculate the SHA256 checksum of files, for systems that don't
-come with such a utility."""
+"""
+Calculate the SHA256 checksum of files.
+
+Meant for systems that don't come with such a utility.
+"""
 
 from hashlib import sha256
 from os.path import isfile
@@ -22,7 +25,8 @@ __version__ = '1.0.2'
 
 
 def main(argv):
-    """Entry point for sha256.
+    """
+    Entry point for sha256.
 
     Arguments:
         argv: command line arguments

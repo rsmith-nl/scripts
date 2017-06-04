@@ -4,14 +4,12 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-01-03 15:48:13 +0100
-# Last modified: 2015-09-22 22:24:41 +0200
+# Last modified: 2017-06-04 13:35:18 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to git-origdate.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
-"""Find out for all command-line arguments when they were first checked in to
-git."""
+"""Report when arguments were checked into git."""
 
 import os.path
 import subprocess
@@ -21,7 +19,8 @@ __version__ = '1.0.1'
 
 
 def main(argv):
-    """Entry point for git-origdate.
+    """
+    Entry point for git-origdate.
 
     Arguments:
         argv: Command line arguments.

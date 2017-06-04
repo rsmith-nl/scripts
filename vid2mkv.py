@@ -2,15 +2,12 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-31 20:13:37 +0100
+# Last modified: 2017-06-04 13:56:44 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to vid2mkv.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
-"""Convert all video files given on the command line to Theora/Vorbis streams
-in a Matroska container using ffmpeg."""
-
+"""Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
 import argparse
@@ -67,7 +64,8 @@ def main(argv):
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -93,8 +91,7 @@ def checkfor(args, rv=0):
 
 def runencoder(fname, vq, aq):
     """
-    Use ffmpeg to convert a video file to Theora/Vorbis streams in a Matroska
-    container.
+    Convert a video file to Theora/Vorbis streams in a Matroska container.
 
     Arguments:
         fname: Name of the file to convert.

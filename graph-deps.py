@@ -4,13 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-27 13:50:28 +0200
-# Last modified: 2017-04-27 21:54:23 +0200
+# Last modified: 2017-06-04 13:38:06 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to graph-deps.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Creates a graph of FreeBSD package dependencies.
+"""
+Creates a graph of FreeBSD package dependencies.
 
 Use it like this:
 

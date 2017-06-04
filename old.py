@@ -3,15 +3,18 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-02-10 21:43:11 +0100
-# Last modified: 2017-01-08 14:15:01 +0100
+# Last modified: 2017-06-04 13:48:45 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to old.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Renames a directory by prefixing the name with 'old-'. If the directory
-name starts with a period, it removes the period and prefixes it with
-'old-dot'."""
+"""
+Renames a directory by prefixing the name with 'old-'.
+
+If the directory name starts with a period, it removes the period and prefixes
+it with 'old-dot'.
+"""
 
 from datetime import datetime
 import logging

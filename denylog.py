@@ -4,15 +4,18 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-09-03 03:04:01 +0200
-# Last modified: 2015-09-05 19:02:16 +0200
+# Last modified: 2017-06-04 13:16:16 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to denylog.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Summarize the deny log messages from ipfw.  Use the given file names, or
-/var/log/security if no filenames are given.  This program can handle
-compressed files like /var/log/security.?.bz2."""
+"""
+Summarize the deny log messages from ipfw.
+
+Use the given file names, or /var/log/security if no filenames are given.
+This program can handle compressed files like /var/log/security.?.bz2.
+"""
 
 import argparse
 import bz2
@@ -24,7 +27,8 @@ __version__ = '0.4.1'
 
 
 def services(filename='/etc/services'):
-    """Generate a dictionary of the available services from /etc/services.
+    """
+    Generate a dictionary of the available services from /etc/services.
 
     Arguments:
         filename: Name of the services file.
@@ -39,7 +43,8 @@ def services(filename='/etc/services'):
 
 
 def parselogfile(filename):
-    """Extract deny rules for incoming packets from file and parse them.
+    """
+    Extract deny rules for incoming packets from file and parse them.
 
     Arguments:
         filename: Name of the file to read.

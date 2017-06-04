@@ -3,10 +3,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2017-04-11 16:11:57 +0200
+# Last modified: 2017-06-04 13:24:34 +0200
 
-"""Decrypt safety data sheets and fix the title to match the filename.
-This is done to make sure that an e-reader displays a sensible title."""
+"""
+Fix PDF file titles.
+
+Decrypt safety data sheets and fix the title to match the filename.
+This is done to make sure that an e-reader displays a sensible title.
+"""
 
 import os
 import subprocess

@@ -3,14 +3,18 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-12-11 22:58:53 +0100
-# Last modified: 2015-09-22 21:50:48 +0200
+# Last modified: 2017-06-04 13:30:53 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genpw.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Generate random passwords by using random data from ``os.urandom`` which is
-encoded in base64 format."""
+"""
+Generate random passwords.
+
+The passwords are random data from ``os.urandom`` which is encoded in base64
+format.
+"""
 
 from base64 import b64encode
 from os import urandom
@@ -21,9 +25,7 @@ __version__ = '2.0.1'
 
 
 def main(argv):
-    """
-    Entry point for genpw.
-    """
+    """Entry point for genpw."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-l', '--length',
                         default=16,
@@ -69,8 +71,9 @@ def genpw(length):
 
 def roundup(characters):
     """
-    Rounds up the number of characters so that you don't end up with '='
-    at the end of the base64 encoded string.
+    Prevent '=' at the end of base64 encoded strings.
+
+    This is done by rounding up the number of characters.
 
     Arguments:
         characters: The number of requested (8-bit) characters.

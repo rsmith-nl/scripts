@@ -2,14 +2,12 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-05-06 13:39:31 +0200
+# Last modified: 2017-06-04 13:25:40 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
-"""Shrink fotos to a size suitable for use in my logbook and other
-   documents."""
+"""Shrink fotos to a size suitable for use in my logbook."""
 
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
@@ -29,9 +27,10 @@ extensions = ('.jpg', '.jpeg', '.raw')
 
 
 def main(argv):
-    """Main program.
+    """
+    Entry point for foto4lb.
 
-    Keyword arguments:
+    Arguments:
         argv: Command line arguments without the script name.
     """
     parser = argparse.ArgumentParser(description=__doc__)
@@ -86,7 +85,8 @@ def main(argv):
 
 
 def processfile(packed):
-    """Read an image file and write a smaller version.
+    """
+    Read an image file and write a smaller version.
 
     Arguments:
         packed: A 3-tuple of (path, filename, output width)

@@ -4,13 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-14 12:09:34 +0100
-# Last modified: 2016-02-14 15:01:50 +0100
+# Last modified: 2017-06-04 13:48:17 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to offsetsrt.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Manipulate the times in an SRT file.
+"""
+Manipulate the times in an SRT file.
 
 Reads an SRT file and applies the given offset to all time values. Then prints
 the modified data to stdout.
@@ -58,7 +59,8 @@ def main(argv):
 
 
 def str2ms(s):
-    """Convert the time strings from an SRT file to milliseconds.
+    """
+    Convert the time strings from an SRT file to milliseconds.
 
     Arguments:
         s: A time value in the format HH:MM:SS,mmm where H, M, S and m are
@@ -74,7 +76,8 @@ def str2ms(s):
 
 
 def ms2str(v):
-    """Convert a time in milliseconds to a time string.
+    """
+    Convert a time in milliseconds to a time string.
 
     Arguments:
         v: a time in milliseconds.
@@ -89,7 +92,10 @@ def ms2str(v):
 
 
 def split_time(s):
-    """Parses a time-line string, which has the format
+    """
+    Parse a time-line string.
+
+    These strings have the format
     HH:MM:SS,mmm --> HH:MM:SS,mmm
 
     Arguments:
@@ -106,7 +112,8 @@ def split_time(s):
 
 
 def parsesrt(path):
-    """Reads an SRT file and splits it up into a list of data.
+    """
+    Read an SRT file and splits it up into a list of data.
 
     Arguments:
         path: path of an SRT file.

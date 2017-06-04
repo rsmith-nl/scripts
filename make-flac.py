@@ -3,13 +3,15 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-08-12 14:37:50 +0200
-# Last modified: 2016-06-22 00:17:44 +0200
+# Last modified: 2017-06-04 13:42:57 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to make-flac.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
+"""
+Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
+
 Processing is done in parallel using as many subprocesses as the machine has
 cores.
 
@@ -43,9 +45,7 @@ __version__ = '2.2.0'
 
 
 def main(argv):
-    """
-    Entry point for make-flac.
-    """
+    """Entry point for make-flac."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--log', default='warning',
                         choices=['debug', 'info', 'warning', 'error'],
@@ -85,7 +85,8 @@ def main(argv):
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -110,7 +111,8 @@ def checkfor(args, rv=0):
 
 
 def runflac(idx, data):
-    """Use the flac(1) program to convert a music file to FLAC format.
+    """
+    Use the flac(1) program to convert a music file to FLAC format.
 
     Arguments:
         idx: track index (starts from 0)
