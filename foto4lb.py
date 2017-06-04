@@ -34,20 +34,24 @@ def main(argv):
         argv: Command line arguments without the script name.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-w', '--width',
-                        default=886,
-                        type=int,
-                        help='width of the images in pixels (default 886)')
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
+    parser.add_argument(
+        '-w',
+        '--width',
+        default=886,
+        type=int,
+        help='width of the images in pixels (default 886)')
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
     parser.add_argument('path', nargs='*', help='directory in which to work')
     args = parser.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     logging.debug('Command line arguments = {}'.format(argv))
     logging.debug('Parsed arguments = {}'.format(args))
     if not args.path:
@@ -61,8 +65,10 @@ def main(argv):
             fs = '"{}" already exists in "{}", skipping this path.'
             logging.warning(fs.format(outdir, path))
             continue
-        files = [f.name for f in scandir(path) if f.is_file() and
-                 f.name.lower().endswith(extensions)]
+        files = [
+            f.name for f in scandir(path)
+            if f.is_file() and f.name.lower().endswith(extensions)
+        ]
         count += len(files)
         pairs.append((path, files))
         logging.debug('Path: "{}"'.format(path))
@@ -73,7 +79,7 @@ def main(argv):
     logging.info('found {} files.'.format(count))
     logging.info('creating output directories.')
     for dirname, _ in pairs:
-            mkdir(dirname + sep + outdir)
+        mkdir(dirname + sep + outdir)
     with ProcessPoolExecutor(max_workers=cpu_count()) as tp:
         agen = ((p, fn, args.width) for p, flist in pairs for fn in flist)
         for fn, rv in tp.map(processfile, agen):
@@ -103,11 +109,13 @@ def processfile(packed):
         with Image(filename=fname) as img:
             w, h = img.size
             scale = newwidth / w
-            exif = {k[5:]: v for k, v in img.metadata.items()
-                    if k.startswith('exif:')}
+            exif = {
+                k[5:]: v
+                for k, v in img.metadata.items() if k.startswith('exif:')
+            }
             img.units = 'pixelsperinch'
             img.resolution = (300, 300)
-            img.resize(width=newwidth, height=round(scale*h))
+            img.resize(width=newwidth, height=round(scale * h))
             img.strip()
             img.compression_quality = 80
             img.unsharp_mask(radius=2, sigma=0.5, amount=0.7, threshold=0)
@@ -117,8 +125,10 @@ def processfile(packed):
             available = list(want.intersection(set(exif.keys())))
             available.sort()
             fields = exif[available[0]].replace(' ', ':').split(':')
-            dt = datetime(int(fields[0]), int(fields[1]), int(fields[2]),
-                          int(fields[3]), int(fields[4]), int(fields[5]))
+            dt = datetime(
+                int(fields[0]),
+                int(fields[1]),
+                int(fields[2]), int(fields[3]), int(fields[4]), int(fields[5]))
         except Exception:
             dt = datetime.today()
         modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute,

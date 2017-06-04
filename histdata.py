@@ -5,7 +5,6 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-07-12 01:38:08 +0200
 # Last modified: 2017-06-04 13:39:04 +0200
-
 """Make a histogram and calculate entropy of files."""
 
 import math
@@ -93,8 +92,10 @@ def histogram_gnuplot(counts, sz, name):
     pl += ["set style line 7 lc rgb '#A65628' pt 7 ps 1 lt 1 lw 4"]
     pl += ["set style line 8 lc rgb '#F781BF' pt 8 ps 1 lt 1 lw 4"]
     pl += ["set palette maxcolors 8"]
-    pl += ["set palette defined ( 0 '#E41A1C', 1 '#377EB8', 2 '#4DAF4A',"
-           " 3 '#984EA3',4 '#FF7F00', 5 '#FFFF33', 6 '#A65628', 7 '#F781BF' )"]
+    pl += [
+        "set palette defined ( 0 '#E41A1C', 1 '#377EB8', 2 '#4DAF4A',"
+        " 3 '#984EA3',4 '#FF7F00', 5 '#FFFF33', 6 '#A65628', 7 '#F781BF' )"
+    ]
     pl += ["set style line 11 lc rgb '#808080' lt 1 lw 5"]
     pl += ["set border 3 back ls 11"]
     pl += ["set tics nomirror"]
@@ -108,8 +109,10 @@ def histogram_gnuplot(counts, sz, name):
     pl += ['set ylabel "occurance [%]"']
     pl += ['rnd(x) = {:.6f}'.format(rnd)]
     cont = "rnd(x) with lines ls 2 title 'continuous uniform ({:.6f}%)'"
-    pl += ["plot '-' using 1:2 with points ls 1 title '{}', ".format(name) +
-           cont.format(rnd)]
+    pl += [
+        "plot '-' using 1:2 with points ls 1 title '{}', ".format(name) +
+        cont.format(rnd)
+    ]
     for n, v in enumerate(counts):
         pl += ['{} {}'.format(n, v)]
     pl += ['e']

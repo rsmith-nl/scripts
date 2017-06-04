@@ -7,7 +7,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to dicom2png.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Convert DICOM files from an X-ray machine to JPG format.
 
@@ -58,17 +57,19 @@ def main(argv):
         argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
-    parser.add_argument('fn', nargs='*', metavar='filename',
-                        help='DICOM files to process')
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        'fn', nargs='*', metavar='filename', help='DICOM files to process')
     args = parser.parse_args(argv[1:])
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     if not args.fn:

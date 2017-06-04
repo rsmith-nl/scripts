@@ -4,7 +4,6 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-06 13:08:02 +0200
 # Last modified: 2016-06-11 00:30:24 +0200
-
 """
 Tests for functions in python files in the scripts directory.
 
@@ -26,7 +25,7 @@ def test_rndcaps():
     v = Counter(rndcaps(100000)).values()
     mxc = max(v)
     mnc = min(v)
-    assert mxc/mnc < 1.3
+    assert mxc / mnc < 1.3
 
 
 def test_otp():
@@ -65,7 +64,7 @@ def test_fixname():
 
 def test_srt():
     for j in range(7200):
-        p = j*10
+        p = j * 10
         ts = ms2str(p)
         k = str2ms(ts)
         assert p == k

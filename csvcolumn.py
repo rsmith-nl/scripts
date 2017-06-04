@@ -39,22 +39,29 @@ def getdata(fn, colnum, delim=';'):
 
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('-v', '--version', action='version',
-                    version=__version__)
-parser.add_argument('-r', '--rows', nargs=2, type=int, metavar=('min', 'max'),
-                    help='only show rows min--max')
-parser.add_argument('-d', '--delimiter', default=';',
-                    help="delimiter to use (defaults to ';')")
-parser.add_argument('column', type=int,
-                    help='number of the column to print (starts at 0)')
-parser.add_argument('path', type=str, nargs='*',
-                    help='path of the file to process')
+parser.add_argument('-v', '--version', action='version', version=__version__)
+parser.add_argument(
+    '-r',
+    '--rows',
+    nargs=2,
+    type=int,
+    metavar=('min', 'max'),
+    help='only show rows min--max')
+parser.add_argument(
+    '-d',
+    '--delimiter',
+    default=';',
+    help="delimiter to use (defaults to ';')")
+parser.add_argument(
+    'column', type=int, help='number of the column to print (starts at 0)')
+parser.add_argument(
+    'path', type=str, nargs='*', help='path of the file to process')
 args = parser.parse_args(sys.argv[1:])
 for path in args.path:
     print('file:', path)
     results = getdata(path, args.column, args.delimiter)
     if args.rows:
-        rg = range(args.rows[0], args.rows[1]+1)
+        rg = range(args.rows[0], args.rows[1] + 1)
         results = [(n, d) for n, d in results if n in rg]
     for n, d in results:
         print("row {:2d}: '{}'".format(n, d))

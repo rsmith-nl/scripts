@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to sha256.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Calculate the SHA256 checksum of files.
 
@@ -35,9 +34,8 @@ def main(argv):
     hs = '''compare file to this sha256 string;
             will add "[ OK ]" or "[ Failed ]" after the checksum'''
     parser.add_argument('-c', '--checksum', default=None, help=hs)
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
     parser.add_argument('file', nargs='*')
     args = parser.parse_args(argv)
     if not args.file:

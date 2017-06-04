@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to denylog.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Summarize the deny log messages from ipfw.
 
@@ -71,17 +70,22 @@ def main(argv):
         argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument("files", metavar='file', nargs='*',
-                        help="one or more files to process")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        "files",
+        metavar='file',
+        nargs='*',
+        help="one or more files to process")
     args = parser.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     if not args.files:
         args.files = ['/var/log/security']
     reps = '  IP: {:16s} port: {:10s} rule: {}'
@@ -97,7 +101,7 @@ def main(argv):
             print('  Nothing to report.')
             continue
         for rule, IP, port in matches:
-            print(reps.format(IP+',', serv[int(port)]+',', rule))
+            print(reps.format(IP + ',', serv[int(port)] + ',', rule))
 
 
 if __name__ == '__main__':

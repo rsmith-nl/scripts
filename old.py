@@ -8,7 +8,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to old.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Renames a directory by prefixing the name with 'old-'.
 

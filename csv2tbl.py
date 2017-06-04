@@ -7,7 +7,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to csv2tbl.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """Convert a CSV file to a LaTeX table."""
 
 from collections import Counter

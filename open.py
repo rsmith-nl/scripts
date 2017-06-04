@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -49,17 +48,22 @@ def main(argv):  # noqa
     if argv[0].endswith(('open', 'open.py')):
         del argv[0]
     opts = argparse.ArgumentParser(prog='open', description=__doc__)
-    opts.add_argument('-v', '--version', action='version',
-                      version=__version__)
+    opts.add_argument('-v', '--version', action='version', version=__version__)
     opts.add_argument('-a', '--application', help='application to use')
-    opts.add_argument('--log', default='warning',
-                      choices=['debug', 'info', 'warning', 'error'],
-                      help="logging level (defaults to 'warning')")
-    opts.add_argument("files", metavar='file', nargs='*',
-                      help="one or more files to process")
+    opts.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    opts.add_argument(
+        "files",
+        metavar='file',
+        nargs='*',
+        help="one or more files to process")
     args = opts.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     logging.info('command line arguments = {}'.format(argv))
     logging.info('parsed arguments = {}'.format(args))
     fail = "opening '{}' failed: {}"

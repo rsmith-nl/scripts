@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to rename.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Utility to rename files.
 
@@ -33,23 +32,39 @@ def main(argv):
         argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-p', '--prefix', default='picture-',
-                        help='prefix for the image name (default "picture-")')
-    parser.add_argument('-s', '--start', type=int, default=1,
-                        help='first number to use (default 1)')
-    parser.add_argument('-w', '--width', type=int, default=2,
-                        help='field width for number (default 2)')
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument("files", metavar='file', nargs='*',
-                        help="one or more files to process")
+    parser.add_argument(
+        '-p',
+        '--prefix',
+        default='picture-',
+        help='prefix for the image name (default "picture-")')
+    parser.add_argument(
+        '-s',
+        '--start',
+        type=int,
+        default=1,
+        help='first number to use (default 1)')
+    parser.add_argument(
+        '-w',
+        '--width',
+        type=int,
+        default=2,
+        help='field width for number (default 2)')
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        "files",
+        metavar='file',
+        nargs='*',
+        help="one or more files to process")
     args = parser.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     # The real work starts here...
     pairs = newnames(args.files, args.prefix, args.start, args.width)
     es = 'Could not rename "{}" to "{}": {}'

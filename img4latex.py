@@ -41,23 +41,33 @@ Command-line arguments override settings in the configuration file.
 Otherwise, the defaults apply.
 """
     raw = argparse.RawDescriptionHelpFormatter
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=raw,
-                                     epilog=after)
-    parser.add_argument('-w', '--width', type=float, default=160,
-                        help='width of the text block in mm. (default=160)')
-    parser.add_argument('-t', '--height', type=float, default=270,
-                        help='height of the text block in mm. (default=270)')
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=raw, epilog=after)
+    parser.add_argument(
+        '-w',
+        '--width',
+        type=float,
+        default=160,
+        help='width of the text block in mm. (default=160)')
+    parser.add_argument(
+        '-t',
+        '--height',
+        type=float,
+        default=270,
+        help='height of the text block in mm. (default=270)')
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
     parser.add_argument('file', nargs='*')
     cfg = from_config()
     args = parser.parse_args(argv, namespace=cfg)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%% %(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%% %(levelname)s: %(message)s')
     if cfg is None:
         logging.info('configuration file not found')
     else:
@@ -147,8 +157,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
-                             stderr=subprocess.DEVNULL)
+        rc = subprocess.call(
+            args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
         logging.info('found required program "{}"'.format(args[0]))
@@ -169,8 +179,10 @@ def getpdfbb(fn):
         A tuple of strings in the form (llx lly urx ury), where ll means
         lower left and ur means upper right.
     """
-    gsopts = ['gs', '-q', '-dFirstPage=1', '-dLastPage=1', '-dNOPAUSE',
-              '-dBATCH', '-sDEVICE=bbox', fn]
+    gsopts = [
+        'gs', '-q', '-dFirstPage=1', '-dLastPage=1', '-dNOPAUSE', '-dBATCH',
+        '-sDEVICE=bbox', fn
+    ]
     gsres = subprocess.check_output(gsopts, stderr=subprocess.STDOUT)
     bbs = gsres.decode().splitlines()[0]
     return bbs.split(' ')[1:]

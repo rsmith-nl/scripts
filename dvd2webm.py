@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Convert an mpeg stream from a DVD to a webm file.
 
@@ -32,25 +31,28 @@ __version__ = '0.8.2'
 def main(argv):
     """Entry point for dvd2webm.py."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--log', default='info',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'info')")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
-    parser.add_argument('-s', '--start', type=str,
-                        help="time (hh:mm:ss) at which to start encoding")
-    parser.add_argument('-c', '--crop', type=str,
-                        help="crop (w:h:x:y) to use")
-    parser.add_argument('-t', '--subtitle', type=str,
-                        help="name of srt file for subtitles")
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'info')")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '-s',
+        '--start',
+        type=str,
+        help="time (hh:mm:ss) at which to start encoding")
+    parser.add_argument('-c', '--crop', type=str, help="crop (w:h:x:y) to use")
+    parser.add_argument(
+        '-t', '--subtitle', type=str, help="name of srt file for subtitles")
     ahelp = "number of the audio track to use (default: 0; first audio track)"
-    parser.add_argument('-a', '--audio', type=int, default=0,
-                        help=ahelp)
+    parser.add_argument('-a', '--audio', type=int, default=0, help=ahelp)
     parser.add_argument('fn', metavar='filename', help='MPEG file to process')
     args = parser.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'.".format(args.fn))
@@ -81,18 +83,25 @@ def findcrop(path, start='00:10:00', duration='00:00:01'):
     Returns:
         A string containing the cropping to use with ffmpeg.
     """
-    args = ['ffmpeg', '-hide_banner',
-            '-ss', start,  # Start at 10 minutes in.
-            '-t', duration,  # Parse for one second.
-            '-i', path,  # Path to the input file.
-            '-vf', 'cropdetect',  # Use the crop detect filter.
-            '-an',  # Disable audio output.
-            '-y',  # Overwrite output without asking.
-            '-f', 'rawvideo',  # write raw video output.
-            '/dev/null'  # Write output to /dev/null
-            ]
-    proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL,
-                  stderr=sp.PIPE)
+    args = [
+        'ffmpeg',
+        '-hide_banner',
+        '-ss',
+        start,  # Start at 10 minutes in.
+        '-t',
+        duration,  # Parse for one second.
+        '-i',
+        path,  # Path to the input file.
+        '-vf',
+        'cropdetect',  # Use the crop detect filter.
+        '-an',  # Disable audio output.
+        '-y',  # Overwrite output without asking.
+        '-f',
+        'rawvideo',  # write raw video output.
+        '/dev/null'  # Write output to /dev/null
+    ]
+    proc = sp.run(
+        args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
     rv = Counter(re.findall('crop=(\d+:\d+:\d+:\d+)', proc.stderr))
     return rv.most_common(1)[0][0]
 
@@ -131,19 +140,21 @@ def mkargs(fn, crop, start, subfname, atrack):
     # TODO: Add ‘--row-mt=1’ to args1 and args2 after libvpx-1.6.2 comes out.
     # In that case, also test ‘numthreads = str(2*os.cpu_count())’
     # See https://github.com/Kagami/webm.py/wiki/Notes-on-encoding-settings
-    args1 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
-             '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
-             '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
-             '-tile-columns', numcolumns, '-an', '-f', 'webm',
-             '-map', '0:v', '-map', '0:{}'.format(atrack), '-y', '/dev/null']
-    args2 = ['ffmpeg', '-loglevel', 'quiet', '-i', fn,
-             '-passlogfile', basename, '-c:v', 'libvpx-vp9',
-             '-threads', numthreads, '-pass', '2', '-sn', '-b:v', '1400k',
-             '-crf', '33', '-g', '250', '-speed', '2',
-             '-tile-columns', numcolumns, '-auto-alt-ref', '1',
-             '-lag-in-frames', '25', '-c:a', 'libvorbis', '-q:a', '3',
-             '-f', 'webm', '-map', '0:v', '-map', '0:{}'.format(atrack),
-             '-y', '{}.webm'.format(basename)]
+    args1 = [
+        'ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
+        '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '1', '-sn',
+        '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '4',
+        '-tile-columns', numcolumns, '-an', '-f', 'webm', '-map', '0:v',
+        '-map', '0:{}'.format(atrack), '-y', '/dev/null'
+    ]
+    args2 = [
+        'ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
+        '-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass', '2', '-sn',
+        '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', '2',
+        '-tile-columns', numcolumns, '-auto-alt-ref', '1', '-lag-in-frames',
+        '25', '-c:a', 'libvorbis', '-q:a', '3', '-f', 'webm', '-map', '0:v',
+        '-map', '0:{}'.format(atrack), '-y', '{}.webm'.format(basename)
+    ]
     vf = []
     if subfname:
         logging.info("using subtitles from '{}'.".format(subfname))
@@ -199,7 +210,7 @@ def encode(args1, args2):
     oidx = args2.index('-i') + 1
     origsize = os.path.getsize(args2[oidx])
     newsize = os.path.getsize(args2[-1])
-    percentage = int(100*newsize/origsize)
+    percentage = int(100 * newsize / origsize)
     sz = "the size of '{}' is {}% of the size of '{}'."
     logging.info(sz.format(args2[-1], percentage, args2[4]))
 

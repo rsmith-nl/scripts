@@ -5,7 +5,6 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-01-17 15:00:08 +0100
 # Last modified: 2017-06-04 13:45:43 +0200
-
 """Check executables in the given directory for missing shared libraries."""
 
 import argparse
@@ -36,17 +35,19 @@ def main(argv):
         argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
-    parser.add_argument('--log', default='warning',
-                        choices=['debug', 'info', 'warning', 'error'],
-                        help="logging level (defaults to 'warning')")
-    parser.add_argument("dirs", nargs='*',
-                        help="one or more directory to process")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')")
+    parser.add_argument(
+        "dirs", nargs='*', help="one or more directory to process")
     args = parser.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                        format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
     logging.debug('Command line arguments = {}'.format(argv))
     logging.debug('Parsed arguments = {}'.format(args))
     programs = (e.path for d in args.dirs for e in os.scandir(d)
@@ -90,10 +91,16 @@ def check_missing_libs(path):
     """
     logging.info("checking {}".format(path))
     try:
-        p = sp.run(['ldd', path], stdout=sp.PIPE, stderr=sp.DEVNULL,
-                   universal_newlines=True, check=True)
-        rv = [ln for ln in p.stdout.splitlines()
-              if 'missing' in ln or 'not found' in ln]
+        p = sp.run(
+            ['ldd', path],
+            stdout=sp.PIPE,
+            stderr=sp.DEVNULL,
+            universal_newlines=True,
+            check=True)
+        rv = [
+            ln for ln in p.stdout.splitlines()
+            if 'missing' in ln or 'not found' in ln
+        ]
     except sp.CalledProcessError:
         logging.warning('ldd failed on {}'.format(path))
         rv = []

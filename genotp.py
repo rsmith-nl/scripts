@@ -7,7 +7,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to genotp.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Generate an old-fashioned one-time pad.
 
@@ -36,7 +35,7 @@ def otp(n=65):
         n lines of 12 groups of 5 random capital letters.
     """
     lines = []
-    for num in range(1, n+1):
+    for num in range(1, n + 1):
         i = ['{:02d} '.format(num)]
         i += [rndcaps(5) for j in range(0, 12)]
         lines.append(' '.join(i))

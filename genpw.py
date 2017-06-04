@@ -8,7 +8,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genpw.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Generate random passwords.
 
@@ -27,29 +26,34 @@ __version__ = '2.0.1'
 def main(argv):
     """Entry point for genpw."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-l', '--length',
-                        default=16,
-                        type=int,
-                        help='# of random character for password (default 16)')
-    parser.add_argument('-r', '--repeat',
-                        default=1,
-                        type=int,
-                        help='number of passwords to generate (default: 1)')
-    parser.add_argument('-g', '--groupby',
-                        default=0,
-                        metavar='N',
-                        type=int,
-                        help='group by N characters (default: 0; no grouping)')
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=__version__)
+    parser.add_argument(
+        '-l',
+        '--length',
+        default=16,
+        type=int,
+        help='# of random character for password (default 16)')
+    parser.add_argument(
+        '-r',
+        '--repeat',
+        default=1,
+        type=int,
+        help='number of passwords to generate (default: 1)')
+    parser.add_argument(
+        '-g',
+        '--groupby',
+        default=0,
+        metavar='N',
+        type=int,
+        help='group by N characters (default: 0; no grouping)')
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
     args = parser.parse_args(argv)
     for _ in range(args.repeat):
         pw = genpw(args.length).decode('ascii')
         if args.groupby > 0:
             n = args.groupby
             count = len(pw) // n
-            pw = ' '.join([pw[k:k+n] for k in range(0, n*count, n)])
+            pw = ' '.join([pw[k:k + n] for k in range(0, n * count, n)])
         print(pw)
 
 

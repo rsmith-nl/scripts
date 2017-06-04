@@ -7,7 +7,6 @@
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to nospaces.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """Change whitespace in file names to underscores."""
 
 import os

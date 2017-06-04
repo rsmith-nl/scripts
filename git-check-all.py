@@ -52,8 +52,8 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL,
-                             stderr=subprocess.DEVNULL)
+        rc = subprocess.call(
+            args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
         logging.info('found required program "{}"'.format(args[0]))
@@ -105,8 +105,8 @@ def gitcmd(cmds, output=False):
     if output:
         rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT).decode()
     else:
-        rv = subprocess.call(cmds, stdout=subprocess.DEVNULL,
-                             stderr=subprocess.DEVNULL)
+        rv = subprocess.call(
+            cmds, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return rv
 
 

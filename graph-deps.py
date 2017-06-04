@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to graph-deps.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Creates a graph of FreeBSD package dependencies.
 
@@ -42,4 +41,4 @@ try:
 except KeyboardInterrupt:
     print('\n', __doc__)
 else:
-    print('\n'.join(output)+'}')
+    print('\n'.join(output) + '}')
