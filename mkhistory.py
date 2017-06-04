@@ -2,13 +2,13 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-11-03 14:42:56 +0100
+# Last modified: 2017-06-04 12:39:20 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to mkhistory.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
-"""Script to format a Git log for LaTeX"""
+"""Script to format a Git log for LaTeX."""
 
 import os
 import re
@@ -24,7 +24,15 @@ header = r"""% vim:fileencoding=utf-8:ft=tex
 
 
 def fmtlog(txt):
-    """Reformat the text of the one-line log"""
+    """
+    Reformat the text of the one-line log as LaTeX.
+
+    Arguments:
+        txt: string to reformat.
+
+    Returns:
+        A LaTeX formatted version of the input.
+    """
     # Replace TeX special characters in the whole text.
     specials = ('_', '#', '%', '\$', '{', '}')
     for s in specials:
@@ -41,10 +49,11 @@ def fmtlog(txt):
 
 
 def main(argv):
-    """Main program.
+    """
+    Entry point for mkhistory.
 
-    Keyword arguments:
-    argv -- command line arguments
+    Arguments:
+        argv: command line arguments
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
