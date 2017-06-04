@@ -3,11 +3,13 @@
 # Adds my copyright notice to photos.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-06-22 00:01:54 +0200
+# Last modified: 2017-06-04 12:35:17 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to markphotos.py. This work is published from
 # the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+
+"""Script to add my copyright notice to photos."""
 
 from os import utime
 from time import mktime
@@ -18,11 +20,12 @@ import os.path
 import subprocess
 import sys
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 def main(argv):
-    """Main program.
+    """
+    Entry point for markphotos.
 
     Arguments:
         argv: Command line arguments.
@@ -52,6 +55,7 @@ def main(argv):
 def checkfor(args, rv=0):
     """
     Make sure that a program necessary for using this script is available.
+
     If the required utility is not found, this function will exit the program.
 
     Arguments:
@@ -76,6 +80,15 @@ def checkfor(args, rv=0):
 
 
 def processfile(name):
+    """
+    Add copyright notice to a file using exiftool.
+
+    Arguments:
+        name: path of the file to change
+
+    Returns:
+        A 2-tuple of the file path and the return value of exiftool.
+    """
     args = ['exiftool', '-CreateDate', name]
     createdate = subprocess.check_output(args).decode()
     fields = createdate.split(":")
