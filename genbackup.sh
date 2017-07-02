@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2013-08-13 22:13:23 +0200
-# Last modified: 2016-09-21 00:34:16 +0200
+# Last modified: 2017-07-02 23:53:32 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to genbackup. This work is published from the
@@ -32,7 +32,7 @@ done
 NAME=$(echo $CURDIR|sed 's/^\./dot/')
 OUTNAME=${OUTNAME:-$NAME}
 # Use the date in the filename of the archive.
-NUM=-$(date '+%Y%m%d')
+NUM=-$(date -u '+%Y%m%dT%H%M%SZ')
 # Add the short hashtag if the current directory is revision control by git.
 if [ -d .git ]; then
     NUM=${NUM}-$(git log -n 1 --oneline |cut -c 1-7)
