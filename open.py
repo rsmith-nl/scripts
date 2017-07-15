@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2017-06-04 13:50:20 +0200
+# Last modified: 2017-07-15 09:29:10 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -15,9 +15,9 @@ Open file(s) given on the command line in the appropriate program.
 Some of the programs are X11 programs.
 """
 
-from os.path import isdir, isfile
+from os.path import isdir, isfile, exists
 from re import search, IGNORECASE
-from subprocess import Popen
+from subprocess import Popen, run, PIPE
 from sys import argv
 import argparse
 import logging
@@ -67,7 +67,27 @@ def main(argv):  # noqa
     logging.info('command line arguments = {}'.format(argv))
     logging.info('parsed arguments = {}'.format(args))
     fail = "opening '{}' failed: {}"
-    for nm in args.files:
+    # Check for non-local files with `locate`.
+    try:
+        files = []
+        for nm in args.files:
+            if exists(nm):
+                files.append(nm)
+            else:
+                cp = run(['locate', nm], stdout=PIPE)
+                paths = cp.stdout.decode('utf-8').splitlines()
+                if len(paths) == 1:
+                    files.append(paths[0])
+                elif len(paths) == 0:
+                    logging.warning("path '{}' not found".format(nm))
+                else:
+                    logging.warning("ambiguous path '{}' skipped".format(nm))
+                    for p in paths:
+                        logging.warning("found '{}'".format(p))
+    except FileNotFoundError:  # `locate` not available.
+        files = args.files
+    # Open the file(s).
+    for nm in files:
         logging.info("Trying '{}'".format(nm))
         if not args.application:
             if isdir(nm):
