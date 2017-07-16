@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-10-18 22:12:31 +0200
-# Last modified: 2016-03-19 10:37:21 +0100
+# Last modified: 2017-07-16 15:48:29 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to texfonts.sh. This work is published
@@ -12,7 +12,7 @@
 
 set -eu
 
-TEXOTF=/usr/local/texlive/2015/texmf-dist/fonts/opentype
+TEXOTF=/usr/local/texlive/2017/texmf-dist/fonts/opentype
 INSTDIR=/usr/local/share/fonts/texlive
 #INSTDIR=/tmp/foo
 
