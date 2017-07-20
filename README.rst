@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-07-20 07:52:31 +0200
+.. Last modified: 2017-07-20 22:51:10 +0200
 
 Introduction
 ============
@@ -138,16 +138,12 @@ The image goes from 2048x2048 pixels to 1574x2048 pixels.
 
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
-Since version 1.1.0, this program requires the py-wand_ library, which in turn
-requires the ImageMagick_ shared library ``libMagickWand-6``.
-Previous versions used the ``convert`` program from ImageMagick directly.
+This program requires the `convert`` program from ImageMagick_.
 
-.. _py-wand: http://docs.wand-py.org/
-
-Multiple images are processed in parallel using a ``ProcessPoolExecutor`` from
-the ``concurrent.futures`` module, using as many worker processes as your CPU
-has cores. This number is determined by the ``os.cpu_count`` function, so this
-program requires at least Python 3.4.
+Multiple images are processed in parallel using a ``ThreadPoolExecutor`` from
+the ``concurrent.futures`` module to start subprocesses using as many worker
+processes as your CPU has cores. This number is determined by the
+``os.cpu_count`` function, so this program requires at least Python 3.4.
 
 
 dvd2webm.py
