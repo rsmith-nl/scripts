@@ -2,26 +2,29 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-06-04 13:25:40 +0200
+# Last modified: 2017-07-20 22:08:43 +0200
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to foto4lb.py. This work is published from the
 # Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 """Shrink fotos to a size suitable for use in my logbook."""
 
-from concurrent.futures import ProcessPoolExecutor
+# from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from os import cpu_count, mkdir, scandir, sep, utime
+from os import cpu_count, mkdir, scandir, sep, utime, devnull
 from os.path import exists
 from time import mktime
 import argparse
 import logging
 import sys
+import subprocess
 
-from wand.exceptions import MissingDelegateError
-from wand.image import Image
+from PIL import Image
+from PIL.ExifTags import TAGS
 
-__version__ = '2.0.0'
+
+__version__ = '2.1.0'
 outdir = 'foto4lb'
 extensions = ('.jpg', '.jpeg', '.raw')
 
@@ -57,6 +60,7 @@ def main(argv):
     if not args.path:
         parser.print_help()
         sys.exit(0)
+    checkfor('mogrify', rv=1)
 
     pairs = []
     count = 0
@@ -80,14 +84,39 @@ def main(argv):
     logging.info('creating output directories.')
     for dirname, _ in pairs:
         mkdir(dirname + sep + outdir)
-    with ProcessPoolExecutor(max_workers=cpu_count()) as tp:
+    with ThreadPoolExecutor(max_workers=cpu_count()) as tp:
         agen = ((p, fn, args.width) for p, flist in pairs for fn in flist)
         for fn, rv in tp.map(processfile, agen):
             if rv == 0:
                 fps = "file '{}' processed."
             elif rv == 1:
                 fps = "file '{}' is not an image, skipped."
+            elif rv == 2:
+                fps = "error running convert on '{}'."
             logging.info(fps.format(fn))
+
+
+def checkfor(args, rv=0):
+    """Make sure that a program necessary for using this script is
+    available.
+
+    :param args: String or list of strings of commands. A single string may
+    not contain spaces.
+    :param rv: Expected return value from evoking the command.
+    """
+    if isinstance(args, str):
+        if ' ' in args:
+            raise ValueError('no spaces in single command allowed')
+        args = [args]
+    try:
+        with open(devnull, 'w') as bb:
+            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        if rc != rv:
+            raise OSError
+    except OSError as oops:
+        outs = "Required program '{}' not found: {}."
+        print(outs.format(args[0], oops.strerror))
+        sys.exit(1)
 
 
 def processfile(packed):
@@ -100,43 +129,47 @@ def processfile(packed):
     Returns:
         A 2-tuple (input file name, status).
         Status 0 indicates a succesful conversion,
-        status 1 means that the input file was not a recognized image format.
+        status 1 means that the input file was not a recognized image format,
+        status 2 means a subprocess error.
     """
     path, name, newwidth = packed
     fname = sep.join([path, name])
     oname = sep.join([path, outdir, name.lower()])
+
     try:
-        with Image(filename=fname) as img:
-            w, h = img.size
-            scale = newwidth / w
-            exif = {
-                k[5:]: v
-                for k, v in img.metadata.items() if k.startswith('exif:')
-            }
-            img.units = 'pixelsperinch'
-            img.resolution = (300, 300)
-            img.resize(width=newwidth, height=round(scale * h))
-            img.strip()
-            img.compression_quality = 80
-            img.unsharp_mask(radius=2, sigma=0.5, amount=0.7, threshold=0)
-            img.save(filename=oname)
-        want = set(['DateTime', 'DateTimeOriginal', 'DateTimeDigitized'])
-        try:
-            available = list(want.intersection(set(exif.keys())))
-            available.sort()
-            fields = exif[available[0]].replace(' ', ':').split(':')
-            dt = datetime(
-                int(fields[0]),
-                int(fields[1]),
-                int(fields[2]), int(fields[3]), int(fields[4]), int(fields[5]))
-        except Exception:
-            dt = datetime.today()
-        modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute,
-                          dt.second, 0, 0, -1))
-        utime(oname, (modtime, modtime))
-        return fname, 0
-    except MissingDelegateError:
-        return fname, 1
+        img = Image.open(fname)
+        ld = {}
+        for tag, value in img._getexif().items():
+            decoded = TAGS.get(tag, tag)
+            ld[decoded] = value
+        want = set([
+            'DateTime', 'DateTimeOriginal', 'CreateDate', 'DateTimeDigitized'
+        ])
+        available = sorted(list(want.intersection(set(ld.keys()))))
+        fields = ld[available[0]].replace(' ', ':').split(':')
+        dt = datetime(
+            int(fields[0]),
+            int(fields[1]),
+            int(fields[2]), int(fields[3]), int(fields[4]), int(fields[5]))
+    except Exception:
+        logging.warning('exception raised when reading the file time.')
+        ed = {}
+        cds = '{}:{}:{} {}:{}:{}'
+        dt = datetime.today()
+        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, dt.hour,
+                                      dt.minute, dt.second)
+    args = [
+        'convert', fname, '-strip', '-resize',
+        str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp',
+        '2x0.5+0.7+0', '-quality', '80', oname
+    ]
+    rp = subprocess.call(args)
+    if rp != 0:
+        return (name, 2)
+    modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                      0, 0, -1))
+    utime(oname, (modtime, modtime))
+    return (fname, 0)
 
 
 if __name__ == '__main__':
