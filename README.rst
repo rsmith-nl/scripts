@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-04-27 15:20:53 +0200
+.. Last modified: 2017-07-20 07:52:31 +0200
 
 Introduction
 ============
@@ -361,9 +361,7 @@ environment for it.
 
 .. _figure: http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions#Figures
 
-Since version 1.2, this program requires the py-wand_ library, which in turn
-requires the ImageMagick_ shared library ``libMagickWand-6``.
-Previous versions used the ``identify`` program from ImageMagick directly.
+this program requires  ImageMagick_ program ``identify``.
 
 This program also requires the ghostscript_ interpreter to determine the size
 of PDF files.

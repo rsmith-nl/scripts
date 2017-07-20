@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2017-06-04 13:42:02 +0200
+# Last modified: 2017-07-19 23:37:23 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to img4latex.py. This work is published
@@ -17,9 +17,8 @@ import logging
 import os
 import subprocess
 import sys
-from wand.image import Image
 
-__version__ = '1.5.0'
+__version__ = '1.6.0'
 
 
 def main(argv):
@@ -77,6 +76,7 @@ Otherwise, the defaults apply.
     args.width *= 72 / 25.4  # convert to points
     args.height *= 72 / 25.4  # convert to points
     checkfor(['gs', '-v'])
+    checkfor(['identify', '--version'])
     if not args.file:
         parser.print_help()
         sys.exit(0)
@@ -198,20 +198,29 @@ def getpicsize(fn):
     Returns:
         Width, hight of the image in points.
     """
+    args = ['identify', '-verbose', fn]
+    rv = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    lines = rv.stdout.decode('utf-8').splitlines()
+    data = {}
+    for ln in lines:
+        k, v = ln.strip().split(':', 1)
+        data[k] = v.strip()
+    if data['Units'] != 'Undefined':
+        res = float(data['Resolution'].split('x')[0])
+    else:
+        res = 300
+    logging.debug('resolution={} {}'.format(res, data['Units']))
+    geom = data['Geometry'].split('+')[0].split('x')
+    xsize, ysize = int(geom[0]), int(geom[1])
+    logging.debug('x={} px, y={} px'.format(xsize, ysize))
     factor = {
-        'pixelsperinch': 72,
-        'pixelspercentimeter': 28.35,
-        'undefined': 72
+        'PixelsPerInch': 72,
+        'PixelsPerCentimeter': 28.35,
+        'Undefined': 72
     }
-    with Image(filename=fn) as img:
-        if img.units is not 'undefined':
-            hres, vres = img.resolution
-            logging.info('resolution: {}x{} {}'.format(hres, vres, img.units))
-        else:
-            hres, vres = 300, 300
-        return (img.width / hres * factor[img.units],
-                img.height / vres * factor[img.units])
-    return None
+    m = factor[data['Units']] / res
+    logging.debug('scaled x={} pt, y={} pt'.format(xsize * m, ysize * m))
+    return (xsize * m, ysize * m)
 
 
 def output_figure(fn, options=None):
