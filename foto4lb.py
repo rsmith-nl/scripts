@@ -23,7 +23,6 @@ import subprocess
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-
 __version__ = '2.1.0'
 outdir = 'foto4lb'
 extensions = ('.jpg', '.jpeg', '.raw')
@@ -160,8 +159,8 @@ def processfile(packed):
                                       dt.minute, dt.second)
     args = [
         'convert', fname, '-strip', '-resize',
-        str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp',
-        '2x0.5+0.7+0', '-quality', '80', oname
+        str(newwidth), '-units', 'PixelsPerInch', '-density', '300',
+        '-unsharp', '2x0.5+0.7+0', '-quality', '80', oname
     ]
     rp = subprocess.call(args)
     if rp != 0:

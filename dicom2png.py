@@ -40,9 +40,11 @@ def convert(filename):
     """
     outname = filename.strip() + '.png'
     size = '1574x2048'
-    args = ['convert', filename, '-units', 'PixelsPerInch', '-density', '300',
-            '-crop', size + '+232+0', '-page', size + '+0+0', '-auto-gamma',
-            outname]
+    args = [
+        'convert', filename, '-units', 'PixelsPerInch', '-density', '300',
+        '-crop', size + '+232+0', '-page', size + '+0+0', '-auto-gamma',
+        outname
+    ]
     rv = sp.call(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return (filename, outname, rv)
 
