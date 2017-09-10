@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-07-20 22:51:10 +0200
+.. Last modified: 2017-09-10 12:29:22 +0200
 
 Introduction
 ============
@@ -310,6 +310,18 @@ An example:
 
     > python3 genpw.py -l 24 -g 4
     BU_7 7RcI jjce zAKo 83v8 RAk_
+
+
+get-tracks.py
+-------------
+
+After using lsdvd_ to see the tracks on a DVD, this script can be used to
+extract the required tracks for viewing or transcoding.
+
+It sxtracts the given tracks from a DVD using ``tccat`` from the ``transcode``
+package.
+
+.. _lsdvd: http://sourceforge.net/projects/lsdvd/
 
 
 git-check-all.py
