@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-10-08 11:13:17 +0200
+.. Last modified: 2017-10-08 22:17:18 +0200
 
 Introduction
 ============
@@ -166,8 +166,6 @@ mode. Optionally it also adds subtitles to the video, and starts from an
 offset.
 
 .. _constrained quality: http://wiki.webmproject.org/ffmpeg/vp9-encoding-guide
-
-TODO: change the script to allow dvdsub stream as subtitle.
 
 
 ffmutt.sh
