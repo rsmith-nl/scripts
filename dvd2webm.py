@@ -4,13 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-06-04 16:58:16 +0200
+# Last modified: 2017-10-08 11:12:01 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 """
-Convert an mpeg stream from a DVD to a webm file.
+Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
+encoding for video and libvorbis for audio.
 
 It uses the first video stream and the first audio stream, unless otherwise
 indicated.
@@ -120,7 +121,7 @@ def reporttime(p, start, end):
 
 def mkargs(fn, crop, start, subfname, atrack):
     """
-    Create argument lists for encoding.
+    Create argument lists for constrained quality VP9/vorbis encoding.
 
     Arguments:
         fn: Path of the input file.
@@ -138,7 +139,7 @@ def mkargs(fn, crop, start, subfname, atrack):
     numthreads = str(os.cpu_count() - 1)
     logging.info('using {} threads.'.format(numthreads))
     # TODO: Add ‘--row-mt=1’ to args1 and args2 after libvpx-1.6.2 comes out.
-    # In that case, also test ‘numthreads = str(2*os.cpu_count())’
+    # In that case, also set ‘numthreads = str(2*os.cpu_count())’
     # See https://github.com/Kagami/webm.py/wiki/Notes-on-encoding-settings
     args1 = [
         'ffmpeg', '-loglevel', 'quiet', '-i', fn, '-passlogfile', basename,
