@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-10-08 21:02:53 +0200
+# Last modified: 2017-10-10 06:01:14 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -69,12 +69,16 @@ def main(argv):
         if width in ['720', '704'] and height == '576':
             logging.info('standard format, no cropping necessary.')
             args.crop = None
+    if args.crop:
+        logging.info('using cropping ' + args.crop)
     subtrack, srtfile = None, None
     if args.subtitle:
         try:
             subtrack = str(int(args.subtitle))
+            logging.info('using subtitle track ' + subtrack)
         except ValueError:
             srtfile = args.subtitle
+            logging.info('using subtitle file ' + srtfile)
     a1 = mkargs(args.fn, 1, crop=args.crop, start=args.start, subf=srtfile,
                 subt=subtrack, atrack=args.audio)
     a2 = mkargs(args.fn, 2, crop=args.crop, start=args.start, subf=srtfile,
