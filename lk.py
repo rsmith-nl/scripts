@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-10-08 21:07:58 +0200
-# Last modified: 2017-01-29 10:49:44 +0100
+# Last modified: 2017-11-02 18:57:09 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to lk.py. This work is published
@@ -29,23 +29,28 @@ import os
 import sys
 import stat
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 
 def lock_path(root, name, mode):
     """Lock down a path"""
-    flags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
+    addflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
     p = os.path.join(root, name)
+    pst = os.stat(p)
+    if pst.st_flags & stat.UF_IMMUTABLE:
+        # Temporarily remove user immutable flag, so we can chmod.
+        os.chflags(p, pst.st_flags ^ stat.UF_IMMUTABLE)
     logging.info('locking path “{}”'.format(p))
     os.chmod(p, mode)
-    os.chflags(p, flags)
+    os.chflags(p, pst.st_flags | addflags)
 
 
 def unlock_path(root, name, mode):
-    flags = 0
+    rmflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
     p = os.path.join(root, name)
+    pst = os.stat(p)
     logging.info('unlocking path “{}”'.format(p))
-    os.chflags(p, flags)
+    os.chflags(p, pst.st_flags & ~rmflags)
     os.chmod(p, mode)
 
 
