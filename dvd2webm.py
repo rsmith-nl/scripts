@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2017-10-10 06:01:14 +0200
+# Last modified: 2017-11-04 10:52:20 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -26,7 +26,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.9.0'
+__version__ = '0.10.0'
 
 
 def main(argv):
@@ -60,7 +60,8 @@ def main(argv):
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     logging.info("processing '{}'.".format(args.fn))
-    logging.info('started at {}.'.format(str(datetime.now())[:-7]))
+    starttime = datetime.now()
+    logging.info('started at {}.'.format(str(starttime)[:-7]))
     logging.info('using audio stream {}.'.format(args.audio))
     if not args.crop:
         logging.info('looking for cropping.')
@@ -84,12 +85,17 @@ def main(argv):
     a2 = mkargs(args.fn, 2, crop=args.crop, start=args.start, subf=srtfile,
                 subt=subtrack, atrack=args.audio)
     if not args.dummy:
-        encode(a1, a2)
+        origbytes, newbytes = encode(a1, a2)
     else:
         logging.basicConfig(level='INFO')
         logging.info('first pass: ' + ' '.join(a1))
         logging.info('second pass: ' + ' '.join(a2))
-    logging.info('ended at {}.'.format(str(datetime.now())[:-7]))
+    stoptime = datetime.now()
+    logging.info('ended at {}.'.format(str(stoptime)[:-7]))
+    runtime = stoptime - starttime
+    logging.info('total running time {}.'.format(str(runtime)[:-7]))
+    encspeed = origbytes/(runtime.seconds*1000)
+    logging.info('average input encoding speed {:.2f} kB/s.'.format(encspeed))
 
 
 def findcrop(path, start='00:10:00', duration='00:00:01'):
@@ -242,6 +248,7 @@ def encode(args1, args2):
     percentage = int(100 * newsize / origsize)
     sz = "the size of '{}' is {}% of the size of '{}'."
     logging.info(sz.format(args2[-1], percentage, args2[4]))
+    return origsize, newsize  # both in bytes.
 
 
 if __name__ == '__main__':
