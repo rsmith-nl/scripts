@@ -4,14 +4,14 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-06-25 14:49:56 +0200
-# Last modified: 2017-09-10 12:24:45 +0200
+# Last modified: 2017-11-04 08:46:25 +0100
 """Retrieve the numbered tracks from a dvd."""
 
 import logging
 import sys
 from subprocess import run, call, DEVNULL
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 
 def checkfor(args, rv=0):
@@ -65,11 +65,13 @@ def main(argv):
 def retrieve(dvddev, num):
     """Use `tccat` to retrieve a track from DVD.
 
+    Without the -P argument some DVD's aren't retrieved correctly.
+
     Arguments:
         dvddev: String containing the device node for the DVD.
         num: The integer number of a track to retrieve.
     """
-    args = ['tccat', '-i', dvddev, '-T', '{},-1'.format(num)]
+    args = ['tccat', '-i', dvddev, '-T', '{},-1'.format(num), '-P']
     trackname = 'track{:02d}.mpg'.format(num)
     logging.info(
         'writing track {} as "{}"... '.format(num, trackname))
