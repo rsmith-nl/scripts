@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2017-10-07 22:39:54 +0200
+# Last modified: 2017-11-12 11:53:28 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -34,7 +34,9 @@ filetypes = {
     '\.(jpe?g|png|gif|tiff?|p[abgp]m|bmp|svg)$': ['gpicview'],
     '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
     '\.(tar\.|t)(z|gz|bz2?|xz)$': ['tar', 'tf'],
-    '\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm)$': ['mpv']
+    '\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm)$': ['mpv'],
+    '\.(s3m|xm|mod|mid)$': [
+        'urxvt', '-title', 'Timidity++', '-e', 'timidity', '-in', '-A30a']
 }
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
