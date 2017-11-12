@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2014-12-26 11:45:59 +0100
-# Last modified: 2017-11-12 11:53:28 +0100
+# Last modified: 2017-11-12 11:56:28 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to open.py. This work is published from the
@@ -23,7 +23,7 @@ import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.5.1'
+__version__ = '1.6'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
