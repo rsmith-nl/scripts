@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-11-26 13:19:00 +0100
-# Last modified: 2017-11-26 14:34:40 +0100
+# Last modified: 2017-11-26 23:24:00 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to find-pkg-updates.py. This work is published
@@ -67,6 +67,8 @@ def main(argv):
         help='FreeBSD architecture (default amd64)')
     args = parser.parse_args(argv)
     print('# Retrieving package lists')
+    # I'm using concurrent.futures here because especially get_remote_pkgs
+    # can take a long time. This way we can reduce the time as much as possible.
     with cf.ProcessPoolExecutor(max_workers=2) as ex:
         remote = ex.submit(get_remote_pkgs, args.major, args.arch)
         local = ex.submit(get_local_pkgs)
