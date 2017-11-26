@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-10-08 22:17:18 +0200
+.. Last modified: 2017-11-26 14:31:15 +0100
 
 Introduction
 ============
@@ -32,6 +32,7 @@ The following scripts use Python_ 3.x specific features (like
 * dicom2jpg.py
 * dicom2png.py
 * dvd2webm.py
+* find-pkg-updates.py
 * foto4lb.py
 * git-check-all.py
 * gitdates.py
@@ -184,6 +185,15 @@ Front-end for find_ to locate all files under the current directory that have
 been modified up to a given number of days ago.
 
 .. _find: https://www.freebsd.org/cgi/man.cgi?query=find
+
+
+find-pkg-updates.py
+-------------------
+
+Script for FreeBSD to compare the versions of locally installed packages to
+the versions available from the FreeBSD `package repo mirror`_.
+
+.. _package repo mirror: http://pkg.freebsd.org/
 
 
 fixbb.sh
