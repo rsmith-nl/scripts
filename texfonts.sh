@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-10-18 22:12:31 +0200
-# Last modified: 2017-12-01 19:49:51 +0100
+# Last modified: 2017-12-02 22:11:53 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to texfonts.sh. This work is published
@@ -31,6 +31,6 @@ for fp in $FNTS; do
 done
 echo " done"
 # Remove some fonts.
-rm -f drm* cm* ffm* smf* DANTE* ocrb[5-9]* emmentaler*
+rm -f lm*[1-9]-* lm*1[1-9]-* drm* ffm* smf* DANTE* ocrb[5-9]* emmentaler*
 echo "Updating font cache for $INSTDIR"
 fc-cache $INSTDIR
