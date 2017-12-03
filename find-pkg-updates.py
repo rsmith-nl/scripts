@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-11-26 13:19:00 +0100
-# Last modified: 2017-11-26 23:24:00 +0100
+# Last modified: 2017-12-03 14:06:43 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to find-pkg-updates.py. This work is published
@@ -40,6 +40,51 @@ def get_local_pkgs():
     """Get a list of local packages."""
     p = sp.run(['pkg', 'info', '-a', '-q'], stdout=sp.PIPE, stderr=sp.DEVNULL)
     return dict([ln.rsplit('-', 1) for ln in p.stdout.decode('utf-8').splitlines()])
+
+
+def pkgver_decode(versionstring):
+    """Decode a package version into prefix and suffix version."""
+    factor = 100
+    if '_' in versionstring:
+        prefixstring, suffixstring = versionstring.split('_', maxsplit=1)
+        try:
+            suffix = [int(n) for n in suffixstring.split(',')]
+            snum = 0
+            for n in suffix:
+                snum = factor*snum + n
+        except ValueError:
+            snum = suffixstring
+    else:
+        prefixstring = versionstring
+        suffixstring = None
+        snum = 0
+    try:
+        prefix = [int(n) for n in prefixstring.split('.')]
+        pnum = 0
+        for n in prefix:
+            pnum = factor*pnum + n
+    except ValueError:
+        pnum = prefixstring
+    return (pnum, snum)
+
+
+def compare(local, remote):
+    """Return True if the remote version is later than the local version.
+
+    Arguments:
+        local: Local package version, e.g. '4.0.1_4'
+        remote: Remote package version.
+
+    Returns:
+        True if the remote version is larger than the local version.
+    """
+    localprefix, localsuffix = pkgver_decode(local)
+    remoteprefix, remotesuffix = pkgver_decode(remote)
+    if remoteprefix > localprefix:
+        return True
+    elif remoteprefix == localprefix and remotesuffix > localsuffix:
+        return True
+    return False
 
 
 def main(argv):
@@ -87,7 +132,7 @@ def main(argv):
     for name in localpkg.keys():
         if name in remotepkg:
             lv, rv = localpkg[name], remotepkg[name]
-            if lv != rv:
+            if compare(lv, rv):
                 print('{}-{}: remote has {}'.format(name, lv, rv))
         else:
             not_remote.append(name)
