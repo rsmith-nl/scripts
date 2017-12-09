@@ -2,7 +2,7 @@
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-06-04 13:55:21 +0200
+# Last modified: 2017-12-09 09:27:25 +0100
 #
 # To the extent possible under law, Roland Smith has waived all copyright and
 # related or neighboring rights to tiff2pdf.py. This work is published from
@@ -21,7 +21,7 @@ import re
 import subprocess
 import sys
 
-__version__ = '1.3.0'
+__version__ = '1.3'
 
 
 def main(argv):
@@ -113,18 +113,19 @@ def tiffconv(fname):
             yres = float(txt[index + 2])
         except ValueError:
             xres, yres = None, None
-        outname = re.sub(
-            '\.tif{1,2}?$', '', fname, flags=re.IGNORECASE) + '.pdf'
+        outname = re.sub('\.tif{1,2}?$', '.pdf', fname, flags=re.IGNORECASE)
         if xres:
             args = [
-                'tiff2pdf', '-w',
-                str(width / xres), '-l',
-                str(length / xres), '-x',
-                str(xres), '-y',
-                str(yres), '-o', outname, fname
+                'tiff2pdf',
+                '-w', str(width / xres),
+                '-l', str(length / xres),
+                '-x', str(xres), '-y', str(yres),
+                '-o', outname, fname
             ]
         else:
-            args = ['tiff2pdf', '-o', outname, '-z', '-p', 'A4', '-F', fname]
+            args = [
+                'tiff2pdf', '-o', outname,
+                '-z', '-p', 'A4', '-F', fname]
             ls = "no resolution in {}. Fitting to A4"
             logging.warning(ls.format(fname))
         rv = subprocess.call(
