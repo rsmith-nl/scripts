@@ -3,11 +3,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2016-03-19 12:37:48 +0100
+# Last modified: 2017-12-10 18:46:56 +0100
 
 set -eu
 
-usage="Usage: sync-laptop [-h][[-f][-r] <dir>]
+usage="Usage: sync-laptop [-h][[-f][-r] <host> <dir>]
 
 Uses rsync to syncronize files between my desktop and laptop.
 
@@ -15,6 +15,9 @@ Options:
   -h: help
   -r: Transfer from laptop to desktop.
   -f: Really sync files. the default is to perform a dry run.
+
+The <host> parameter contains the hostname of the host to synchronize to.
+The <dir> parameter is the directory to syncronize, relative to the current directory.
 "
 
 
@@ -45,14 +48,20 @@ while true; do
             ;;
         esac
 done
-if [ ! $1 ]; then
+if [ $# -ne 2 ]; then
     echo "$usage"
     exit 1
 fi
-DIR=$(pwd)/${1%%/}
+HOST=${1}
+DIR=$(pwd)/${2%%/}
+#echo "DEBUG: host=${HOST}, dir=${DIR}"
+if ! ping -q -c 1 ${HOST} > /dev/null; then
+    echo "${HOST} cannot be pinged!"
+    exit 2
+fi
 if [ ! -d ${DIR} ]; then
     echo "${DIR} is not a directory!"
-    exit 2
+    exit 3
 fi
 DIR=${DIR##/home/${USER}/}
 OPTS='-avn'
@@ -60,7 +69,7 @@ if [ $FORCE ]; then
     OPTS='-av'
 fi
 if [ $REVERSE ]; then
-    rsync ${OPTS} --delete rfs::home/${USER}/${DIR}/ /home/${USER}/${DIR}
+    rsync ${OPTS} --delete ${HOST}::home/${USER}/${DIR}/ /home/${USER}/${DIR}
 else
-    rsync ${OPTS} --delete /home/${USER}/${DIR}/ rfs::home/${USER}/${DIR}
+    rsync ${OPTS} --delete /home/${USER}/${DIR}/ ${HOST}::home/${USER}/${DIR}
 fi
