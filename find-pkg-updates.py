@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-11-26 13:19:00 +0100
-# Last modified: 2017-12-03 14:06:43 +0100
+# Last modified: 2017-12-26 12:02:49 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to find-pkg-updates.py. This work is published
@@ -19,7 +19,7 @@ import sys
 import time
 import requests
 
-__version__ = '1.0'
+__version__ = '2.0'
 
 
 def get_remote_pkgs(version, arch):
@@ -95,6 +95,9 @@ def main(argv):
     Arguments:
         argv: Command line arguments.
     """
+    uname = sp.check_output(['uname', '-p', '-U']).decode('ascii').split()
+    major = int(uname[1][:2])
+    arch = uname[0]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '-v', '--version', action='version', version=__version__)
@@ -102,16 +105,27 @@ def main(argv):
         '-m',
         '--major',
         type=int,
-        default=11,
-        help='FreeBSD major version (default 11)')
+        default=major,
+        help='FreeBSD major version (default {})'.format(major))
     parser.add_argument(
         '-a',
         '--arch',
         type=str,
-        default='amd64',
-        help='FreeBSD architecture (default amd64)')
+        default=arch,
+        help='FreeBSD architecture (default {})'.format(arch))
     args = parser.parse_args(argv)
-    print('# Retrieving package lists')
+    parser.parse_args(argv)
+    if major == args.major:
+        extra = '(detected)'
+    else:
+        extra = '(override)'
+    print('# FreeBSD major version: {} {}'.format(args.major, extra))
+    if arch == args.arch:
+        extra = '(detected)'
+    else:
+        extra = '(override)'
+    print('# FreeBSD processor architecture: {} {}'.format(args.arch, extra))
+    print('# Retrieving local and remote package lists')
     # I'm using concurrent.futures here because especially get_remote_pkgs
     # can take a long time. This way we can reduce the time as much as possible.
     with cf.ProcessPoolExecutor(max_workers=2) as ex:
