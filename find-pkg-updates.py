@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-11-26 13:19:00 +0100
-# Last modified: 2017-12-26 12:02:49 +0100
+# Last modified: 2017-12-27 13:27:37 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to find-pkg-updates.py. This work is published
@@ -80,11 +80,14 @@ def compare(local, remote):
     """
     localprefix, localsuffix = pkgver_decode(local)
     remoteprefix, remotesuffix = pkgver_decode(remote)
-    if remoteprefix > localprefix:
+    try:
+        if remoteprefix > localprefix:
+            return True
+        elif remoteprefix == localprefix and remotesuffix > localsuffix:
+            return True
+        return False
+    except TypeError:  # Comparing str and int doesn't work.
         return True
-    elif remoteprefix == localprefix and remotesuffix > localsuffix:
-        return True
-    return False
 
 
 def main(argv):
