@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-12-28 12:36:14 +0100
+.. Last modified: 2017-12-28 13:50:42 +0100
 
 Introduction
 ============
@@ -468,6 +468,15 @@ This scripts adds a copyright notice to pictures.
 .. note:: This script requires exiftool_.
 
 .. _exiftool: https://www.sno.phy.queensu.ca/~phil/exiftool/
+
+
+mkhistory.py
+------------
+
+This script takes the ``git log --oneline`` history from the current working
+directory and formats it as LaTeX text with one commit per line. This is
+written to a given output file or standard output if ``-`` is used as the file
+name.
 
 
 mkindexpic.sh
