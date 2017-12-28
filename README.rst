@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-11-26 14:31:15 +0100
+.. Last modified: 2017-12-28 12:36:14 +0100
 
 Introduction
 ============
@@ -39,6 +39,7 @@ The following scripts use Python_ 3.x specific features (like
 * img4latex.py
 * make-flac.py
 * make-mp3.py
+* markphotos.py
 * missing-libs.py
 * tifftopdf.py
 * vid2mkv.py
@@ -454,6 +455,19 @@ Works like ``make-flac.py`` but uses lame_ to encode to variable bitrate MP3
 files. It uses the same ``album.json`` file as make-flac.
 
 .. _lame: http://lame.sourceforge.net/
+
+
+markphotos.py
+-------------
+
+This scripts adds a copyright notice to pictures.
+
+.. warning:: You should edit this script and update the ``cr`` string in the
+   ``processfile`` function to contain your details before using this script!
+
+.. note:: This script requires exiftool_.
+
+.. _exiftool: https://www.sno.phy.queensu.ca/~phil/exiftool/
 
 
 mkindexpic.sh
