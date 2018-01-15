@@ -4,21 +4,24 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2018-01-14 14:00:23 +0100
+# Last modified: 2018-01-15 21:28:16 +0100
 """
 Fix PDF file titles.
 
-Decrypt safety data sheets and fix the title to match the filename.
+Decrypt PDF safety data sheets and fix the title to match the filename.
 This is done to make sure that the reader app on a tablet displays a sensible title.
 """
 
 from collections import defaultdict
+import argparse
 import logging
 import os
 import shutil
 import subprocess as sp
 import sys
 import tempfile
+
+__version__ = '1.0'
 
 
 def pdfinfo(path):
@@ -64,20 +67,28 @@ def decrypt(path, fn, tempdir):
     return rv.returncode
 
 
-def main(args):
-    lvl = 'INFO'
-    if args[0].startswith('-'):
-        if args[0] in ('-v', '--verbose'):
-            lvl = 'DEBUG'
-        if args[0] in ('-h', '--help'):
-            print('Usage: fix-vib.py [-v|--verbose|-h|--help] <pdf-files>')
-            return
-        del args[0]
-    logging.basicConfig(level=lvl, format='%(levelname)s: %(message)s')
-    if lvl == 'DEBUG':
-        logging.info('using verbose logging')
+def main(argv):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'info')")
+    parser.add_argument(
+        '-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        "files",
+        metavar='file',
+        nargs='+',
+        help="one or more files to process")
+    args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s')
+    if args.log == 'debug':
+        logging.debug('using verbose logging')
     tdir = tempfile.mkdtemp()
-    for path in args:
+    for path in args.files:
         logging.debug('processing {}'.format(path))
         info = pdfinfo(path)
         if len(info) == 0:
@@ -93,6 +104,8 @@ def main(args):
                 logging.error(es.format(path, rv))
                 continue
             logging.debug('{} decrypted'.format(path))
+        else:
+            logging.debug('{} is not encrypted'.format(path))
         newtitle = fn.replace('_', ' ')[:-4]
         if info['Title'] != newtitle:
             logging.info('{} needs its title changed'.format(path))
@@ -104,6 +117,8 @@ def main(args):
                 logging.error(es.format(path, rv.returncode))
             else:
                 logging.debug('title of {} changed'.format(path))
+        else:
+            logging.debug('the title of {} does not need to be changed'.format(path))
     shutil.rmtree(tdir)
 
 
