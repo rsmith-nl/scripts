@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-28 23:25:35 +0200
-# Last modified: 2017-06-04 13:51:48 +0200
+# Last modified: 2018-01-22 21:12:09 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to py-ver.py. This work is published
@@ -16,7 +16,7 @@ import os
 import re
 import sys
 
-_vre = re.compile('^__version__\s+=.+', flags=re.M)
+_vre = re.compile('^__version__\s+=\s+[\'\"].+', flags=re.M)
 _vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
 
 
