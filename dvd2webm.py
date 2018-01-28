@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-01-26 00:53:13 +0100
+# Last modified: 2018-01-28 17:27:23 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -172,9 +172,6 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
         raise ValueError('cropping must be in the format W:H:X:Y')
     if start and not re.search('\d{2}:\d{2}:\d{2}', start):
         raise ValueError('starting time must be in the format HH:MM:SS')
-    # TODO: Add ‘--row-mt=1’ to args1 and args2 after libvpx-1.6.2 comes out.
-    # In that case, also test ‘numthreads = str(2*os.cpu_count())’
-    # See https://github.com/Kagami/webm.py/wiki/Notes-on-encoding-settings
     numthreads = str(os.cpu_count() - 1)
     basename = fn.rsplit('.', 1)[0]
     args = ['ffmpeg',  '-loglevel',  'quiet']
@@ -184,7 +181,7 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
     speed = '2'
     if npass == 1:
         speed = '4'
-    args += ['-c:v', 'libvpx-vp9', '-threads', numthreads, '-pass',
+    args += ['-c:v', 'libvpx-vp9', '--row-mt=1' '-threads', numthreads, '-pass',
              str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250',
              '-speed', speed, '-tile-columns', '1']
     if npass == 2:
