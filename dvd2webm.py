@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-01-28 17:27:23 +0100
+# Last modified: 2018-02-25 03:04:55 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -181,7 +181,7 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
     speed = '2'
     if npass == 1:
         speed = '4'
-    args += ['-c:v', 'libvpx-vp9', '--row-mt=1' '-threads', numthreads, '-pass',
+    args += ['-c:v', 'libvpx-vp9', '-row-mt=1' '-threads', numthreads, '-pass',
              str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250',
              '-speed', speed, '-tile-columns', '1']
     if npass == 2:
@@ -230,7 +230,7 @@ def encode(args1, args2):
     end = datetime.utcnow()
     if proc.returncode:
         logging.error('pass 1 returned {}.'.format(proc.returncode))
-        return
+        return None, None
     else:
         reporttime(1, start, end)
     logging.info('running pass 2...')
