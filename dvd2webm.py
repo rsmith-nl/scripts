@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-02-25 03:04:55 +0100
+# Last modified: 2018-02-25 08:59:31 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -21,6 +21,7 @@ from collections import Counter
 from datetime import datetime
 import argparse
 import logging
+import math
 import os
 import re
 import subprocess as sp
@@ -172,7 +173,10 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
         raise ValueError('cropping must be in the format W:H:X:Y')
     if start and not re.search('\d{2}:\d{2}:\d{2}', start):
         raise ValueError('starting time must be in the format HH:MM:SS')
-    numthreads = str(os.cpu_count() - 1)
+    numthreads = str(os.cpu_count())
+    logging.info('using {} threads'.format(numthreads))
+    tc = str(round(math.log2(numthreads)))
+    logging.info('using {} tile columns'.format(tc))
     basename = fn.rsplit('.', 1)[0]
     args = ['ffmpeg',  '-loglevel',  'quiet']
     if start:
@@ -181,9 +185,9 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
     speed = '2'
     if npass == 1:
         speed = '4'
-    args += ['-c:v', 'libvpx-vp9', '-row-mt=1' '-threads', numthreads, '-pass',
+    args += ['-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
              str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250',
-             '-speed', speed, '-tile-columns', '1']
+             '-speed', speed, '-tile-columns', tc]
     if npass == 2:
         args += ['-auto-alt-ref', '1', '-lag-in-frames', '25']
     args += ['-sn']
@@ -222,7 +226,12 @@ def encode(args1, args2):
     Arguments:
         args1: Commands to run the first encoding step as a subprocess.
         args2: Commands to run the second encoding step as a subprocess.
+
+    Return values:
+        A 2-tuple of the original movie size in bytes and the encoded movie size in bytes.
     """
+    oidx = args2.index('-i') + 1
+    origsize = os.path.getsize(args2[oidx])
     logging.info('running pass 1...')
     logging.debug('pass 1: {}'.format(' '.join(args1)))
     start = datetime.utcnow()
@@ -230,7 +239,7 @@ def encode(args1, args2):
     end = datetime.utcnow()
     if proc.returncode:
         logging.error('pass 1 returned {}.'.format(proc.returncode))
-        return None, None
+        return origsize, 0
     else:
         reporttime(1, start, end)
     logging.info('running pass 2...')
@@ -242,8 +251,6 @@ def encode(args1, args2):
         logging.error('pass 2 returned {}.'.format(proc.returncode))
     else:
         reporttime(2, start, end)
-    oidx = args2.index('-i') + 1
-    origsize = os.path.getsize(args2[oidx])
     newsize = os.path.getsize(args2[-1])
     percentage = int(100 * newsize / origsize)
     sz = "the size of '{}' is {}% of the size of '{}'."
