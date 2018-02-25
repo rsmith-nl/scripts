@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-02-25 08:59:31 +0100
+# Last modified: 2018-02-25 12:36:17 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -60,6 +60,8 @@ def main(argv):
         format='%(levelname)s: %(message)s')
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
+    if not check_ffmpeg():
+        return 1
     logging.info("processing '{}'.".format(args.fn))
     starttime = datetime.now()
     logging.info('started at {}.'.format(str(starttime)[:-7]))
@@ -71,6 +73,10 @@ def main(argv):
         if width in ['720', '704'] and height == '576':
             logging.info('standard format, no cropping necessary.')
             args.crop = None
+            tc = tile_cols(width)
+    else:
+        width, _, _, _ = args.crop.split(':')
+        tc = tile_cols(width)
     if args.crop:
         logging.info('using cropping ' + args.crop)
     subtrack, srtfile = None, None
@@ -81,9 +87,9 @@ def main(argv):
         except ValueError:
             srtfile = args.subtitle
             logging.info('using subtitle file ' + srtfile)
-    a1 = mkargs(args.fn, 1, crop=args.crop, start=args.start, subf=srtfile,
+    a1 = mkargs(args.fn, 1, tc, crop=args.crop, start=args.start, subf=srtfile,
                 subt=subtrack, atrack=args.audio)
-    a2 = mkargs(args.fn, 2, crop=args.crop, start=args.start, subf=srtfile,
+    a2 = mkargs(args.fn, 2, tc, crop=args.crop, start=args.start, subf=srtfile,
                 subt=subtrack, atrack=args.audio)
     if not args.dummy:
         origbytes, newbytes = encode(a1, a2)
@@ -97,6 +103,29 @@ def main(argv):
     logging.info('total running time {}.'.format(str(runtime)[:-7]))
     encspeed = origbytes/(runtime.seconds*1000)
     logging.info('average input encoding speed {:.2f} kB/s.'.format(encspeed))
+
+
+def tile_cols(width):
+    return math.floor(math.log2(math.ceil(float(width) / 64.0)))
+
+
+def check_ffmpeg():
+    """Check the minumum version requirement of ffmpeg, and that it is built with
+    the needed drivers enabled."""
+    args = ['ffmpeg']
+    proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
+    verre = r'ffmpeg version (\d+)\.(\d+)\.(\d+) Copyright'
+    major, minor, patch = re.findall(verre, proc.stderr)[0]
+    if int(major) < 3 and int(minor) < 3:
+        logging.error('ffmpeg 3.3 is required; found {}.{}.{}'.format(major, minor, patch))
+        return False
+    if not re.search(r'enable-libvpx', proc.stderr):
+        logging.error('ffmpeg is not built with VP9 video support.')
+        return False
+    if not re.search(r'enable-libvorbis', proc.stderr):
+        logging.error('ffmpeg is not built with Vorbis audio support.')
+        return False
+    return True
 
 
 def findcrop(path, start='00:10:00', duration='00:00:01'):
@@ -149,13 +178,14 @@ def reporttime(p, start, end):
     logging.info('pass {} took {}.'.format(p, dt[:-7]))
 
 
-def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
+def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
            atrack=0):
     """Create argument list for constrained quality VP9/vorbis encoding.
 
     Arguments:
         fn: String containing the path of the input file
         npass: Number of the pass. Must be 1 or 2.
+        tile_columns: number of tile columns.
         crop: Optional string containing the cropping to use. Must be in the
             format W:H:X:Y, where W, H, X and Y are numbers.
         start: Optional string containing the start time for the conversion.
@@ -175,8 +205,7 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
         raise ValueError('starting time must be in the format HH:MM:SS')
     numthreads = str(os.cpu_count())
     logging.info('using {} threads'.format(numthreads))
-    tc = str(round(math.log2(numthreads)))
-    logging.info('using {} tile columns'.format(tc))
+    logging.info('using {} tile columns'.format(tile_columns))
     basename = fn.rsplit('.', 1)[0]
     args = ['ffmpeg',  '-loglevel',  'quiet']
     if start:
@@ -187,7 +216,7 @@ def mkargs(fn, npass, crop=None, start=None, subf=None, subt=None,
         speed = '4'
     args += ['-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
              str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250',
-             '-speed', speed, '-tile-columns', tc]
+             '-speed', speed, '-tile-columns', str(tile_columns)]
     if npass == 2:
         args += ['-auto-alt-ref', '1', '-lag-in-frames', '25']
     args += ['-sn']
