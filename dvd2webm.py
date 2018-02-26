@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-02-25 12:36:17 +0100
+# Last modified: 2018-02-26 21:55:46 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -204,15 +204,15 @@ def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
     if start and not re.search('\d{2}:\d{2}:\d{2}', start):
         raise ValueError('starting time must be in the format HH:MM:SS')
     numthreads = str(os.cpu_count())
-    logging.info('using {} threads'.format(numthreads))
-    logging.info('using {} tile columns'.format(tile_columns))
     basename = fn.rsplit('.', 1)[0]
-    args = ['ffmpeg',  '-loglevel',  'quiet']
+    args = ['ffmpeg',  '-loglevel', 'quiet', '-probesize', '1G', '-analyzeduration', '1G']
     if start:
         args += ['-ss',  start]
     args += ['-i', fn, '-passlogfile', basename]
     speed = '2'
     if npass == 1:
+        logging.info('using {} threads'.format(numthreads))
+        logging.info('using {} tile columns'.format(tile_columns))
         speed = '4'
     args += ['-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
              str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250',
