@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2018-01-15 21:28:16 +0100
+# Last modified: 2018-02-27 12:52:20 +0100
 """
 Fix PDF file titles.
 
@@ -116,7 +116,7 @@ def main(argv):
                 es = 'could not change title of {}; exiftool returned {}'
                 logging.error(es.format(path, rv.returncode))
             else:
-                logging.debug('title of {} changed'.format(path))
+                logging.info('title of {} changed'.format(path))
         else:
             logging.debug('the title of {} does not need to be changed'.format(path))
     shutil.rmtree(tdir)
