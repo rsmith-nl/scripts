@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2017-06-04 12:41:00 +0200
+# Last modified: 2018-02-28 09:28:44 +0100
 
 """
 Creates a passphrase.
@@ -19,8 +19,8 @@ import sys
 
 __version__ = '1.0.0'
 
-# wordfile = '/usr/share/dict/opentaal-210G-basis-gekeurd'
-wordfile = '/usr/share/dict/words'
+wordfile = '/usr/share/dict/opentaal-210G-basis-gekeurd'
+#wordfile = '/usr/share/dict/words'
 minwordlen = 4
 maxwordlen = 9
 fillchars = '!@#$%&*_-'
