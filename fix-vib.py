@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2018-02-27 12:52:20 +0100
+# Last modified: 2018-03-04 11:45:27 +0100
 """
 Fix PDF file titles.
 
@@ -108,15 +108,25 @@ def main(argv):
             logging.debug('{} is not encrypted'.format(path))
         newtitle = fn.replace('_', ' ')[:-4]
         if info['Title'] != newtitle:
-            logging.info('{} needs its title changed'.format(path))
-            args2 = ['exiftool', '-m', '-Title={}'.format(newtitle),
-                     '-overwrite_original', path]
+            # Use ghostscript to change the title
+            with open('pdfmarks', 'w') as marksfile:
+                marksfile.write('[ /Title ({})\n  /DOCINFO pdfmark'.format(newtitle))
+            args2 = ['gs', '-q', '-dBATCH', '-dNOPAUSE', '-sDEVICE=pdfwrite',
+                     '-sOutputFile=withmarks.pdf', path, 'pdfmarks']
             rv = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
             if rv.returncode != 0:
+                os.remove('withmarks.pdf')
                 es = 'could not change title of {}; exiftool returned {}'
                 logging.error(es.format(path, rv.returncode))
             else:
-                logging.info('title of {} changed'.format(path))
+                try:
+                    os.remove(path)
+                    os.rename('withmarks.pdf', path)
+                    logging.info('title of {} changed'.format(path))
+                except OSError as e:
+                    es = 'could not rename withmarks.pdf to {}: {}'
+                    logging.error(es.format(path, e))
+            os.remove('pdfmarks')
         else:
             logging.debug('the title of {} does not need to be changed'.format(path))
     shutil.rmtree(tdir)
