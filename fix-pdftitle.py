@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# file: fix-vib.py
+# file: fix-pdftitle.py
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2018-03-04 11:45:27 +0100
+# Last modified: 2018-03-04 11:47:26 +0100
 """
 Fix PDF file titles.
 
@@ -21,7 +21,7 @@ import subprocess as sp
 import sys
 import tempfile
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 
 def pdfinfo(path):
