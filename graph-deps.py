@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-27 13:50:28 +0200
-# Last modified: 2017-06-04 13:38:06 +0200
+# Last modified: 2018-03-10 22:50:33 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to graph-deps.py. This work is published
@@ -26,7 +26,8 @@ import sys
 if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
     print(__doc__)
     exit(0)
-output = ['digraph deps {', 'rankdir=LR;', 'node [shape=box];']
+output = ['digraph deps {', 'rankdir=LR;', 'fontname="Alegreya";', 'concentratr=true;',
+          'node [shape=box, fontname="Alegreya"];']
 parent = None
 try:
     for ln in sys.stdin:
