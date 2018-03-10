@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-03-10 07:58:32 +0100
+# Last modified: 2018-03-10 08:10:30 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -27,7 +27,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.10.0'
+__version__ = '0.11'
 
 
 def main(argv):
@@ -50,7 +50,7 @@ def main(argv):
     parser.add_argument('-d', '--dummy', action="store_true",
                         help="print commands but do not run them")
     parser.add_argument(
-        '-t', '--subtitle', type=str, help="srt file or dvdsub track number")
+        '-t', '--subtitle', type=str, help="srt file or dvdsub track number (default: no subtitle)")
     ahelp = "number of the audio track to use (default: 0; first audio track)"
     parser.add_argument('-a', '--audio', type=int, default=0, help=ahelp)
     parser.add_argument('fn', metavar='filename', help='MPEG file to process')
