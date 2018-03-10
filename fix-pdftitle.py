@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2018-03-04 12:02:27 +0100
+# Last modified: 2018-03-04 12:17:14 +0100
 """
 Fix PDF file titles.
 
@@ -13,6 +13,7 @@ This is done to make sure that the reader app on a tablet displays a sensible ti
 """
 
 from collections import defaultdict
+from datetime import datetime
 import argparse
 import logging
 import os
@@ -80,7 +81,8 @@ def set_title(path, fn, tempdir, newtitle):
     orig = os.getcwd()
     os.chdir(tempdir)
     with open('pdfmarks', 'w') as marksfile:
-        marksfile.write('[ /Title ({})\n  /DOCINFO pdfmark'.format(newtitle))
+        marks = '[ /Title ({})\n  /ModDate (D:{:%Y%m%d%H%M%z})\n  /DOCINFO pdfmark'
+        marksfile.write(marks.format(newtitle), datetime.now())
     args = ['gs', '-q', '-dBATCH', '-dNOPAUSE', '-sDEVICE=pdfwrite',
             '-sOutputFile=withmarks.pdf', path, 'pdfmarks']
     rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
