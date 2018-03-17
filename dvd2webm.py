@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-03-10 08:10:30 +0100
+# Last modified: 2018-03-17 19:51:53 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to dvd2webm.py. This work is published
@@ -27,7 +27,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.11'
+__version__ = '0.12'
 
 
 def main(argv):
@@ -66,6 +66,7 @@ def main(argv):
     starttime = datetime.now()
     logging.info('started at {}.'.format(str(starttime)[:-7]))
     logging.info('using audio stream {}.'.format(args.audio))
+    tc = 1
     if not args.crop:
         logging.info('looking for cropping.')
         args.crop = findcrop(args.fn)
@@ -97,6 +98,7 @@ def main(argv):
         logging.basicConfig(level='INFO')
         logging.info('first pass: ' + ' '.join(a1))
         logging.info('second pass: ' + ' '.join(a2))
+        return
     stoptime = datetime.now()
     logging.info('ended at {}.'.format(str(stoptime)[:-7]))
     runtime = stoptime - starttime
