@@ -1,26 +1,35 @@
 #!/usr/bin/env python3
-# file: changed_options.py
+# file: default_options.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2018-03-26 20:53:13 +0200
-# Last modified: 2018-03-26 23:03:02 +0200
+# Last modified: 2018-03-28 23:59:40 +0200
 """
 Get a list of installed packages. For each package, determine if the options
-have been changed compared to the default options, and print that.
+are identical compared to the default options. If so, print out the package name.
 
 * The ‘pkg query’ command is used to retrieve the options that are set.
 * For determining the default options, ‘make -V OPTIONS_DEFAULT’ is called
   from the port directory.
 
-This program requires pkg(8) and the ports tree to be installed.
+This program requires pkg(8), BSD make(1) and the ports tree.
+[Note that GNU make won't work; it lacks the -V option.]
 So this program will run on FreeBSD and maybe DragonflyBSD.
 """
 # Imports {{{1
+from datetime import datetime
+from enum import Enum
 import concurrent.futures as cf
 import os
 import subprocess as sp
 import sys
+
+
+class Comparison(Enum):
+    SAME = 0
+    CHANGED = 1
+    UNKNOWN = 2
 
 
 def run(args):  # {{{1
@@ -48,7 +57,7 @@ def check(line):  # {{{1
         separated by whitespace.
 
     Returns:
-        A string containing the package name and either [CHANGED] or [default].
+        A tuple of a string containing the package name and a Comparison enum.
     """
     pkg, origin = line.split()
     optionlines = run(['pkg', 'query', '%Ok %Ov', pkg]).splitlines()
@@ -56,28 +65,33 @@ def check(line):  # {{{1
     try:
         os.chdir('/usr/ports/{}'.format(origin))
     except FileNotFoundError:
-        return ('{}: undetermined'.format(pkg))
+        return (pkg, Comparison.UNKNOWN)
     default = run(['make', '-V', 'OPTIONS_DEFAULT'])
     options_default = set(default.split())
     if options_default == options_set:
-        v = 'default'
+        v = Comparison.SAME
     else:
-        v = 'CHANGED'
-    return '{}: [{}]'.format(pkg, v)
+        v = Comparison.CHANGED
+    return (pkg, v)
 
 
 def main(argv):  # {{{1
     """
-    Entry point for changed_options.py.
+    Entry point for default_options.py
 
     Arguments:
         argv: command line arguments
     """
     data = run(['pkg', 'info', '-a', '-o'])
     packagelines = data.splitlines()
+    print('# List of packages with default options.')
+    print('# Generated on', str(datetime.now())[:-10])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for rv in tp.map(check, packagelines):
-            print(rv)
+        for pkg, result in tp.map(check, packagelines):
+            if result == Comparison.SAME:
+                print(pkg)
+            elif result == Comparison.UNKNOWN:
+                print('#', pkg, 'is unknown in the ports tree.')
 
 
 if __name__ == '__main__':
