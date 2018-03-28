@@ -4,7 +4,11 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2018-03-26 20:53:13 +0200
-# Last modified: 2018-03-28 23:59:40 +0200
+# Last modified: 2018-03-29 00:14:07 +0200
+#
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to default_options.py. This work is published
+# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 """
 Get a list of installed packages. For each package, determine if the options
 are identical compared to the default options. If so, print out the package name.
