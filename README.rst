@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2017-12-28 13:50:42 +0100
+.. Last modified: 2018-03-29 00:16:41 +0200
 
 Introduction
 ============
@@ -26,9 +26,10 @@ work with ``bash``. Bug reports and patches welcome. Most of it should work on
 other BSD systems, Linux or OS-X without major problems.
 
 The following scripts use Python_ 3.x specific features (like
-``os.cpu_count``, ``subprocess.DEVNULL`` and ``concurrent.futures``);
+``os.cpu_count``, ``subprocess.DEVNULL``, ``concurrent.futures`` or ``Enum``);
 
 * checkfor.py
+* default_options.py
 * dicom2jpg.py
 * dicom2png.py
 * dvd2webm.py
@@ -107,6 +108,13 @@ csv2tbl.py
 ----------
 
 Convert a CSV file to a LaTeX table.
+
+
+default_options.py
+------------------
+
+This script generates a list of names of installed packages for which the
+options on the related port are equal to the default options.
 
 
 denylog.py
