@@ -2,9 +2,10 @@
 # file: get-tracks.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2017-06-25 14:49:56 +0200
-# Last modified: 2017-11-04 08:46:25 +0100
+# Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2017-09-10T12:15:13+02:00
+# Last modified: 2018-04-16T22:05:29+0200
 """Retrieve the numbered tracks from a dvd."""
 
 import logging

@@ -1,13 +1,11 @@
 #!/bin/sh
-# Re-write a PDF file with ghostscript.
+# file: pdftopdf.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2014-02-27 00:15:14 +0100
-# Last modified: 2016-03-20 18:53:22 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to pdftopdf. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2014-2016 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2014-02-27T00:15:14+0100
+# Last modified: 2018-04-16T22:27:59+0200
 
 if [ $# -lt 1 ]; then
     echo "Usage: $(basename $0) file"

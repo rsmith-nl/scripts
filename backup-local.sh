@@ -1,14 +1,11 @@
 #!/bin/sh
-# Backs up mount points to other mount points.
-# This script is designed to be run from cron.
+# file: backup-local.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
+# Copyright © 2008-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
 # Created: 2008-05-26 22:59:14 +0200
-# Last modified: 2016-04-05 22:16:54 +0200
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to backup-local. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Last modified: 2018-04-16 20:06:49 +0200
 
 # Check for non-standard programs that are used in this script.
 PROGS="/usr/local/bin/rsync"

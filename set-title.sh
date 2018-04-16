@@ -1,13 +1,11 @@
 #!/bin/sh
-# Set the title of the terminal emulator.
+# file: set-title.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2014-11-16 02:22:35 +0100
-# Last modified: 2016-03-19 10:35:32 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to set-title.sh. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2014-11-16T02:22:35+0100
+# Last modified: 2018-04-16T22:34:04+0200
 
 VAR=`hostname`
 if [ $1 ]; then

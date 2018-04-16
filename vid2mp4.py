@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
+# file: vid2mp4.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-06-04 13:57:48 +0200
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to vid2mp4.py. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2013-11-16T18:41:21+01:00
+# Last modified: 2018-04-16T22:42:44+0200
 """Convert video files to H.264/AAC streams in an MP4 container."""
 
 from functools import partial

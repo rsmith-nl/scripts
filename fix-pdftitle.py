@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # file: fix-pdftitle.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2017-04-11 15:39:37 +0200
-# Last modified: 2018-03-04 12:17:14 +0100
+# Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2017-04-11T16:17:26+02:00
+# Last modified: 2018-04-16T21:58:12+0200
 """
 Fix PDF file titles.
 

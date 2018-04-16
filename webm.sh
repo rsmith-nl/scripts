@@ -1,9 +1,12 @@
 #!/bin/sh
+# file: webm.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 # Two-pass webm encoding
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2015-06-21 16:44:34 +0200
-# Last modified: 2016-03-20 18:54:43 +0100
+# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-06-21T16:44:34+0200
+# Last modified: 2018-04-16T22:43:29+0200
 
 # Check for non-standard programs that are used in this script.
 FF=ffmpeg

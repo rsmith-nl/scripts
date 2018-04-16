@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
 # file: scripts-tests.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2015-04-06 13:08:02 +0200
-# Last modified: 2016-06-11 00:30:24 +0200
+# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-04-06T13:08:02+0200
+# Last modified: 2018-04-16T22:32:33+0200
 """
 Tests for functions in python files in the scripts directory.
 

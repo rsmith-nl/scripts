@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # file: dvd2webm.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2016-02-10 22:42:09 +0100
-# Last modified: 2018-03-17 19:51:53 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to dvd2webm.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2016-02-11T19:02:34+01:00
+# Last modified: 2018-04-16T21:54:34+0200
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.

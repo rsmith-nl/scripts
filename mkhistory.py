@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
+# file: mkhistory.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-12-28 13:44:18 +0100
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to mkhistory.py. This work is published from
-# the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2012-04-11T01:41:21+02:00
+# Last modified: 2018-04-16T22:18:06+0200
 """Script to format a Git log for LaTeX."""
 
 import os

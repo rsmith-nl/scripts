@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # file: py-ver.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2015-04-28 23:25:35 +0200
-# Last modified: 2018-01-22 21:12:09 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to py-ver.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-04-28T23:25:35+0200
+# Last modified: 2018-04-16T22:29:43+0200
 """Recursively list or set the __version__ string in Python files."""
 
 import argparse

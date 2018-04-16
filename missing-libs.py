@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # file: missing-libs.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2016-01-17 15:00:08 +0100
-# Last modified: 2017-06-04 13:45:43 +0200
+# Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2016-01-17T15:48:11+01:00
+# Last modified: 2018-04-16T22:17:21+0200
 """Check executables in the given directory for missing shared libraries."""
 
 import argparse

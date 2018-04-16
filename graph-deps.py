@@ -2,13 +2,10 @@
 # file: graph-deps.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2017-04-27 13:50:28 +0200
-# Last modified: 2018-03-10 22:50:33 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to graph-deps.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2017-04-27T14:20:52+02:00
+# Last modified: 2018-04-16T22:09:10+0200
 """
 Creates a graph of FreeBSD package dependencies.
 

@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
 # file: img4latex.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2014-12-04 20:14:34 +0100
-# Last modified: 2017-07-19 23:37:23 +0200
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to img4latex.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2014-12-05T01:26:59+01:00
+# Last modified: 2018-04-16T22:12:33+0200
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse

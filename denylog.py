@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # file: denylog.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2015-09-03 03:04:01 +0200
-# Last modified: 2017-06-04 13:16:16 +0200
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to denylog.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-09-03T08:47:30+02:00
+# Last modified: 2018-04-16T21:51:14+0200
 """
 Summarize the deny log messages from ipfw.
 

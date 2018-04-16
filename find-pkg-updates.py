@@ -2,13 +2,10 @@
 # file: find-pkg-updates.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2017-11-26 13:19:00 +0100
-# Last modified: 2017-12-27 13:27:37 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to find-pkg-updates.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2017-11-26T14:38:15+01:00
+# Last modified: 2018-04-16T21:57:15+0200
 """Find updated packages for FreeBSD."""
 
 import argparse

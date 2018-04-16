@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # file: csvcolumn.py
-# vim:fileencoding=utf-8:ft=python
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2016-03-19 12:42:04 +0100
-# Last modified: 2017-06-04 13:15:26 +0200
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to csvcolumn.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2016-03-19T13:03:26+01:00
+# Last modified: 2018-04-16T21:48:55+0200
 """Prints a single column from a CSV file."""
 
 import csv

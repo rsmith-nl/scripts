@@ -1,12 +1,11 @@
 #!/bin/sh
-# Sets the resolution of pictures to the provided value.
+# file: setres.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-01-08 14:27:45 +0100
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to 'setres'. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2006-2017 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2006-02-19T16:52:08+01:00
+# Last modified: 2018-04-16T22:35:01+0200
 
 # Check for arguments
 if [ $# -lt 2 ]; then

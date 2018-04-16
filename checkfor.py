@@ -1,12 +1,10 @@
-# vim:fileencoding=utf-8:ft=python
+# file: checkfor.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-06-04 13:10:47 +0200
-#
-# To the extent possible under law, Roland Smith has waived all
-# copyright and related or neighboring rights to checkfor.py This work
-# is published from the Netherlands. See
-# http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2012-12-13T01:39:03+01:00
+# Last modified: 2018-04-16T21:23:11+0200
 
 import logging
 import subprocess

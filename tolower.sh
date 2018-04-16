@@ -1,12 +1,12 @@
 #!/bin/sh
+# file: tolower.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 # Converts file names to lower case.
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-03-19 10:38:03 +0100
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to 'tolower'. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-05-08T22:12:45+02:00
+# Last modified: 2018-04-16T22:40:43+0200
 
 set -eu
 

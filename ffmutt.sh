@@ -1,7 +1,9 @@
 #!/bin/sh
-# Lauch Mutt for a mailto link.
+# file: ffmutt.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2014-12-26 22:49:16 +0100
-# Last modified: 2016-03-19 10:26:24 +0100
+# Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-05-08T22:12:45+02:00
+# Last modified: 2018-04-16T21:55:39+0200
 exec urxvt -e sh -c "mutt $$@"

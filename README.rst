@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-03-29 00:16:41 +0200
+.. Last modified: 2018-04-16T22:45:41+0200
 
 Introduction
 ============
@@ -51,13 +51,6 @@ Other Python scripts are written on Python 3 but could be usable on Python
 Linux and OS-X. They *might* work on MS-windows as well, provided that the
 external programs and modules they use are available.  *This has not been
 tested, however*.  Patches welcome.
-
-
-License
-=======
-
-All of these programs are in the public domain. Use them as you wish. See
-LICENSE.txt for the full text of the license.
 
 
 The programs

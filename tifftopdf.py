@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
+# file: tifftopdf.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-12-09 09:51:44 +0100
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to tiff2pdf.py. This work is published from
-# the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2012-06-29T21:02:55+02:00
+# Last modified: 2018-04-16T22:39:06+0200
 """
 Convert TIFF files to PDF format.
 

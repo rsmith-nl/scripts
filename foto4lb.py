@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
+# file: foto4lb.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-07-20 22:08:43 +0200
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to foto4lb.py. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2011-11-07T21:40:58+01:00
+# Last modified: 2018-04-16T22:01:00+0200
 """Shrink fotos to a size suitable for use in my logbook."""
 
 # from concurrent.futures import ProcessPoolExecutor

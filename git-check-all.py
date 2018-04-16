@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
+# file: git-check-all.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2017-06-04 13:33:30 +0200
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to <script>. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2012-09-02T17:45:51+02:00
+# Last modified: 2018-04-16T22:06:19+0200
 """
 Run ``git gc`` on all the user's git repositories.
 

@@ -1,12 +1,12 @@
 #!/bin/sh
+# file: clock.sh
 # Script to show all the times that are important for me.
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-03-19 10:26:00 +0100
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to 'clock'. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-05-08T22:12:45+02:00
+# Last modified: 2018-04-16T21:25:46+0200
 
 set -eu
 

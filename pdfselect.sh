@@ -1,12 +1,11 @@
 #!/bin/sh
-# Select consecutive pages from a PDF document
+# file: pdfselect.sh
+# vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2016-03-20 18:52:48 +0100
-#
-# To the extent possible under law, Roland Smith has waived all copyright and
-# related or neighboring rights to pdfselect. This work is published from the
-# Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2015-05-08T22:12:45+02:00
+# Last modified: 2018-04-16T22:25:54+0200
 
 if [ $# -lt 3 ]; then
     echo "Usage: $(basename $0) N M file"

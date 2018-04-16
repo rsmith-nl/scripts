@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
 # file: histdata.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2014-07-12 01:38:08 +0200
-# Last modified: 2017-06-04 13:39:04 +0200
+# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2012-07-23T01:18:29+02:00
+# Last modified: 2018-04-16T22:09:58+0200
 """Make a histogram and calculate entropy of files."""
 
 import math
