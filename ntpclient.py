@@ -6,9 +6,6 @@
 # Created: 2017-11-16 19:33:50 +0100
 # Last modified: 2017-11-16 22:11:49 +0100
 #
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to ntpclient.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 from contextlib import closing
 from socket import socket, AF_INET, SOCK_DGRAM
