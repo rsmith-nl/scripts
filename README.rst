@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-04-16T22:45:41+0200
+.. Last modified: 2018-05-03T00:22:28+0200
 
 Introduction
 ============
@@ -653,6 +653,13 @@ sha256.py
 
 A utility written in pure Python_ to calculate the SHA-256 checksum of files,
 for systems that don't come with such a utility.
+
+
+standalone.sh
+-------------
+
+Compiles a LaTeX file with the standalone documentclass to Encapsulated
+PostScript format.
 
 
 texfonts.sh
