@@ -4,7 +4,6 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
 # Last modified: 2018-02-28 09:28:44 +0100
-
 """
 Creates a passphrase.
 
@@ -26,18 +25,25 @@ maxwordlen = 9
 fillchars = '!@#$%&*_-'
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--log', default='warning',
-                    choices=['debug', 'info', 'warning', 'error'],
-                    help='logging level (default: warning)')
-parser.add_argument('-w', '--words', type=str, default=wordfile,
-                    help='path to words file (default: {})'.format(wordfile))
-parser.add_argument('-c', '--count', type=int, default=4,
-                    help='number of words (default: 4)')
-parser.add_argument('-v', '--version', action='version',
-                    version=__version__)
+parser.add_argument(
+    '--log',
+    default='warning',
+    choices=['debug', 'info', 'warning', 'error'],
+    help='logging level (default: warning)'
+)
+parser.add_argument(
+    '-w',
+    '--words',
+    type=str,
+    default=wordfile,
+    help='path to words file (default: {})'.format(wordfile)
+)
+parser.add_argument('-c', '--count', type=int, default=4, help='number of words (default: 4)')
+parser.add_argument('-v', '--version', action='version', version=__version__)
 args = parser.parse_args(sys.argv[1:])
-logging.basicConfig(level=getattr(logging, args.log.upper(), None),
-                    format='%(levelname)s: %(message)s')
+logging.basicConfig(
+    level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+)
 
 logging.info('reading words database {}'.format(args.words))
 with open(args.words) as df:
