@@ -32,8 +32,7 @@ filetypes = {
     '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
     '\.(tar\.|t)(z|gz|bz2?|xz)$': ['tar', 'tf'],
     '\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm)$': ['mpv'],
-    '\.(s3m|xm|mod|mid)$': [
-        'urxvt', '-title', 'Timidity++', '-e', 'timidity', '-in', '-A30a']
+    '\.(s3m|xm|mod|mid)$': ['urxvt', '-title', 'Timidity++', '-e', 'timidity', '-in', '-A30a']
 }
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
@@ -53,16 +52,13 @@ def main(argv):  # noqa
         '--log',
         default='warning',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')")
-    opts.add_argument(
-        "files",
-        metavar='file',
-        nargs='*',
-        help="one or more files to process")
+        help="logging level (defaults to 'warning')"
+    )
+    opts.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
     args = opts.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     logging.info('command line arguments = {}'.format(argv))
     logging.info('parsed arguments = {}'.format(args))
     fail = "opening '{}' failed: {}"

@@ -110,10 +110,7 @@ def histogram_gnuplot(counts, sz, name):
     pl += ['set ylabel "occurance [%]"']
     pl += ['rnd(x) = {:.6f}'.format(rnd)]
     cont = "rnd(x) with lines ls 2 title 'continuous uniform ({:.6f}%)'"
-    pl += [
-        "plot '-' using 1:2 with points ls 1 title '{}', ".format(name) +
-        cont.format(rnd)
-    ]
+    pl += ["plot '-' using 1:2 with points ls 1 title '{}', ".format(name) + cont.format(rnd)]
     for n, v in enumerate(counts):
         pl += ['{} {}'.format(n, v)]
     pl += ['e']

@@ -36,23 +36,20 @@ def main(argv):
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-w',
-        '--width',
-        default=886,
-        type=int,
-        help='width of the images in pixels (default 886)')
+        '-w', '--width', default=886, type=int, help='width of the images in pixels (default 886)'
+    )
     parser.add_argument(
         '--log',
         default='warning',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')")
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument('path', nargs='*', help='directory in which to work')
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     logging.debug('Command line arguments = {}'.format(argv))
     logging.debug('Parsed arguments = {}'.format(args))
     if not args.path:
@@ -68,8 +65,7 @@ def main(argv):
             logging.warning(fs.format(outdir, path))
             continue
         files = [
-            f.name for f in scandir(path)
-            if f.is_file() and f.name.lower().endswith(extensions)
+            f.name for f in scandir(path) if f.is_file() and f.name.lower().endswith(extensions)
         ]
         count += len(files)
         pairs.append((path, files))
@@ -140,32 +136,28 @@ def processfile(packed):
         for tag, value in img._getexif().items():
             decoded = TAGS.get(tag, tag)
             ld[decoded] = value
-        want = set([
-            'DateTime', 'DateTimeOriginal', 'CreateDate', 'DateTimeDigitized'
-        ])
+        want = set(['DateTime', 'DateTimeOriginal', 'CreateDate', 'DateTimeDigitized'])
         available = sorted(list(want.intersection(set(ld.keys()))))
         fields = ld[available[0]].replace(' ', ':').split(':')
         dt = datetime(
-            int(fields[0]),
-            int(fields[1]),
-            int(fields[2]), int(fields[3]), int(fields[4]), int(fields[5]))
+            int(fields[0]), int(fields[1]), int(fields[2]), int(fields[3]), int(fields[4]),
+            int(fields[5])
+        )
     except Exception:
         logging.warning('exception raised when reading the file time.')
         ed = {}
         cds = '{}:{}:{} {}:{}:{}'
         dt = datetime.today()
-        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, dt.hour,
-                                      dt.minute, dt.second)
+        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
     args = [
         'convert', fname, '-strip', '-resize',
-        str(newwidth), '-units', 'PixelsPerInch', '-density', '300',
-        '-unsharp', '2x0.5+0.7+0', '-quality', '80', oname
+        str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp', '2x0.5+0.7+0',
+        '-quality', '80', oname
     ]
     rp = subprocess.call(args)
     if rp != 0:
         return (name, 2)
-    modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
-                      0, 0, -1))
+    modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, 0, 0, -1))
     utime(oname, (modtime, modtime))
     return (fname, 0)
 

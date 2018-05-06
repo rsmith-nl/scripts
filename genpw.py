@@ -29,22 +29,20 @@ def main(argv):
         '--length',
         default=16,
         type=int,
-        help='# of random character for password (default 16)')
+        help='# of random character for password (default 16)'
+    )
     parser.add_argument(
-        '-r',
-        '--repeat',
-        default=1,
-        type=int,
-        help='number of passwords to generate (default: 1)')
+        '-r', '--repeat', default=1, type=int, help='number of passwords to generate (default: 1)'
+    )
     parser.add_argument(
         '-g',
         '--groupby',
         default=0,
         metavar='N',
         type=int,
-        help='group by N characters (default: 0; no grouping)')
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
+        help='group by N characters (default: 0; no grouping)'
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     args = parser.parse_args(argv)
     for _ in range(args.repeat):
         pw = genpw(args.length).decode('ascii')

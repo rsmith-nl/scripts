@@ -28,19 +28,19 @@ def main(argv):
         argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument(
         '--log',
         default='warning',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')")
+        help="logging level (defaults to 'warning')"
+    )
     parser.add_argument('filename', type=str, help="file to process")
     parser.add_argument('offset', type=float, help='offset in seconds')
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     # The real program starts here...
     offs = int(1000 * args.offset)
     srtdata = parsesrt(args.filename)
@@ -123,8 +123,7 @@ def parsesrt(path):
     emptyidx = [n for n, ln in enumerate(lines) if not ln]
     timeidx = [n + 2 for n in emptyidx]
     timeidx.insert(0, 1)
-    srtdata = [(split_time(lines[t]), lines[t + 1:e])
-               for t, e in zip(timeidx, emptyidx)]
+    srtdata = [(split_time(lines[t]), lines[t + 1:e]) for t, e in zip(timeidx, emptyidx)]
     return srtdata
 
 

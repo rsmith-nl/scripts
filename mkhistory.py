@@ -41,9 +41,7 @@ def fmtlog(txt):
     # Remove reference to HEAD
     lines[0] = re.sub('\(.*\) ', '', lines[0])
     # Use typewriter font for the commit id.
-    lines = [
-        r'\texttt{' + re.sub(' ', r'} ', ln, count=1) for ln in lines if ln
-    ]
+    lines = [r'\texttt{' + re.sub(' ', r'} ', ln, count=1) for ln in lines if ln]
     return '\\\\\n'.join(lines)
 
 

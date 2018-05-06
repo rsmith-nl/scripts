@@ -116,7 +116,7 @@ def pkgver_decode(versionstring):
             suffix = [int(n) for n in suffixstring.split(',')]
             snum = 0
             for n in suffix:
-                snum = factor*snum + n
+                snum = factor * snum + n
         except ValueError:
             snum = suffixstring
     else:
@@ -127,7 +127,7 @@ def pkgver_decode(versionstring):
         prefix = [int(n) for n in prefixstring.split('.')]
         pnum = 0
         for n in prefix:
-            pnum = factor*pnum + n
+            pnum = factor * pnum + n
     except ValueError:
         pnum = prefixstring
     return (pnum, snum)
@@ -167,20 +167,21 @@ def main(argv):
     major = int(uname[1][:2])
     arch = uname[0]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument(
         '-m',
         '--major',
         type=int,
         default=major,
-        help='FreeBSD major version (default {})'.format(major))
+        help='FreeBSD major version (default {})'.format(major)
+    )
     parser.add_argument(
         '-a',
         '--arch',
         type=str,
         default=arch,
-        help='FreeBSD architecture (default {})'.format(arch))
+        help='FreeBSD architecture (default {})'.format(arch)
+    )
     args = parser.parse_args(argv)
     parser.parse_args(argv)
     if major == args.major:

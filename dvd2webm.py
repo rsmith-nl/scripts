@@ -34,27 +34,29 @@ def main(argv):
         '--log',
         default='info',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'info')")
+        help="logging level (defaults to 'info')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        '-s',
-        '--start',
-        type=str,
-        default=None,
-        help="time (hh:mm:ss) at which to start encoding")
+        '-s', '--start', type=str, default=None, help="time (hh:mm:ss) at which to start encoding"
+    )
     parser.add_argument('-c', '--crop', type=str, help="crop (w:h:x:y) to use")
-    parser.add_argument('-d', '--dummy', action="store_true",
-                        help="print commands but do not run them")
     parser.add_argument(
-        '-t', '--subtitle', type=str, help="srt file or dvdsub track number (default: no subtitle)")
+        '-d', '--dummy', action="store_true", help="print commands but do not run them"
+    )
+    parser.add_argument(
+        '-t',
+        '--subtitle',
+        type=str,
+        help="srt file or dvdsub track number (default: no subtitle)"
+    )
     ahelp = "number of the audio track to use (default: 0; first audio track)"
     parser.add_argument('-a', '--audio', type=int, default=0, help=ahelp)
     parser.add_argument('fn', metavar='filename', help='MPEG file to process')
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     if not check_ffmpeg():
@@ -85,10 +87,26 @@ def main(argv):
         except ValueError:
             srtfile = args.subtitle
             logging.info('using subtitle file ' + srtfile)
-    a1 = mkargs(args.fn, 1, tc, crop=args.crop, start=args.start, subf=srtfile,
-                subt=subtrack, atrack=args.audio)
-    a2 = mkargs(args.fn, 2, tc, crop=args.crop, start=args.start, subf=srtfile,
-                subt=subtrack, atrack=args.audio)
+    a1 = mkargs(
+        args.fn,
+        1,
+        tc,
+        crop=args.crop,
+        start=args.start,
+        subf=srtfile,
+        subt=subtrack,
+        atrack=args.audio
+    )
+    a2 = mkargs(
+        args.fn,
+        2,
+        tc,
+        crop=args.crop,
+        start=args.start,
+        subf=srtfile,
+        subt=subtrack,
+        atrack=args.audio
+    )
     if not args.dummy:
         origbytes, newbytes = encode(a1, a2)
     else:
@@ -100,7 +118,7 @@ def main(argv):
     logging.info('ended at {}.'.format(str(stoptime)[:-7]))
     runtime = stoptime - starttime
     logging.info('total running time {}.'.format(str(runtime)[:-7]))
-    encspeed = origbytes/(runtime.seconds*1000)
+    encspeed = origbytes / (runtime.seconds * 1000)
     logging.info('average input encoding speed {:.2f} kB/s.'.format(encspeed))
 
 
@@ -158,8 +176,7 @@ def findcrop(path, start='00:10:00', duration='00:00:01'):
         'rawvideo',  # write raw video output.
         '/dev/null'  # Write output to /dev/null
     ]
-    proc = sp.run(
-        args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
+    proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
     rv = Counter(re.findall('crop=(\d+:\d+:\d+:\d+)', proc.stderr))
     return rv.most_common(1)[0][0]
 
@@ -177,8 +194,7 @@ def reporttime(p, start, end):
     logging.info('pass {} took {}.'.format(p, dt[:-7]))
 
 
-def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
-           atrack=0):
+def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None, atrack=0):
     """Create argument list for constrained quality VP9/vorbis encoding.
 
     Arguments:
@@ -204,18 +220,20 @@ def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
         raise ValueError('starting time must be in the format HH:MM:SS')
     numthreads = str(os.cpu_count())
     basename = fn.rsplit('.', 1)[0]
-    args = ['ffmpeg',  '-loglevel', 'quiet', '-probesize', '1G', '-analyzeduration', '1G']
+    args = ['ffmpeg', '-loglevel', 'quiet', '-probesize', '1G', '-analyzeduration', '1G']
     if start:
-        args += ['-ss',  start]
+        args += ['-ss', start]
     args += ['-i', fn, '-passlogfile', basename]
     speed = '2'
     if npass == 1:
         logging.info('using {} threads'.format(numthreads))
         logging.info('using {} tile columns'.format(tile_columns))
         speed = '4'
-    args += ['-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
-             str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250',
-             '-speed', speed, '-tile-columns', str(tile_columns)]
+    args += [
+        '-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
+        str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', speed, '-tile-columns',
+        str(tile_columns)
+    ]
     if npass == 2:
         args += ['-auto-alt-ref', '1', '-lag-in-frames', '25']
     args += ['-sn']
@@ -237,13 +255,12 @@ def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
         fc = '[0:v][0:s:{}]overlay'.format(subt)
         if crop:
             fc += ',crop={}[v]'.format(crop)
-        args += ['-filter_complex', fc, '-map', '[v]', '-map',
-                 '0:a:{}'.format(atrack)]
+        args += ['-filter_complex', fc, '-map', '[v]', '-map', '0:a:{}'.format(atrack)]
     if npass == 1:
         outname = '/dev/null'
     else:
         outname = basename + '.webm'
-    args += ['-y',  outname]
+    args += ['-y', outname]
     return args
 
 
@@ -282,7 +299,7 @@ def encode(args1, args2):
     newsize = os.path.getsize(args2[-1])
     percentage = int(100 * newsize / origsize)
     sz = "the size of '{}' is {}% of the size of '{}'."
-    logging.info(sz.format(args2[-1], percentage, args2.index('-i')+1))
+    logging.info(sz.format(args2[-1], percentage, args2.index('-i') + 1))
     return origsize, newsize  # both in bytes.
 
 

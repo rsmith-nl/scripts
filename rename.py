@@ -33,35 +33,26 @@ def main(argv):
         '-p',
         '--prefix',
         default='picture-',
-        help='prefix for the image name (default "picture-")')
+        help='prefix for the image name (default "picture-")'
+    )
     parser.add_argument(
-        '-s',
-        '--start',
-        type=int,
-        default=1,
-        help='first number to use (default 1)')
+        '-s', '--start', type=int, default=1, help='first number to use (default 1)'
+    )
     parser.add_argument(
-        '-w',
-        '--width',
-        type=int,
-        default=2,
-        help='field width for number (default 2)')
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
+        '-w', '--width', type=int, default=2, help='field width for number (default 2)'
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument(
         '--log',
         default='warning',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')")
-    parser.add_argument(
-        "files",
-        metavar='file',
-        nargs='*',
-        help="one or more files to process")
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     # The real work starts here...
     pairs = newnames(args.files, args.prefix, args.start, args.width)
     es = 'Could not rename "{}" to "{}": {}'

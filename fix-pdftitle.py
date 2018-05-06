@@ -42,8 +42,10 @@ def pdfinfo(path):
     rv = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
     if rv.returncode != 0:
         return defaultdict(lambda: '')
-    pairs = [(k, v.strip()) for k, v in
-             [ln.split(':', 1) for ln in rv.stdout.decode('utf-8').splitlines()]]
+    pairs = [
+        (k, v.strip())
+        for k, v in [ln.split(':', 1) for ln in rv.stdout.decode('utf-8').splitlines()]
+    ]
     return defaultdict(lambda: '', pairs)
 
 
@@ -84,8 +86,10 @@ def set_title(path, fn, tempdir, newtitle):
     with open('pdfmarks', 'w') as marksfile:
         marks = '[ /Title ({})\n  /ModDate (D:{:%Y%m%d%H%M%z})\n  /DOCINFO pdfmark'
         marksfile.write(marks.format(newtitle), datetime.now())
-    args = ['gs', '-q', '-dBATCH', '-dNOPAUSE', '-sDEVICE=pdfwrite',
-            '-sOutputFile=withmarks.pdf', path, 'pdfmarks']
+    args = [
+        'gs', '-q', '-dBATCH', '-dNOPAUSE', '-sDEVICE=pdfwrite', '-sOutputFile=withmarks.pdf',
+        path, 'pdfmarks'
+    ]
     rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     os.remove('pdfmarks')
     os.chdir(orig)
@@ -109,18 +113,14 @@ def main(argv):
         '--log',
         default='info',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'info')")
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        "files",
-        metavar='file',
-        nargs='+',
-        help="one or more files to process")
+        help="logging level (defaults to 'info')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     if args.log == 'debug':
         logging.debug('using verbose logging')
     tdir = tempfile.mkdtemp()

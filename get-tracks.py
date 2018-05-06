@@ -48,8 +48,7 @@ def main(argv):
     Arguments:
         argv: command line arguments
     """
-    logging.basicConfig(
-        level=logging.INFO, format='%(levelname)s: %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
     DVD = '/dev/cd1'
     if len(argv) == 0:
         print('get-tracks version', __version__)
@@ -74,8 +73,7 @@ def retrieve(dvddev, num):
     """
     args = ['tccat', '-i', dvddev, '-T', '{},-1'.format(num), '-P']
     trackname = 'track{:02d}.mpg'.format(num)
-    logging.info(
-        'writing track {} as "{}"... '.format(num, trackname))
+    logging.info('writing track {} as "{}"... '.format(num, trackname))
     with open(trackname, 'wb') as outf:
         run(args, stdout=outf, stderr=DEVNULL)
     logging.info('done.')

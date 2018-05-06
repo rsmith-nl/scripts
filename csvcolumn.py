@@ -38,21 +38,11 @@ def getdata(fn, colnum, delim=';'):
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-v', '--version', action='version', version=__version__)
 parser.add_argument(
-    '-r',
-    '--rows',
-    nargs=2,
-    type=int,
-    metavar=('min', 'max'),
-    help='only show rows min--max')
-parser.add_argument(
-    '-d',
-    '--delimiter',
-    default=';',
-    help="delimiter to use (defaults to ';')")
-parser.add_argument(
-    'column', type=int, help='number of the column to print (starts at 0)')
-parser.add_argument(
-    'path', type=str, nargs='*', help='path of the file to process')
+    '-r', '--rows', nargs=2, type=int, metavar=('min', 'max'), help='only show rows min--max'
+)
+parser.add_argument('-d', '--delimiter', default=';', help="delimiter to use (defaults to ';')")
+parser.add_argument('column', type=int, help='number of the column to print (starts at 0)')
+parser.add_argument('path', type=str, nargs='*', help='path of the file to process')
 args = parser.parse_args(sys.argv[1:])
 for path in args.path:
     print('file:', path)

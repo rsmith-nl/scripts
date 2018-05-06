@@ -63,8 +63,7 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        rc = subprocess.call(
-            args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
         logging.info('found required program "{}"'.format(args[0]))

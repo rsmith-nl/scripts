@@ -67,22 +67,18 @@ def main(argv):
         argv: command line arguments
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument(
         '--log',
         default='warning',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')")
-    parser.add_argument(
-        "files",
-        metavar='file',
-        nargs='*',
-        help="one or more files to process")
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     if not args.files:
         args.files = ['/var/log/security']
     reps = '  IP: {:16s} port: {:10s} rule: {}'

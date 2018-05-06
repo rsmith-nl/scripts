@@ -23,8 +23,10 @@ import sys
 if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
     print(__doc__)
     exit(0)
-output = ['digraph deps {', 'rankdir=LR;', 'fontname="Alegreya";', 'concentratr=true;',
-          'node [shape=box, fontname="Alegreya"];']
+output = [
+    'digraph deps {', 'rankdir=LR;', 'fontname="Alegreya";', 'concentratr=true;',
+    'node [shape=box, fontname="Alegreya"];'
+]
 parent = None
 try:
     for ln in sys.stdin:

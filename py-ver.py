@@ -25,13 +25,7 @@ def main(argv):
         argv: List command line argument strings.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-s',
-        '--set',
-        dest='verstr',
-        default='',
-        type=str,
-        help='version to set')
+    parser.add_argument('-s', '--set', dest='verstr', default='', type=str, help='version to set')
     parser.add_argument('file', nargs='*', help='files to process')
     args = parser.parse_args(argv[1:])
     if not args.file:
@@ -41,9 +35,7 @@ def main(argv):
         func = replacever
     else:
         func = printver
-    filelist = [
-        nm for nm in args.file if os.path.isfile(nm) and nm.endswith('.py')
-    ]
+    filelist = [nm for nm in args.file if os.path.isfile(nm) and nm.endswith('.py')]
     dirs = [nm for nm in args.file if os.path.isdir(nm)]
     for nm in dirs:
         for root, dirs, files in os.walk(nm):
@@ -52,9 +44,7 @@ def main(argv):
                     dirs.remove(d)
                 except ValueError:
                     pass
-            filelist += [
-                os.path.join(root, f) for f in files if f.endswith('.py')
-            ]
+            filelist += [os.path.join(root, f) for f in files if f.endswith('.py')]
     for p in filelist:
         func(p, args.verstr)
 

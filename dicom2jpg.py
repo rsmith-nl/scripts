@@ -40,9 +40,8 @@ def convert(filename):
     outname = filename.strip() + '.jpg'
     size = '1574x2048'
     args = [
-        'convert', filename, '-units', 'PixelsPerInch', '-density', '300',
-        '-crop', size + '+232+0', '-page', size + '+0+0', '-auto-gamma',
-        outname
+        'convert', filename, '-units', 'PixelsPerInch', '-density', '300', '-crop',
+        size + '+232+0', '-page', size + '+0+0', '-auto-gamma', outname
     ]
     rv = sp.call(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return (filename, outname, rv)
@@ -84,15 +83,14 @@ def main(argv):
         '--log',
         default='warning',
         choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')")
-    parser.add_argument(
-        '-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        'fn', nargs='*', metavar='filename', help='DICOM files to process')
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument('fn', nargs='*', metavar='filename', help='DICOM files to process')
     args = parser.parse_args(argv[1:])
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s')
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     logging.debug('command line arguments = {}'.format(argv))
     logging.debug('parsed arguments = {}'.format(args))
     checkfor('convert', rv=1)
