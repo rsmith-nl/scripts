@@ -5,11 +5,17 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2018-04-16T21:57:15+0200
-"""Find updated packages for FreeBSD."""
+# Last modified: 2018-05-06T14:51:18+0200
+"""Find updated packages for FreeBSD.
 
+
+
+"""
+
+from enum import Enum
 import argparse
 import concurrent.futures as cf
+import os
 import re
 import subprocess as sp
 import sys
@@ -19,12 +25,21 @@ import requests
 __version__ = '2.0'
 
 
+class Comparison(Enum):
+    SAME = 0
+    CHANGED = 1
+    UNKNOWN = 2
+
+
 def get_remote_pkgs(version, arch):
     """Get a dict of the latest packages from the FreeBSD repo.
 
     Arguments:
         version: The FreeBSD major version number.
         arch: The CPU architecture for which packages are to be retrieved.
+
+    Returns:
+        A dict of packages, indexed by package name and containing the version string.
     """
     t = re.compile('href="(.*?)"', re.MULTILINE)
     ps = 'http://pkg.freebsd.org/FreeBSD:{:d}:{}/latest/All/'
@@ -33,10 +48,66 @@ def get_remote_pkgs(version, arch):
     return dict(ln for ln in data if len(ln) == 2)
 
 
+def run(args):
+    """
+    Run a subprocess and return the standard output.
+
+    Arguments:
+        args (list): List of argument strings. Typically a command name
+            followed by options.
+
+    Returns:
+        Standard output of the program, converted to UTF-8 and split into lines.
+    """
+    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    return comp.stdout.decode('utf-8').splitlines()
+
+
+def check_options(pkg, origin):
+    """
+    Check of a given package uses the default options or
+    if options have been changed.
+
+    Arguments:
+        pkg (str): package name
+        origin (str): directory in the ports the where the package was buit from.
+
+    Returns:
+        A Comparison enum.
+    """
+
+    optionlines = run(['pkg', 'query', '%Ok %Ov', pkg])
+    options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
+    try:
+        os.chdir('/usr/ports/{}'.format(origin))
+    except FileNotFoundError:
+        return (pkg, Comparison.UNKNOWN)
+    default = run(['make', '-V', 'OPTIONS_DEFAULT'])
+    if not default[0]:
+        return Comparison.SAME
+    options_default = set(default[0].split())
+    if options_default == options_set:
+        v = Comparison.SAME
+    else:
+        v = Comparison.CHANGED
+    return v
+
+
 def get_local_pkgs():
-    """Get a list of local packages."""
-    p = sp.run(['pkg', 'info', '-a', '-q'], stdout=sp.PIPE, stderr=sp.DEVNULL)
-    return dict([ln.rsplit('-', 1) for ln in p.stdout.decode('utf-8').splitlines()])
+    """Get a dict of local packages.
+
+    Returns:
+        A dict of version indexed by package name,
+        for those packages that use default options.
+    """
+    lines = run(['pkg', 'info', '-a', '-o'])
+    rv = {}
+    for ln in lines:
+        pkg, origin = ln.split()
+        if check_options(pkg, origin) != Comparison.CHANGED:
+            name, ver = pkg.rsplit('-', 1)
+            rv[name] = ver
+    return rv
 
 
 def pkgver_decode(versionstring):
