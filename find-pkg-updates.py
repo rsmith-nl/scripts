@@ -5,12 +5,8 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2018-05-06T15:35:14+0200
-"""Find updated packages for FreeBSD.
-
-
-
-"""
+# Last modified: 2018-06-10T17:15:45+0200
+"""Find updated packages for FreeBSD."""
 
 from enum import Enum
 import argparse
@@ -63,33 +59,33 @@ def run(args):
     return comp.stdout.decode('utf-8').splitlines()
 
 
-def check_options(pkgdata):
+def uses_default_options(name, origin):
     """
     Check of a given package uses the default options or
     if options have been changed.
 
     Arguments:
-        pkgdata (tuple): (name, version, origin)
+        name (str): Name of the package.
+        origin (str): Directory relative to /usr/ports from which the package was built.
 
     Returns:
-        A tuple (name, version, origin, Comparison)
+        A Comparison
     """
-    name, version, origin = pkgdata
     optionlines = run(['pkg', 'query', '%Ok %Ov', name])
     options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
     try:
         os.chdir('/usr/ports/{}'.format(origin))
     except FileNotFoundError:
-        return (name, version, origin, Comparison.UNKNOWN)
+        return Comparison.UNKNOWN
     default = run(['make', '-V', 'OPTIONS_DEFAULT'])
     if not default[0]:
-        return (name, version, origin, Comparison.SAME)
+        return Comparison.SAME
     options_default = set(default[0].split())
     if options_default == options_set:
         v = Comparison.SAME
     else:
         v = Comparison.CHANGED
-    return (name, version, origin, v)
+    return v
 
 
 def get_local_pkgs():
@@ -133,7 +129,7 @@ def pkgver_decode(versionstring):
     return (pnum, snum)
 
 
-def compare(local, remote):
+def remote_is_newer(local, remote):
     """Return True if the remote version is later than the local version.
 
     Arguments:
@@ -211,18 +207,21 @@ def main(argv):
             time.sleep(0.25)
         remotepkg = remote.result()
         localpkg = local.result()
-    print('# Checking options on local packages')
-    with cf.ThreadPoolExecutor() as ex:
-        localpkg = ex.map(check_options, localpkg)
-    print('# * Finished checking options on local packages.')
     not_remote = []
-    for name, version, _, default_options in localpkg:
+    rebuild_from_source = []
+    for name, version, origin in localpkg:
         if name in remotepkg:
+            c = uses_default_options(name, origin)
             rv = remotepkg[name]
-            if default_options == Comparison.SAME and compare(version, rv):
-                print('{}-{}: remote has {}'.format(name, version, rv))
+            if remote_is_newer(version, rv):
+                if c == Comparison.SAME:
+                    print('{}-{}: remote has {}'.format(name, version, rv))
+                else:
+                    rebuild_from_source.append(name)
         else:
             not_remote.append(name)
+    print('# Should be rebuilt from source (non-default options):')
+    print('# ' + ' '.join(rebuild_from_source))
     print('# Not in remote repo:')
     print('# ' + ' '.join(not_remote))
 
