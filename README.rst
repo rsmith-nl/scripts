@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-05-03T00:22:28+0200
+.. Last modified: 2018-06-10T17:21:57+0200
 
 Introduction
 ============
@@ -193,7 +193,9 @@ find-pkg-updates.py
 -------------------
 
 Script for FreeBSD to compare the versions of locally installed packages to
-the versions available from the FreeBSD `package repo mirror`_.
+the versions available from the FreeBSD `package repo mirror`_. It will tell
+you which packages can be upgraded via ``pkg upgrade``, and which have to be
+built from source.
 
 .. _package repo mirror: http://pkg.freebsd.org/
 
