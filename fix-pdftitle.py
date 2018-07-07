@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2018-04-16T21:58:12+0200
+# Last modified: 2018-07-07T09:11:55+0200
 """
 Fix PDF file titles.
 
@@ -95,16 +95,14 @@ def set_title(path, fn, tempdir, newtitle):
     os.chdir(orig)
     if rv.returncode != 0:
         os.remove(tempdir + os.sep + 'withmarks.pdf')
-        es = 'could not change title of {}; ghostscript returned {}'
-        logging.error(es.format(path, rv.returncode))
+        logging.error(f'could not change title of {path}; ghostscript returned {rv.returncode}')
     else:
         try:
             os.remove(path)
             os.rename(tempdir + os.sep + 'withmarks.pdf', path)
-            logging.info('title of {} changed'.format(path))
+            logging.info(f'title of {path} changed')
         except OSError as e:
-            es = 'could not rename withmarks.pdf to {}: {}'
-            logging.error(es.format(path, e))
+            logging.error(f'could not rename withmarks.pdf to {path}: {e}')
 
 
 def main(argv):
@@ -125,28 +123,26 @@ def main(argv):
         logging.debug('using verbose logging')
     tdir = tempfile.mkdtemp()
     for path in args.files:
-        logging.debug('processing {}'.format(path))
+        logging.debug(f'processing {path}')
         info = pdfinfo(path)
         if len(info) == 0:
-            es = 'skipping {}; could not retrieve info dict'
-            logging.error(es.format(path))
+            logging.error(f'skipping {path}; could not retrieve info dict')
             continue
         fn = os.path.basename(path)
         if info['Encrypted'].startswith('yes'):
-            logging.info('{} is encrypted'.format(path))
+            logging.info(f'{path} is encrypted')
             rv = decrypt(path, fn, tdir)
             if rv != 0:
-                es = 'could not decrypt {}; qpdf returned {}'
-                logging.error(es.format(path, rv))
+                logging.error(f'could not decrypt {path}; qpdf returned {rv}')
                 continue
-            logging.debug('{} decrypted'.format(path))
+            logging.debug(f'{path} decrypted')
         else:
-            logging.debug('{} is not encrypted'.format(path))
+            logging.debug(f'{path} is not encrypted')
         newtitle = fn.replace('_', ' ')[:-4]
         if info['Title'] != newtitle:
             set_title(path, fn, tdir, newtitle)
         else:
-            logging.debug('the title of {} does not need to be changed'.format(path))
+            logging.debug(f'the title of {path} does not need to be changed')
     shutil.rmtree(tdir)
 
 

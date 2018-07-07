@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2018-04-16T22:41:38+0200
+# Last modified: 2018-07-07T19:01:51+0200
 """Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
@@ -45,22 +45,20 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+    logging.debug(f'command line arguments = {args}')
+    logging.debug(f'parsed arguments = {args}')
     checkfor(['ffmpeg', '-version'])
     starter = partial(runencoder, vq=args.videoquality, aq=args.audioquality)
-    errmsg = 'conversion of {} failed, return code {}'
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         fl = [tp.submit(starter, t) for t in args.files]
         for fut in cf.as_completed(fl):
             fn, rv = fut.result()
             if rv == 0:
-                logging.info('finished "{}"'.format(fn))
+                logging.info(f'finished "{fn}"')
             elif rv < 0:
-                ls = 'file "{}" has unknown extension, ignoring it.'
-                logging.warning(ls.format(fn))
+                logging.warning(f'file "{fn}" has unknown extension, ignoring it.')
             else:
-                logging.error(errmsg.format(fn, rv))
+                logging.error(f'conversion of "{fn}" failed, return code {rv}')
 
 
 def checkfor(args, rv=0):
@@ -82,10 +80,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -114,7 +111,7 @@ def runencoder(fname, vq, aq):
         str(aq), '-sn', '-y', ofn
     ]
     logging.debug(' '.join(args))
-    logging.info('starting conversion of "{}".'.format(fname))
+    logging.info(f'starting conversion of "{fname}".')
     rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return fname, rv
 

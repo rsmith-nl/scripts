@@ -5,7 +5,7 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-05T01:26:59+01:00
-# Last modified: 2018-04-16T22:12:33+0200
+# Last modified: 2018-07-07T18:53:42+0200
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse
@@ -68,9 +68,9 @@ Otherwise, the defaults apply.
     if cfg is None:
         logging.info('configuration file not found')
     else:
-        logging.info('from config: {}'.format(cfg))
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+        logging.info(f'from config: {cfg}')
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
     args.width *= 72 / 25.4  # convert to points
     args.height *= 72 / 25.4  # convert to points
     checkfor(['gs', '-v'])
@@ -80,7 +80,7 @@ Otherwise, the defaults apply.
         sys.exit(0)
     for filename in args.file:
         if not os.path.exists(filename):
-            logging.error('file "{}" does not exist.'.format(filename))
+            logging.error(f'file "{filename}" does not exist.')
             continue
         if filename.endswith(('.ps', '.PS', '.eps', '.EPS', '.pdf', '.PDF')):
             bbox = getpdfbb(filename)
@@ -92,8 +92,7 @@ Otherwise, the defaults apply.
                 hscale = args.width / bbwidth
             if bbheight > args.height:
                 vscale = args.height / bbheight
-            sinfo = 'hscale: {:.3f}, vscale: {:.3f}'
-            logging.info(sinfo.format(hscale, vscale))
+            logging.info(f'hscale: {hscale:.3f}, vscale: {vscale:.3f}')
             scale = min([hscale, vscale])
             if scale < 0.999:
                 fs = '[viewport={} {} {} {},clip,scale={s:.3f}]'
@@ -106,14 +105,12 @@ Otherwise, the defaults apply.
             opts = None
             hscale = args.width / width
             vscale = args.height / height
-            sinfo = 'hscale: {:.3f}, vscale: {:.3f}'
-            logging.info(sinfo.format(hscale, vscale))
+            logging.info(f'hscale: {hscale:.3f}, vscale: {vscale:.3f}')
             scale = min([hscale, vscale])
             if scale < 0.999:
-                opts = '[scale={:.3f}]'.format(scale)
+                opts = f'[scale={scale:.3f}]'
         else:
-            fskip = 'file "{}" has an unrecognized format. Skipping...'
-            logging.error(fskip.format(filename))
+            logging.error(f'file "{filename}" has an unrecognized format. Skipping...')
             continue
         output_figure(filename, opts)
     print()
@@ -157,10 +154,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -207,11 +203,12 @@ def getpicsize(fn):
     logging.debug('resolution={} {}'.format(res, data['Units']))
     geom = data['Geometry'].split('+')[0].split('x')
     xsize, ysize = int(geom[0]), int(geom[1])
-    logging.debug('x={} px, y={} px'.format(xsize, ysize))
+    logging.debug(f'x={xsize} px, y={ysize} px')
     factor = {'PixelsPerInch': 72, 'PixelsPerCentimeter': 28.35, 'Undefined': 72}
     m = factor[data['Units']] / res
-    logging.debug('scaled x={} pt, y={} pt'.format(xsize * m, ysize * m))
-    return (xsize * m, ysize * m)
+    x, y = xsize * m, ysize * m
+    logging.debug(f'scaled x={x} pt, y={y} pt')
+    return (x, y)
 
 
 def output_figure(fn, options=None):

@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-01-17T15:48:11+01:00
-# Last modified: 2018-04-16T22:17:21+0200
+# Last modified: 2018-07-07T13:42:40+0200
 """Check executables in the given directory for missing shared libraries."""
 
 import argparse
@@ -48,8 +48,8 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('Command line arguments = {}'.format(argv))
-    logging.debug('Parsed arguments = {}'.format(args))
+    logging.debug(f'Command line arguments = {argv}')
+    logging.debug(f'Parsed arguments = {args}')
     programs = (
         e.path for d in args.dirs for e in os.scandir(d) if get_type(e.path) == Ftype.executable
     )
@@ -70,7 +70,7 @@ def get_type(path):
         with open(path, 'rb') as p:
             data = p.read(2)
     except OSError:
-        logging.warning("cannot access {}".format(path))
+        logging.warning(f"cannot access {path}")
         return Ftype.unaccessible
     if data == b'#!':
         return Ftype.script
@@ -90,14 +90,14 @@ def check_missing_libs(path):
     Returns:
         A tuple of the path and a list of missing libraries.
     """
-    logging.info("checking {}".format(path))
+    logging.info(f"checking {path}")
     try:
         p = sp.run(
             ['ldd', path], stdout=sp.PIPE, stderr=sp.DEVNULL, universal_newlines=True, check=True
         )
         rv = [ln for ln in p.stdout.splitlines() if 'missing' in ln or 'not found' in ln]
     except sp.CalledProcessError:
-        logging.warning('ldd failed on {}'.format(path))
+        logging.warning(f'ldd failed on {path}')
         rv = []
     return (path, rv)
 

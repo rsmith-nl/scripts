@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-01-03T16:31:09+01:00
-# Last modified: 2018-04-16T22:07:04+0200
+# Last modified: 2018-07-07T11:06:17+0200
 """Report when arguments were checked into git."""
 
 import os.path
@@ -24,8 +24,8 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print("{} ver. {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
+        print(f"{binary} ver. {__version__}", file=sys.stderr)
+        print(f"Usage: {binary} [file ...]", file=sys.stderr)
         sys.exit(0)
     del argv[0]  # delete the name of the script.
     try:
@@ -33,12 +33,12 @@ def main(argv):
             args = ['git', 'log', '--diff-filter=A', '--format=%ai', '--', fn]
             date = subprocess.check_output(args, stderr=subprocess.PIPE)
             date = date.decode('utf-8').strip()
-            print('{}: {}'.format(fn, date))
+            print(f'{fn}: {date}')
     except subprocess.CalledProcessError as e:
         if e.returncode == 128:
             print("Not a git repository! Exiting.")
         else:
-            print("git error: '{}'. Exiting.".format())
+            print(f"git error: '{e.strerror}'. Exiting.")
 
 
 if __name__ == '__main__':

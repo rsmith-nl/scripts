@@ -5,7 +5,7 @@
 # Copyright © 2014-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-28T13:36:38+0100
-# Last modified: 2018-04-16T22:37:20+0200
+# Last modified: 2018-07-07T15:10:52+0200
 """
 Calculate the SHA256 checksum of files.
 
@@ -46,7 +46,7 @@ def main(argv):
         with open(nm, 'rb') as f:
             data = f.read()
         hexdat = sha256(data).hexdigest()
-        print('SHA256 ({}) = {}'.format(nm, hexdat), end='')
+        print(f'SHA256 ({nm}) = {hexdat}', end='')
         if args.checksum:
             if args.checksum != hexdat:
                 print(' [ Failed ]', end='')

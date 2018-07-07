@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2018-04-16T22:06:19+0200
+# Last modified: 2018-07-07T13:09:49+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -54,10 +54,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -74,13 +73,13 @@ def runchecks(d, verbose=False):
     os.chdir(d)
     outp = gitcmd('status', True)
     if 'clean' not in outp:
-        print("'{}' is not clean, skipping.".format(d))
+        print(f"'{d}' is not clean, skipping.")
         return
     if verbose:
-        print("Running check on '{}'".format(d))
+        print(f"Running check on '{d}'")
     rv = gitcmd(['gc', '--auto', '--quiet'])
     if rv:
-        print("git gc failed on '{}'!".format(d))
+        print(f"git gc failed on '{d}'!")
 
 
 def gitcmd(cmds, output=False):

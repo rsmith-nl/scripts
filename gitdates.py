@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-10-28T14:07:21+01:00
-# Last modified: 2018-04-16T22:08:05+0200
+# Last modified: 2018-07-07T13:10:21+0200
 """Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
@@ -44,7 +44,8 @@ def main():
     filedata.sort(key=lambda a: a[2], reverse=True)
     dfmt = '%Y-%m-%d %H:%M:%S %Z'
     for name, tag, date in filedata:
-        print('{}|{}|{}'.format(name, tag, time.strftime(dfmt, date)))
+        ds = time.strftime(dfmt, date)
+        print(f'{name}|{tag}|{ds}')
 
 
 def checkfor(args, rv=0):
@@ -66,10 +67,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 

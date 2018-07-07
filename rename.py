@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-06T11:45:52+0200
-# Last modified: 2018-04-16T22:30:55+0200
+# Last modified: 2018-07-07T15:09:31+0200
 """
 Utility to rename files.
 
@@ -55,12 +55,11 @@ def main(argv):
     )
     # The real work starts here...
     pairs = newnames(args.files, args.prefix, args.start, args.width)
-    es = 'Could not rename "{}" to "{}": {}'
     for old, new in pairs:
         try:
             os.rename(old, new)
         except OSError as e:
-            print(es.format(old, new, e))
+            print(f'Could not rename "{old}" to "{new}": {e}')
 
 
 def newnames(paths, prefix, start, precision):
@@ -88,14 +87,13 @@ def newnames(paths, prefix, start, precision):
         paths = [paths]
     req_prec = len(str(len(paths)))
     if req_prec > precision:
-        s = 'precision changed from {} to {}'
-        logging.warning(s.format(precision, req_prec))
+        logging.warning(f'precision changed from {precision} to {req_prec}')
         precision = req_prec
     rv = []
     for path in paths:
         head, tail = os.path.split(path)
-        logging.debug('head = {}'.format(head))
-        logging.debug('tail = {}'.format(tail))
+        logging.debug(f'head = {head}')
+        logging.debug(f'tail = {tail}')
         if not tail:
             number += 1
             continue
@@ -104,7 +102,7 @@ def newnames(paths, prefix, start, precision):
         _, ext = os.path.splitext(tail)
         t = ''.join([prefix, r'{:0', str(precision), r'd}', ext])
         newpath = ''.join([head, t.format(number)])
-        logging.debug('newpath = {}'.format(newpath))
+        logging.debug(f'newpath = {newpath}')
         number += 1
         rv.append((path, newpath))
     return rv

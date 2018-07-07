@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-29T21:02:55+02:00
-# Last modified: 2018-04-16T22:39:06+0200
+# Last modified: 2018-07-07T19:00:40+0200
 """
 Convert TIFF files to PDF format.
 
@@ -48,11 +48,10 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
     checkfor('tiffinfo', 255)
     checkfor(['tiff2pdf', '-v'])
-    errmsg = 'conversion of {} failed, return code {}'
     func = tiffconv
     if args.jpeg:
         logging.info('using JPEG compression.')
@@ -60,20 +59,20 @@ def main(argv):
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for fn, rv in tp.map(func, args.files):
             if rv == 0:
-                logging.info('finished "{}"'.format(fn))
+                logging.info(f'finished "{fn}"')
             else:
-                logging.error(errmsg.format(fn, rv))
+                logging.error(f'conversion of {fn} failed, return code {rv}')
 
 
 def checkfor(args, rv=0):
     """
     Ensure that a program necessary for using this script is available.
 
-    Exits the program is the requirement cannot be found.
+    If the required utility is not found, this function will exit the program.
 
     Arguments:
-        args: String or list of strings of commands. A single string may
-            not contain spaces.
+        args: String or list of strings of commands. A single string may not
+            contain spaces.
         rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
@@ -84,10 +83,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -130,19 +128,17 @@ def tiffconv(fname, jpeg=False, quality=85):
             ]
         else:
             args = ['-o', outname, '-z', '-p', 'A4', '-F', fname]
-            ls = "no resolution in {}. Fitting to A4"
-            logging.warning(ls.format(fname))
+            logging.warning(f"no resolution in {fname}. Fitting to A4")
         if jpeg:
             args = program + ['-n', '-j', '-q', str(quality)] + args
         else:
             args = program + args
-        logging.info('calling "{}"'.format(' '.join(args)))
+        logging.info(f'calling "{args}"')
         rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        logging.info('created "{}"'.format(outname))
+        logging.info(f'created "{outname}"')
         return (fname, rv)
     except Exception as e:
-        ls = 'starting conversion of "{}" failed: {}'
-        logging.error(ls.format(fname, str(e)))
+        logging.error(f'starting conversion of "{fname}" failed: {e}')
         return (fname, 0)
 
 

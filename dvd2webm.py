@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2018-04-16T21:54:34+0200
+# Last modified: 2018-07-07T00:00:36+0200
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -57,14 +57,15 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
     if not check_ffmpeg():
         return 1
-    logging.info("processing '{}'.".format(args.fn))
+    logging.info(f"processing '{args.fn}'.")
     starttime = datetime.now()
-    logging.info('started at {}.'.format(str(starttime)[:-7]))
-    logging.info('using audio stream {}.'.format(args.audio))
+    startstr = str(starttime)[:-7]
+    logging.info(f'started at {startstr}.')
+    logging.info(f'using audio stream {args.audio}.')
     tc = 1
     if not args.crop:
         logging.info('looking for cropping.')
@@ -115,11 +116,13 @@ def main(argv):
         logging.info('second pass: ' + ' '.join(a2))
         return
     stoptime = datetime.now()
-    logging.info('ended at {}.'.format(str(stoptime)[:-7]))
+    stopstr = str(stoptime)[:-7]
+    logging.info(f'ended at {stopstr}.')
     runtime = stoptime - starttime
-    logging.info('total running time {}.'.format(str(runtime)[:-7]))
+    runstr = str(runtime)[:-7]
+    logging.info(f'total running time {runstr}.')
     encspeed = origbytes / (runtime.seconds * 1000)
-    logging.info('average input encoding speed {:.2f} kB/s.'.format(encspeed))
+    logging.info(f'average input encoding speed {encspeed:.2f} kB/s.')
 
 
 def tile_cols(width):
@@ -134,7 +137,7 @@ def check_ffmpeg():
     verre = r'ffmpeg version (\d+)\.(\d+)\.(\d+) Copyright'
     major, minor, patch = re.findall(verre, proc.stderr)[0]
     if int(major) < 3 and int(minor) < 3:
-        logging.error('ffmpeg 3.3 is required; found {}.{}.{}'.format(major, minor, patch))
+        logging.error(f'ffmpeg 3.3 is required; found {major}.{minor}.{patch}')
         return False
     if not re.search(r'enable-libvpx', proc.stderr):
         logging.error('ffmpeg is not built with VP9 video support.')
@@ -190,8 +193,8 @@ def reporttime(p, start, end):
         start: datetime.datetime instance.
         end: datetime.datetime instance.
     """
-    dt = str(end - start)
-    logging.info('pass {} took {}.'.format(p, dt[:-7]))
+    dt = str(end - start)[:-7]
+    logging.info(f'pass {p} took {dt}.')
 
 
 def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None, atrack=0):
@@ -226,8 +229,8 @@ def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
     args += ['-i', fn, '-passlogfile', basename]
     speed = '2'
     if npass == 1:
-        logging.info('using {} threads'.format(numthreads))
-        logging.info('using {} tile columns'.format(tile_columns))
+        logging.info(f'using {numthreads} threads')
+        logging.info(f'using {tile_columns} tile columns')
         speed = '4'
     args += [
         '-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
@@ -243,19 +246,19 @@ def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
         args += ['-c:a', 'libvorbis', '-q:a', '3']
     args += ['-f', 'webm']
     if not subt:  # SRT file
-        args += ['-map', '0:v', '-map', '0:a:{}'.format(atrack)]
+        args += [f'-map', '0:v', '-map', '0:a:{atrack}']
         vf = []
         if subf:
-            vf = ['subtitles={}'.format(subf)]
+            vf = [f'subtitles={subf}']
         if crop:
-            vf.append('crop={}'.format(crop))
+            vf.append(f'crop={crop}')
         if vf:
             args += ['-vf', ','.join(vf)]
     else:
-        fc = '[0:v][0:s:{}]overlay'.format(subt)
+        fc = f'[0:v][0:s:{subt}]overlay'
         if crop:
-            fc += ',crop={}[v]'.format(crop)
-        args += ['-filter_complex', fc, '-map', '[v]', '-map', '0:a:{}'.format(atrack)]
+            fc += f',crop={crop}[v]'
+        args += ['-filter_complex', fc, '-map', '[v]', '-map', f'0:a:{atrack}']
     if npass == 1:
         outname = '/dev/null'
     else:
@@ -283,7 +286,7 @@ def encode(args1, args2):
     proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
     if proc.returncode:
-        logging.error('pass 1 returned {}.'.format(proc.returncode))
+        logging.error(f'pass 1 returned {proc.returncode}.')
         return origsize, 0
     else:
         reporttime(1, start, end)
@@ -293,13 +296,13 @@ def encode(args1, args2):
     proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
     if proc.returncode:
-        logging.error('pass 2 returned {}.'.format(proc.returncode))
+        logging.error(f'pass 2 returned {proc.returncode}.')
     else:
         reporttime(2, start, end)
     newsize = os.path.getsize(args2[-1])
     percentage = int(100 * newsize / origsize)
-    sz = "the size of '{}' is {}% of the size of '{}'."
-    logging.info(sz.format(args2[-1], percentage, args2.index('-i') + 1))
+    ifn, ofn = args2[oidx], args2[-1]
+    logging.info(f"the size of '{ofn}' is {percentage}% of the size of '{ifn}'.")
     return origsize, newsize  # both in bytes.
 
 

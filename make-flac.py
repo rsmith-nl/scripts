@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-22T00:12:03+01:00
-# Last modified: 2018-04-16T22:14:11+0200
+# Last modified: 2018-07-07T18:56:22+0200
 """
 Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
 
@@ -55,31 +55,30 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
     checkfor('flac')
     tfn = 'album.json'
     with open(tfn) as jf:
         data = json.load(jf)
     keys = data.keys()
-    errmsg = 'key "{}" not in "{}"'
     for key in ['title', 'year', 'genre', 'artist', 'tracks']:
         if key not in keys:
-            logging.error(errmsg.format(key, tfn))
+            logging.error(f'key "{key}" not in "{tfn}"')
             sys.exit(1)
-    logging.info('album name: {}'.format(data['title']))
-    logging.info('artist: {}'.format(data['artist']))
-    logging.info('year: {}'.format(data['year']))
-    logging.info('genre: {}'.format(data['genre']))
-    errmsg = 'conversion of track {} failed, return code {}'
-    okmsg = 'finished track {}, "{}"'
+    logging.info('album name: ' + data['title'])
+    logging.info('artist: ' + data['artist'])
+    logging.info('year: ' + str(data['year']))
+    logging.info('genre: ' + data['genre'])
     num = len(data['tracks'])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for idx, rv in tp.map(partial(runflac, data=data), range(num)):
+            tnum = idx + 1
             if rv == 0:
-                logging.info(okmsg.format(idx + 1, data['tracks'][idx]))
+                tt = data['tracks'][idx]
+                logging.info(f'finished track {tnum}, "{tt}"')
             else:
-                logging.error(errmsg.format(idx + 1, rv))
+                logging.error(f'conversion of track {tnum} failed, return code {rv}')
 
 
 def checkfor(args, rv=0):
@@ -101,10 +100,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -120,12 +118,12 @@ def runflac(idx, data):
         A tuple containing the track index and return value of flac.
     """
     num = idx + 1
-    ifn = 'track{:02d}.cdda.wav'.format(num)
+    ifn = f'track{num:02d}.cdda.wav'
     args = [
         'flac', '--best', '--totally-silent', '-TARTIST=' + data['artist'],
         '-TALBUM=' + data['title'], '-TTITLE=' + data['tracks'][idx],
-        '-TDATE={}'.format(data['year']), '-TGENRE={}'.format(data['genre']),
-        '-TTRACKNUM={:02d}'.format(num), '-o', 'track{:02d}.flac'.format(num), ifn
+        '-TDATE=' + str(data['year']), '-TGENRE=' + data['genre'],
+        f'-TTRACKNUM={num:02d}', '-o', f'track{num:02d}.flac', ifn
     ]
     rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return (idx, rv)

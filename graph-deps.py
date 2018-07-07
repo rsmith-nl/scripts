@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-27T14:20:52+02:00
-# Last modified: 2018-04-16T22:09:10+0200
+# Last modified: 2018-07-07T11:09:44+0200
 """
 Creates a graph of FreeBSD package dependencies.
 
@@ -33,11 +33,11 @@ try:
         pkgname = ln.strip()
         if pkgname.endswith(':'):
             pkgname = pkgname[:-1]
-        output.append('"{0}" [label="{0}"];'.format(pkgname))
+        output.append(f'"{pkgname}" [label="{pkgname}"];')
         if ln[0] not in ' \t':  # parent
             parent = pkgname
         else:
-            output.append('"{}" -> "{}";'.format(parent, pkgname))
+            output.append(f'"{parent}" -> "{pkgname}";')
 except KeyboardInterrupt:
     print('\n', __doc__)
 else:

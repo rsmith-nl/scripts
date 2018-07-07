@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T01:41:21+02:00
-# Last modified: 2018-04-16T22:18:06+0200
+# Last modified: 2018-07-07T13:43:20+0200
 """Script to format a Git log for LaTeX."""
 
 import os
@@ -54,7 +54,7 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print("Usage: {} outputfilename".format(binary))
+        print(f"Usage: {binary} outputfilename")
         sys.exit(0)
     fn = argv[1]
     try:

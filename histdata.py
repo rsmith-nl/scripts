@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-07-23T01:18:29+02:00
-# Last modified: 2018-04-16T22:09:58+0200
+# Last modified: 2018-07-07T11:13:39+0200
 """Make a histogram and calculate entropy of files."""
 
 import math
@@ -26,7 +26,7 @@ def main(argv):
     for fn in argv:
         hdata, size = readdata(fn)
         e = entropy(hdata, size)
-        print("entropy of {} is {:.4f} bits/byte".format(fn, e))
+        print(f"entropy of {fn} is {e:.4f} bits/byte")
         histogram_gnuplot(hdata, size, fn)
 
 
@@ -102,17 +102,18 @@ def histogram_gnuplot(counts, sz, name):
     pl += ["set tics nomirror"]
     pl += ["set style line 12 lc rgb '#808080' lt 0 lw 2"]
     pl += ["set grid back ls 12"]
-    pl += ["set output 'hist-{}.pdf'".format(os.path.basename(name))]
+    nm = os.path.basename(name)
+    pl += [f"set output 'hist-{nm}.pdf'"]
     pl += ['set xrange[-1:256]']
     pl += ['set yrange[0:*]']
     pl += ['set key right top']
     pl += ['set xlabel "byte value"']
     pl += ['set ylabel "occurance [%]"']
-    pl += ['rnd(x) = {:.6f}'.format(rnd)]
-    cont = "rnd(x) with lines ls 2 title 'continuous uniform ({:.6f}%)'"
-    pl += ["plot '-' using 1:2 with points ls 1 title '{}', ".format(name) + cont.format(rnd)]
+    pl += [f'rnd(x) = {rnd:.6f}']
+    pl += [f"plot '-' using 1:2 with points ls 1 title '{name}', "
+           f"rnd(x) with lines ls 2 title 'continuous uniform ({rnd:.6f}%)'"]
     for n, v in enumerate(counts):
-        pl += ['{} {}'.format(n, v)]
+        pl += [f'{n} {v}']
     pl += ['e']
     pt = '\n'.join(pl)
     gp = subprocess.Popen(['gnuplot'], stdin=subprocess.PIPE)

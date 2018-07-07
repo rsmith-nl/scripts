@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-21T16:21:37+01:00
-# Last modified: 2018-04-16T22:21:22+0200
+# Last modified: 2018-07-07T13:44:35+0200
 """Change whitespace in file names to underscores."""
 
 import os
@@ -23,15 +23,15 @@ def main(argv):
     """
     if len(argv) == 1:
         binary = os.path.basename(argv[0])
-        print("{} version {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} [file ...]".format(binary), file=sys.stderr)
+        print(f"{binary} version {__version__}", file=sys.stderr)
+        print(f"Usage: {binary} [file ...]", file=sys.stderr)
         sys.exit(0)
     del argv[0]  # delete the name of the script.
     for n in argv:
         try:
             os.rename(n, fixname(n))
         except OSError as e:
-            print('Renaming "{}" failed: {}'.format(n, e.strerror))
+            print(f'Renaming "{n}" failed: {e.strerror}')
 
 
 def fixname(path):

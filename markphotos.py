@@ -5,7 +5,7 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-06T20:28:07+01:00
-# Last modified: 2018-04-16T22:16:12+0200
+# Last modified: 2018-07-07T13:40:50+0200
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -40,19 +40,19 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
     checkfor(['exiftool', '-ver'])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for fn, rv in tp.map(processfile, args.files):
-            logging.info('file "{}" processed.'.format(fn))
+            logging.info(f'file "{fn}" processed.')
             if rv != 0:
-                logging.error('error processing "{}": {}'.format(fn, rv))
+                logging.error(f'error processing "{fn}": {rv}')
 
 
 def checkfor(args, rv=0):
     """
-    Make sure that a program necessary for using this script is available.
+    Ensure that a program necessary for using this script is available.
 
     If the required utility is not found, this function will exit the program.
 
@@ -69,10 +69,9 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -91,10 +90,10 @@ def processfile(name):
     fields = createdate.split(":")
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
-    cmt = "Copyright © {} {}".format(year, cr)
+    cmt = f"Copyright © {year} {cr}"
     args = [
-        'exiftool', '-Copyright="Copyright (C) {} {}"'.format(year, cr),
-        '-Comment="{}"'.format(cmt), '-overwrite_original', '-q', name
+        'exiftool', f'-Copyright="Copyright (C) {year} {cr}"',
+        f'-Comment="{cmt}"', '-overwrite_original', '-q', name
     ]
     rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     modtime = int(

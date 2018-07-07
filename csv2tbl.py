@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-17T19:25:53+02:00
-# Last modified: 2018-04-16T21:48:04+0200
+# Last modified: 2018-07-06T23:27:37+0200
 """Convert a CSV file to a LaTeX table."""
 
 from collections import Counter
@@ -78,8 +78,8 @@ def main(argv):
     """
     binary = os.path.basename(argv[0])
     if len(argv) < 2:
-        print("{} ver. {}".format(binary, __version__))
-        print("Usage: {} file".format(binary), file=sys.stderr)
+        print(f"{binary} ver. {__version__}")
+        print(f"Usage: {binary} file", file=sys.stderr)
         sys.exit(0)
     # Read the data into a list of lines.
     lines = readlines(argv[1])

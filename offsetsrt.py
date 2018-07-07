@@ -5,7 +5,7 @@
 # Copyright © 2016-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-14T14:54:32+01:00
-# Last modified: 2018-04-16T22:22:25+0200
+# Last modified: 2018-07-07T14:58:50+0200
 """
 Manipulate the times in an SRT file.
 
@@ -84,7 +84,7 @@ def ms2str(v):
     v, ms = divmod(v, 1000)
     v, s = divmod(v, 60)
     h, m = divmod(v, 60)
-    return '{:02d}:{:02d}:{:02d},{:03d}'.format(h, m, s, ms)
+    return f'{h:02d}:{m:02d}:{s:02d},{ms:03d}'
 
 
 def split_time(s):
@@ -102,7 +102,7 @@ def split_time(s):
     """
     start, sym, end = s.split()
     if sym != '-->':
-        logging.debug('line "{}"'.format(s))
+        logging.debug(f'line "{s}"')
         raise ValueError('not a valid time-line')
     return (str2ms(start), str2ms(end))
 

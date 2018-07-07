@@ -5,7 +5,7 @@
 # Copyright © 2014-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-02-10T22:02:02+01:00
-# Last modified: 2018-04-16T22:24:12+0200
+# Last modified: 2018-07-07T15:00:35+0200
 """
 Renames a directory by prefixing the name with 'old-'.
 
@@ -30,14 +30,13 @@ def main(argv):
     """
     if len(argv) < 2:
         binary = os.path.basename(argv[0])
-        print("{} ver. {}".format(binary, __version__), file=sys.stderr)
-        print("Usage: {} directory ...".format(binary), file=sys.stderr)
+        print(f"{binary} ver. {__version__}", file=sys.stderr)
+        print(f"Usage: {binary} directory ...", file=sys.stderr)
         sys.exit(1)
     logging.basicConfig(format='%(levelname)s: %(message)s')
     for dirname in argv[1:]:
         if not os.path.isdir(dirname):
-            dn = "'{}' is not a directory. Skipping."
-            logging.warning(dn.format(dirname))
+            logging.warning(f"'{dirname}' is not a directory. Skipping.")
             continue
         if dirname.endswith(os.sep):
             dirname = dirname[:-1]
@@ -47,8 +46,7 @@ def main(argv):
         else:
             newname = ''.join(['old-', dirname, dt])
         if os.path.exists(newname):
-            ren = "'{}' already exists. Skipping rename of '{}'."
-            logging.warning(ren.format(newname, dirname))
+            logging.warning(f"'{newname}' already exists. Skipping rename of '{dirname}'.")
             continue
         os.rename(dirname, newname)
 

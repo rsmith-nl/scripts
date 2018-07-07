@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2018-04-16T21:52:41+0200
+# Last modified: 2018-07-07T18:46:29+0200
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -66,8 +66,9 @@ def checkfor(args, rv=0):
         if rc != rv:
             raise OSError
     except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
+        p = args[0]
+        errs = oops.strerror
+        print(f"Required program '{p}' not found: {errs}.")
         sys.exit(1)
 
 
@@ -91,18 +92,19 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('command line arguments = {}'.format(argv))
-    logging.debug('parsed arguments = {}'.format(args))
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
     checkfor('convert', rv=1)
     if not args.fn:
         logging.error('no files to process')
         sys.exit(1)
-    logging.info('started at {}.'.format(str(datetime.now())[:-7]))
-    es = 'finished conversion of {} to {} (returned {})'
+    starttime = str(datetime.now())[:-7]
+    logging.info(f'started at {starttime}.')
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for infn, outfn, rv in tp.map(convert, args.fn):
-            logging.info(es.format(infn, outfn, rv))
-    logging.info('completed at {}.'.format(str(datetime.now())[:-7]))
+            logging.info(f'finished conversion of {infn} to {outfn} (returned {rv})')
+    endtime = str(datetime.now())[:-7]
+    logging.info(f'completed at {endtime}.')
 
 
 if __name__ == '__main__':

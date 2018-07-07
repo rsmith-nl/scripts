@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-04-28T23:25:35+0200
-# Last modified: 2018-04-16T22:29:43+0200
+# Last modified: 2018-07-07T15:07:05+0200
 """Recursively list or set the __version__ string in Python files."""
 
 import argparse
@@ -61,11 +61,11 @@ def replacever(fn, newver):
         data = f.read()
         changed = False
         if _vre.search(data):
-            newver = "__version__ = '{}'".format(newver)
+            newver = f"__version__ = '{newver}'"
             data = _vre.sub(newver, data, count=1)
             changed = True
         elif fn.endswith('setup.py') and _vse.search(data):
-            newver = "      version='{}',".format(newver)
+            newver = f"      version='{newver}',"
             data = _vse.sub(newver, data, count=1)
             changed = True
         if changed:
@@ -82,7 +82,6 @@ def printver(fn, newver):
         fn: Name of the file to read.
         newver: For compatibility with replacever, ignored.
     """
-    ffmt = "{}: {}"
     with open(fn, 'r', encoding='utf-8') as f:
         data = f.read()
     rlist = [_vre.search(data)]
@@ -90,7 +89,8 @@ def printver(fn, newver):
         rlist.append(_vse.search(data))
     rlist = [r for r in rlist if r is not None]
     for res in rlist:
-        print(ffmt.format(fn, res.group().strip()))
+        rs = res.group().strip()
+        print(f"{fn}: {rs}")
 
 
 if __name__ == '__main__':

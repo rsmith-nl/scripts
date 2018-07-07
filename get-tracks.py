@@ -5,12 +5,12 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-09-10T12:15:13+02:00
-# Last modified: 2018-04-16T22:05:29+0200
+# Last modified: 2018-07-07T13:09:20+0200
 """Retrieve the numbered tracks from a dvd."""
 
 import logging
 import sys
-from subprocess import run, call, DEVNULL
+import subprocess
 
 __version__ = '1.1.0'
 
@@ -31,13 +31,12 @@ def checkfor(args, rv=0):
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        rc = call(args, stdout=DEVNULL, stderr=DEVNULL)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info('found required program "{}"'.format(args[0]))
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = 'required program "{}" not found: {}.'
-        logging.error(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -59,7 +58,7 @@ def main(argv):
         try:
             retrieve(DVD, int(a))
         except ValueError:
-            print('"{}" is not an integer, skipping'.format(a))
+            print(f'"{a}" is not an integer, skipping')
 
 
 def retrieve(dvddev, num):
@@ -71,11 +70,11 @@ def retrieve(dvddev, num):
         dvddev: String containing the device node for the DVD.
         num: The integer number of a track to retrieve.
     """
-    args = ['tccat', '-i', dvddev, '-T', '{},-1'.format(num), '-P']
-    trackname = 'track{:02d}.mpg'.format(num)
-    logging.info('writing track {} as "{}"... '.format(num, trackname))
+    args = ['tccat', '-i', dvddev, '-T', f'{num},-1', '-P']
+    trackname = f'track{num:02d}.mpg'
+    logging.info(f'writing track {num} as "{trackname}"... ')
     with open(trackname, 'wb') as outf:
-        run(args, stdout=outf, stderr=DEVNULL)
+        subprocess.run(args, stdout=outf, stderr=subprocess.DEVNULL)
     logging.info('done.')
 
 

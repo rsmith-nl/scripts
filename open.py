@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2018-04-16T22:24:52+0200
+# Last modified: 2018-07-07T15:03:21+0200
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -59,8 +59,8 @@ def main(argv):  # noqa
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.info('command line arguments = {}'.format(argv))
-    logging.info('parsed arguments = {}'.format(args))
+    logging.info(f'command line arguments = {argv}')
+    logging.info(f'parsed arguments = {args}')
     fail = "opening '{}' failed: {}"
     # Check for non-local files with `locate`.
     try:
@@ -74,16 +74,16 @@ def main(argv):  # noqa
                 if len(paths) == 1:
                     files.append(paths[0])
                 elif len(paths) == 0:
-                    logging.warning("path '{}' not found".format(nm))
+                    logging.warning(f"path '{nm}' not found")
                 else:
-                    logging.warning("ambiguous path '{}' skipped".format(nm))
+                    logging.warning(f"ambiguous path '{nm}' skipped")
                     for p in paths:
-                        logging.warning("found '{}'".format(p))
+                        logging.warning(f"found '{p}'")
     except FileNotFoundError:  # `locate` not available.
         files = args.files
     # Open the file(s).
     for nm in files:
-        logging.info("Trying '{}'".format(nm))
+        logging.info(f"Trying '{nm}'")
         if not args.application:
             if isdir(nm):
                 cmds = othertypes['dir'] + [nm]
@@ -94,7 +94,7 @@ def main(argv):  # noqa
         else:
             cmds = [args.application, nm]
         if not cmds:
-            logging.warning("do not know how to open '{}'".format(nm))
+            logging.warning(f"do not know how to open '{nm}'")
             continue
         try:
             Popen(cmds)

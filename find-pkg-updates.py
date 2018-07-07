@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2018-06-10T17:15:45+0200
+# Last modified: 2018-07-07T00:03:14+0200
 """Find updated packages for FreeBSD."""
 
 from enum import Enum
@@ -74,7 +74,7 @@ def uses_default_options(name, origin):
     optionlines = run(['pkg', 'query', '%Ok %Ov', name])
     options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
     try:
-        os.chdir('/usr/ports/{}'.format(origin))
+        os.chdir(f'/usr/ports/{origin}')
     except FileNotFoundError:
         return Comparison.UNKNOWN
     default = run(['make', '-V', 'OPTIONS_DEFAULT'])
@@ -169,14 +169,14 @@ def main(argv):
         '--major',
         type=int,
         default=major,
-        help='FreeBSD major version (default {})'.format(major)
+        help=f'FreeBSD major version (default {major})'
     )
     parser.add_argument(
         '-a',
         '--arch',
         type=str,
         default=arch,
-        help='FreeBSD architecture (default {})'.format(arch)
+        help=f'FreeBSD architecture (default {arch})'
     )
     args = parser.parse_args(argv)
     parser.parse_args(argv)
@@ -184,12 +184,12 @@ def main(argv):
         extra = '(detected)'
     else:
         extra = '(override)'
-    print('# FreeBSD major version: {} {}'.format(args.major, extra))
+    print(f'# FreeBSD major version: {args.major} {extra}')
     if arch == args.arch:
         extra = '(detected)'
     else:
         extra = '(override)'
-    print('# FreeBSD processor architecture: {} {}'.format(args.arch, extra))
+    print(f'# FreeBSD processor architecture: {args.arch} {extra}')
     print('# Retrieving local and remote package lists')
     # I'm using concurrent.futures here because especially get_remote_pkgs
     # can take a long time. This way we can reduce the time as much as possible.
@@ -215,7 +215,7 @@ def main(argv):
             rv = remotepkg[name]
             if remote_is_newer(version, rv):
                 if c == Comparison.SAME:
-                    print('{}-{}: remote has {}'.format(name, version, rv))
+                    print(f'{name}-{version}: remote has {rv}')
                 else:
                     rebuild_from_source.append(name)
         else:

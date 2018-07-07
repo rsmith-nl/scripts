@@ -5,13 +5,12 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2018-04-16T22:01:00+0200
+# Last modified: 2018-07-07T18:49:17+0200
 """Shrink fotos to a size suitable for use in my logbook."""
 
-# from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from os import cpu_count, mkdir, scandir, sep, utime, devnull
+from os import cpu_count, mkdir, scandir, sep, utime
 from os.path import exists
 from time import mktime
 import argparse
@@ -50,8 +49,8 @@ def main(argv):
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug('Command line arguments = {}'.format(argv))
-    logging.debug('Parsed arguments = {}'.format(args))
+    logging.debug(f'Command line arguments = {argv}')
+    logging.debug(f'Parsed arguments = {args}')
     if not args.path:
         parser.print_help()
         sys.exit(0)
@@ -61,20 +60,19 @@ def main(argv):
     count = 0
     for path in args.path:
         if exists(path + sep + outdir):
-            fs = '"{}" already exists in "{}", skipping this path.'
-            logging.warning(fs.format(outdir, path))
+            logging.warning(f'"{outdir}" already exists in "{path}", skipping this path.')
             continue
         files = [
             f.name for f in scandir(path) if f.is_file() and f.name.lower().endswith(extensions)
         ]
         count += len(files)
         pairs.append((path, files))
-        logging.debug('Path: "{}"'.format(path))
-        logging.debug('Files: {}'.format(files))
+        logging.debug(f'Path: "{path}"')
+        logging.debug(f'Files: {files}')
     if len(pairs) == 0:
         logging.info('nothing to do.')
         return
-    logging.info('found {} files.'.format(count))
+    logging.info(f'found {count} files.')
     logging.info('creating output directories.')
     for dirname, _ in pairs:
         mkdir(dirname + sep + outdir)
@@ -82,34 +80,36 @@ def main(argv):
         agen = ((p, fn, args.width) for p, flist in pairs for fn in flist)
         for fn, rv in tp.map(processfile, agen):
             if rv == 0:
-                fps = "file '{}' processed."
+                fps = f"file '{fn}' processed."
             elif rv == 1:
-                fps = "file '{}' is not an image, skipped."
+                fps = f"file '{fn}' is not an image, skipped."
             elif rv == 2:
-                fps = "error running convert on '{}'."
-            logging.info(fps.format(fn))
+                fps = f"error running convert on '{fn}'."
+            logging.info(fps)
 
 
 def checkfor(args, rv=0):
-    """Make sure that a program necessary for using this script is
-    available.
+    """
+    Ensure that a program necessary for using this script is available.
 
-    :param args: String or list of strings of commands. A single string may
-    not contain spaces.
-    :param rv: Expected return value from evoking the command.
+    If the required utility is not found, this function will exit the program.
+
+    Arguments:
+        args: String or list of strings of commands. A single string may not
+            contain spaces.
+        rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
     try:
-        with open(devnull, 'w') as bb:
-            rc = subprocess.call(args, stdout=bb, stderr=bb)
+        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
+        logging.info(f'found required program "{args[0]}"')
     except OSError as oops:
-        outs = "Required program '{}' not found: {}."
-        print(outs.format(args[0], oops.strerror))
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
 
 
@@ -146,9 +146,8 @@ def processfile(packed):
     except Exception:
         logging.warning('exception raised when reading the file time.')
         ed = {}
-        cds = '{}:{}:{} {}:{}:{}'
         dt = datetime.today()
-        ed['CreateDate'] = cds.format(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+        ed['CreateDate'] = f'{dt.year}:{dt.month}:{dt.day} {dt.hour}:{dt.minute}:{dt.second}'
     args = [
         'convert', fname, '-strip', '-resize',
         str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp', '2x0.5+0.7+0',
