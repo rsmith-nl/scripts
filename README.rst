@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-06-10T17:21:57+0200
+.. Last modified: 2018-07-08T01:47:39+0200
 
 Introduction
 ============
@@ -25,33 +25,9 @@ shell-scripts use the plain old ``sh`` that comes with FreeBSD, but should
 work with ``bash``. Bug reports and patches welcome. Most of it should work on
 other BSD systems, Linux or OS-X without major problems.
 
-The following scripts use Python_ 3.x specific features (like
-``os.cpu_count``, ``subprocess.DEVNULL``, ``concurrent.futures`` or ``Enum``);
-
-* checkfor.py
-* default_options.py
-* dicom2jpg.py
-* dicom2png.py
-* dvd2webm.py
-* find-pkg-updates.py
-* foto4lb.py
-* git-check-all.py
-* gitdates.py
-* img4latex.py
-* make-flac.py
-* make-mp3.py
-* markphotos.py
-* missing-libs.py
-* tifftopdf.py
-* vid2mkv.py
-* vid2mp4.py
-
-Other Python scripts are written on Python 3 but could be usable on Python
-2.x with some changes. The Python scripts should work on other BSD systems,
-Linux and OS-X. They *might* work on MS-windows as well, provided that the
-external programs and modules they use are available.  *This has not been
-tested, however*.  Patches welcome.
-
+All scripts use Python 3 specific features. Most recently I converted
+``str.format`` calls to f-strings, meaning that you'll need Python 3.6 or
+later for the Python scripts.
 
 The programs
 ============
