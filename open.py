@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2018-07-07T15:03:21+0200
+# Last modified: 2018-07-29T16:53:01+0200
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -20,11 +20,12 @@ import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.6'
+__version__ = '1.7'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
     '\.(pdf|epub)$': ['mupdf'],
+    '\.(txt|tex|md|rst|py|sh)$': ['gvim', '--nofork'],
     '\.html$': ['firefox'],
     '\.xcf$': ['gimp'],
     '\.e?ps$': ['gv'],
