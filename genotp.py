@@ -5,7 +5,7 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-03-08T14:04:00+01:00
-# Last modified: 2018-07-07T10:34:30+0200
+# Last modified: 2018-08-02T00:51:46+0200
 """
 Generate an old-fashioned one-time pad.
 
@@ -13,7 +13,9 @@ The format of the one-time pad is:
 65 lines of 12 groups of 5 random capital letters.
 """
 
-from os import urandom
+from secrets import choice
+
+_CAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 def main():
@@ -51,8 +53,7 @@ def rndcaps(n):
     Returns:
         A string of n random capital letters.
     """
-    b = urandom(n)
-    return ''.join([chr(int(c / 9.808) + 65) for c in b])
+    return ''.join([choice(_CAPS) for c in range(n)])
 
 
 if __name__ == '__main__':
