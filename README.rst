@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-07-08T01:47:39+0200
+.. Last modified: 2018-08-19T14:25:19+0200
 
 Introduction
 ============
@@ -530,6 +530,12 @@ This utility requires the python-magic_ module.
 
 The ``filetypes`` and ``othertypes`` dictionaries in the beginning of this
 script should be changed to suit your preferences.
+
+
+osversion.py
+------------
+
+Prints the value __FreeBSD_version, aka OSVERSION.
 
 
 pdfselect.sh
