@@ -2,16 +2,21 @@
 # file: ntpclient.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
+# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-09-09T14:10:52+0200
-"""Simple NTP query program."""
+# Last modified: 2018-09-09T21:11:09+0200
+"""
+Simple NTP query program. This program does not strive for high accuracy.
+Use this only as a client, not for a time server!
+"""
 
 from contextlib import closing
 from datetime import datetime
 from socket import socket, AF_INET, SOCK_DGRAM
 import os
 import struct
+import sys
 import time
 
 # See e.g. # https://www.cisco.com/c/en/us/about/press/internet-protocol-journal/back-issues/table-contents-58/154-ntp.html
@@ -33,14 +38,23 @@ def get_ntp_time(host="pool.ntp.org", port=123):
     # Return the average of receive and transmit timestamps.
     # Note that 2208988800 is the difference in seconds between the
     # UNIX epoch 1970-1-1 and the NTP epoch 1900-1-1.
-    # See: (datetime.datetime(1970,1,1) - datetime.datetim:::::e(1900,1,1)).total_seconds()
+    # See: (datetime.datetime(1970,1,1) - datetime.datetime(1900,1,1)).total_seconds()
     t2 = unpacked[8] + float(unpacked[9]) / 2**32 - 2208988800
     t3 = unpacked[10] + float(unpacked[11]) / 2**32 - 2208988800
     return (t2 + t3) / 2
 
 
-if __name__ == "__main__":
+def main(argv):
+    """
+    Entry point for ntpclient.py.
+
+    Arguments:
+        argv: command line arguments
+    """
     res = None
+    quiet = False
+    if '-q' in argv:
+        quiet = True
     t1 = time.clock_gettime(time.CLOCK_REALTIME)
     ntptime = get_ntp_time('nl.pool.ntp.org')
     t4 = time.clock_gettime(time.CLOCK_REALTIME)
@@ -53,8 +67,13 @@ if __name__ == "__main__":
     diff = localtime - ntptime
     localtime = datetime.fromtimestamp(localtime)
     ntptime = datetime.fromtimestamp(ntptime)
-    print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y'))
-    print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y'))
-    print('Local time - ntp time: {:.6f} s'.format(diff))
-    if res:
-        print(res)
+    if not quiet:
+        print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y'))
+        print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y'))
+        print('Local time - ntp time: {:.6f} s'.format(diff))
+        if res:
+            print(res)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
