@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-05-13T12:15:28+0200
+# Last modified: 2018-09-09T14:10:52+0200
 """Simple NTP query program."""
 
 from contextlib import closing
@@ -14,6 +14,13 @@ import os
 import struct
 import time
 
+# See e.g. # https://www.cisco.com/c/en/us/about/press/internet-protocol-journal/back-issues/table-contents-58/154-ntp.html
+# From left to right:
+# * No leap second adjustment = 0 (2 bits)
+# * protocol version 3 (3 bits)
+# * client packet = 3 (3 bits)
+# In [1]: hex((0 & 0b11) << 6 | (3 & 0b111) << 3 | (3 & 0b111))
+# Out[1]: '0x1b'
 _query = b'\x1b' + 47 * b'\0'
 
 
@@ -23,25 +30,31 @@ def get_ntp_time(host="pool.ntp.org", port=123):
         s.sendto(_query, (host, port))
         msg, address = s.recvfrom(1024)
     unpacked = struct.unpack(fmt, msg[0:struct.calcsize(fmt)])
-    return unpacked[10] + float(unpacked[11]) / 2**32 - 2208988800
+    # Return the average of receive and transmit timestamps.
+    # Note that 2208988800 is the difference in seconds between the
+    # UNIX epoch 1970-1-1 and the NTP epoch 1900-1-1.
+    # See: (datetime.datetime(1970,1,1) - datetime.datetim:::::e(1900,1,1)).total_seconds()
+    t2 = unpacked[8] + float(unpacked[9]) / 2**32 - 2208988800
+    t3 = unpacked[10] + float(unpacked[11]) / 2**32 - 2208988800
+    return (t2 + t3) / 2
 
 
 if __name__ == "__main__":
-    beforetime = time.clock_gettime(time.CLOCK_REALTIME)
+    res = None
+    t1 = time.clock_gettime(time.CLOCK_REALTIME)
     ntptime = get_ntp_time('nl.pool.ntp.org')
-    aftertime = time.clock_gettime(time.CLOCK_REALTIME)
+    t4 = time.clock_gettime(time.CLOCK_REALTIME)
     # It is not guaranteed that the NTP time is *exactly* in the middle of both
     # local times. But it is a reasonable simplification.
-    localtime = (beforetime + aftertime) / 2
+    localtime = (t1 + t4) / 2
     if os.geteuid() == 0:
         time.clock_settime(time.CLOCK_REALTIME, ntptime)
         res = 'Time set to NTP time.'
-    else:
-        res = 'Can not set time: not superuser.'
     diff = localtime - ntptime
     localtime = datetime.fromtimestamp(localtime)
     ntptime = datetime.fromtimestamp(ntptime)
     print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y'))
     print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y'))
     print('Local time - ntp time: {:.6f} s'.format(diff))
-    print(res)
+    if res:
+        print(res)
