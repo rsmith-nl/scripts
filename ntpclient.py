@@ -5,10 +5,10 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-09-09T21:11:09+0200
+# Last modified: 2018-09-15T14:00:36+0200
 """
 Simple NTP query program. This program does not strive for high accuracy.
-Use this only as a client, not for a time server!
+Use this only as a client, never for a time server!
 """
 
 from contextlib import closing
