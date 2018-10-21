@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-09-15T14:00:36+0200
+# Last modified: 2018-10-21T09:36:28+0200
 """
 Simple NTP query program. This program does not strive for high accuracy.
 Use this only as a client, never for a time server!
@@ -55,21 +55,28 @@ def main(argv):
     quiet = False
     if '-q' in argv:
         quiet = True
+    if '-s' in argv:
+        server = argv[argv.index('-s')+1]
+    else:
+        server = 'pool.ntp.org'
     t1 = time.clock_gettime(time.CLOCK_REALTIME)
-    ntptime = get_ntp_time('nl.pool.ntp.org')
+    ntptime = get_ntp_time(server)
     t4 = time.clock_gettime(time.CLOCK_REALTIME)
     # It is not guaranteed that the NTP time is *exactly* in the middle of both
     # local times. But it is a reasonable simplification.
+    roundtrip = round(t4 - t1, 4)
     localtime = (t1 + t4) / 2
+    diff = localtime - ntptime
     if os.geteuid() == 0:
         time.clock_settime(time.CLOCK_REALTIME, ntptime)
         res = 'Time set to NTP time.'
-    diff = localtime - ntptime
     localtime = datetime.fromtimestamp(localtime)
     ntptime = datetime.fromtimestamp(ntptime)
     if not quiet:
+        print('NTP call took approximately', roundtrip, 's')
         print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y'))
-        print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y'))
+        print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y'),
+              '±', roundtrip/2, 's')
         print('Local time - ntp time: {:.6f} s'.format(diff))
         if res:
             print(res)

@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-08-19T14:25:19+0200
+.. Last modified: 2018-10-21T09:02:13+0200
 
 Introduction
 ============
@@ -479,6 +479,11 @@ nospaces.py
 -----------
 
 Replaces whitespace in filenames with underscores.
+
+ntpclient.py
+------------
+
+A very simple NTP query and time setting program.
 
 
 offsetsrt.py
