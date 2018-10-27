@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-10-21T09:36:28+0200
+# Last modified: 2018-10-28T00:37:43+0200
 """
 Simple NTP query program. This program does not strive for high accuracy.
 Use this only as a client, never for a time server!
@@ -53,10 +53,16 @@ def main(argv):
     """
     res = None
     quiet = False
-    if '-q' in argv:
+    args = set(argv)
+    if {'-h', '--help'}.intersection(args):
+        print('Usage: ntpclient [-h|--help] [-q|--quiet] [-s|--server timeserver]')
+        sys.exit(0)
+    if {'-q', '--quiet'}.intersection(args):
         quiet = True
     if '-s' in argv:
         server = argv[argv.index('-s')+1]
+    elif '--server' in argv:
+        server = argv[argv.index('--server')+1]
     else:
         server = 'pool.ntp.org'
     t1 = time.clock_gettime(time.CLOCK_REALTIME)
