@@ -1,9 +1,11 @@
 #!/bin/sh
 # Use rsync to syncronize a directory to/from another computer.
 #
+# Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2018-10-28T15:20:15+0100
+# Last modified: 2018-10-28T15:25:22+0100
 
 set -eu
 
