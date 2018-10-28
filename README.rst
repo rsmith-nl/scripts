@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-10-21T09:02:13+0200
+.. Last modified: 2018-10-28T15:18:06+0100
 
 Introduction
 ============
@@ -649,6 +649,20 @@ standalone.sh
 
 Compiles a LaTeX file with the standalone documentclass to Encapsulated
 PostScript format.
+
+
+sync-to.sh
+----------
+
+This script was written to simplify the syncronization of data between
+different computers using rsync(1).
+
+It assumes that:
+
+* The other host you are synchronizing to is running the rsync(1) daemon.
+* That host exposes ``/home`` as the ``[home]`` module.
+* You are syncronizing a directory in your $HOME to the same directory on the
+  other host.
 
 
 texfonts.sh
