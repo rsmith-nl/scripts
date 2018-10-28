@@ -1,15 +1,18 @@
 #!/bin/sh
-# Use rsync to syncronize a directory to/from my laptop.
+# Use rsync to syncronize a directory to/from another computer.
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2018-10-28T12:31:05+0100
+# Last modified: 2018-10-28T12:40:09+0100
 
 set -eu
 
 usage="Usage: sync-laptop <host> [-h][[-f][-r] <dir>]
 
-Uses rsync to syncronize files between my desktop and laptop.
+Uses rsync to syncronize files between two computers.
+
+The rsync(1) daemon should be running on <host>.  The /home directory on
+<host> should be listed as the [home] module in the rsyncd.conf(5) on <host>.
 
 Options:
   -h: help
