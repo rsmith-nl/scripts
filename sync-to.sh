@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2018-10-28T12:40:09+0100
+# Last modified: 2018-10-28T15:20:15+0100
 
 set -eu
 
@@ -21,6 +21,7 @@ Options:
 
 The <host> parameter contains the hostname of the host to synchronize to.
 The <dir> parameter is the directory to syncronize, relative to the current directory.
+It should be the same on both machines.
 "
 
 US=`hostname -s`
