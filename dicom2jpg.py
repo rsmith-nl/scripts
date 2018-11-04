@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2018-07-07T18:46:29+0200
+# Last modified: 2018-11-04T12:59:55+0100
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -14,18 +14,19 @@ is based on the image size of a Philips flat detector. The image goes from
 2048x2048 pixels to 1574x2048 pixels.
 """
 
-import concurrent.futures as cf
 from datetime import datetime
+from functools import partial
 import argparse
+import concurrent.futures as cf
 import logging
 import os
-import sys
 import subprocess as sp
+import sys
 
-__version__ = '1.3.0'
+__version__ = '1.4.0'
 
 
-def convert(filename):
+def convert(filename, quality, level):
     """
     Convert a DICOM file to a JPEG file.
 
@@ -33,6 +34,8 @@ def convert(filename):
 
     Arguments:
         filename: name of the file to convert.
+        quality: JPEG quality to apply
+        level: Boolean to indicate whether level adustment should be done.
 
     Returns:
         Tuple of (input filename, output filename, convert return value)
@@ -41,8 +44,12 @@ def convert(filename):
     size = '1574x2048'
     args = [
         'convert', filename, '-units', 'PixelsPerInch', '-density', '300', '-crop',
-        size + '+232+0', '-page', size + '+0+0', '-auto-gamma', outname
+        size + '+232+0', '-page', size + '+0+0', '-auto-gamma', '-quality',
+        str(quality)
     ]
+    if level:
+        args += ['-level', '-35%,70%,0.5']
+    args.append(outname)
     rv = sp.call(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return (filename, outname, rv)
 
@@ -87,6 +94,16 @@ def main(argv):
         help="logging level (defaults to 'warning')"
     )
     parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '-l',
+        '--level',
+        action='store_true',
+        default=False,
+        help='Correct color levels (default: no)'
+    )
+    parser.add_argument(
+        '-q', '--quality', type=int, default=80, help='JPEG quailty level (default: 80)'
+    )
     parser.add_argument('fn', nargs='*', metavar='filename', help='DICOM files to process')
     args = parser.parse_args(argv[1:])
     logging.basicConfig(
@@ -98,10 +115,15 @@ def main(argv):
     if not args.fn:
         logging.error('no files to process')
         sys.exit(1)
+    if args.quality != 80:
+        logging.info(f'quality set to {args.quality}')
+    if args.level:
+        logging.info('applying level correction.')
+    convert_partial = partial(convert, quality=args.quality, level=args.level)
     starttime = str(datetime.now())[:-7]
     logging.info(f'started at {starttime}.')
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for infn, outfn, rv in tp.map(convert, args.fn):
+        for infn, outfn, rv in tp.map(convert_partial, args.fn):
             logging.info(f'finished conversion of {infn} to {outfn} (returned {rv})')
     endtime = str(datetime.now())[:-7]
     logging.info(f'completed at {endtime}.')
