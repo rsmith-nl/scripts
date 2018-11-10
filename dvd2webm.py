@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2018-07-07T00:00:36+0200
+# Last modified: 2018-11-10T17:57:55+0100
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -24,7 +24,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.12'
+__version__ = '0.13'
 
 
 def main(argv):
@@ -134,8 +134,8 @@ def check_ffmpeg():
     the needed drivers enabled."""
     args = ['ffmpeg']
     proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
-    verre = r'ffmpeg version (\d+)\.(\d+)\.(\d+) Copyright'
-    major, minor, patch = re.findall(verre, proc.stderr)[0]
+    verre = r'ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright'
+    major, minor, patch, *rest = re.findall(verre, proc.stderr)[0]
     if int(major) < 3 and int(minor) < 3:
         logging.error(f'ffmpeg 3.3 is required; found {major}.{minor}.{patch}')
         return False
