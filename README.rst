@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-10-28T15:18:06+0100
+.. Last modified: 2018-11-13T23:55:37+0100
 
 Introduction
 ============
@@ -300,6 +300,12 @@ An example:
 
     > python3 genpw.py -l 24 -g 4
     BU_7 7RcI jjce zAKo 83v8 RAk_
+
+
+getbb.sh
+--------
+
+Determines the bounding box of PostScript files using ghostscript_.
 
 
 get-tracks.py
