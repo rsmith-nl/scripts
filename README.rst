@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-11-13T23:55:37+0100
+.. Last modified: 2018-11-17T13:16:05+0100
 
 Introduction
 ============
@@ -147,6 +147,16 @@ offset.
 .. _constrained quality: http://wiki.webmproject.org/ffmpeg/vp9-encoding-guide
 
 
+eps2png.sh
+----------
+
+This script uses ghostscript_ to render encapsulated PostScript files to PNG
+format. Using command-line arguments the resolution and the type of PNG file
+can be changed.
+
+.. _ghostscript: http://www.ghostscript.com/
+
+
 ffmutt.sh
 ---------
 
@@ -183,7 +193,6 @@ Corrects the ``BoundingBox`` for single-page PostScript_ documents.
 It requires the ghostscript_ program.
 
 .. _PostScript: http://en.wikipedia.org/wiki/PostScript
-.. _ghostscript: http://www.ghostscript.com/
 
 
 foto4lb.py
