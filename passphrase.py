@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2018-02-28 09:28:44 +0100
+# Last modified: 2018-12-06T22:43:27+0100
 """
 Creates a passphrase.
 
@@ -38,7 +38,7 @@ parser.add_argument(
     default=wordfile,
     help='path to words file (default: {})'.format(wordfile)
 )
-parser.add_argument('-c', '--count', type=int, default=4, help='number of words (default: 4)')
+parser.add_argument('-c', '--count', type=int, default=3, help='number of words (default: 3)')
 parser.add_argument('-v', '--version', action='version', version=__version__)
 args = parser.parse_args(sys.argv[1:])
 logging.basicConfig(
