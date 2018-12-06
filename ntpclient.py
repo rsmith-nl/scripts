@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-11-24T10:18:56+0100
+# Last modified: 2018-12-06T22:37:44+0100
 """
 Simple NTP query program. This program does not strive for high accuracy.
 Use this only as a client, never for a time server!
@@ -82,11 +82,12 @@ def main(argv):
     localtime = datetime.fromtimestamp(localtime)
     ntptime = datetime.fromtimestamp(ntptime)
     if not quiet:
-        print('NTP call took approximately', roundtrip, 's')
-        print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y'))
-        print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y'),
-              '±', roundtrip/2, 's')
-        print('Local time - ntp time: {:.6f} s'.format(diff))
+        print('Using server {}.'.format(server))
+        print('NTP call took approximately', roundtrip, 's.')
+        print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y.'))
+        print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y.'),
+              '±', roundtrip/2, 's.')
+        print('Local time - ntp time: {:.6f} s.'.format(diff))
         if res:
             print(res)
 
