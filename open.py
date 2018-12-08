@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2018-07-29T16:53:01+0200
+# Last modified: 2018-12-08T01:34:04+0100
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -20,20 +20,21 @@ import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.7'
+__version__ = '1.8'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
-    '\.(pdf|epub)$': ['mupdf'],
-    '\.(txt|tex|md|rst|py|sh)$': ['gvim', '--nofork'],
-    '\.html$': ['firefox'],
-    '\.xcf$': ['gimp'],
-    '\.e?ps$': ['gv'],
-    '\.(jpe?g|png|gif|tiff?|p[abgp]m|bmp|svg)$': ['gpicview'],
-    '\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
-    '\.(tar\.|t)(z|gz|bz2?|xz)$': ['tar', 'tf'],
-    '\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm)$': ['mpv'],
-    '\.(s3m|xm|mod|mid)$': ['urxvt', '-title', 'Timidity++', '-e', 'timidity', '-in', '-A30a']
+    r'\.(pdf|epub)$': ['mupdf'],
+    r'\.(txt|tex|md|rst|py|sh)$': ['gvim', '--nofork'],
+    r'\.html$': ['firefox'],
+    r'\.xcf$': ['gimp'],
+    r'\.e?ps$': ['gv'],
+    r'\.(jpe?g|png|gif|tiff?|p[abgp]m|bmp|svg)$': ['gpicview'],
+    r'\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
+    r'\.(tar\.|t)(z|gz|bz2?|xz)$': ['tar', 'tf'],
+    r'\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm|vob)$': ['mpv'],
+    r'\.(s3m|xm|mod|mid)$':
+    ['urxvt', '-title', 'Timidity++', '-e', 'timidity', '-in', '-A30a']
 }
 othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
 
@@ -55,10 +56,13 @@ def main(argv):  # noqa
         choices=['debug', 'info', 'warning', 'error'],
         help="logging level (defaults to 'warning')"
     )
-    opts.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
+    opts.add_argument(
+        "files", metavar='file', nargs='*', help="one or more files to process"
+    )
     args = opts.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
     )
     logging.info(f'command line arguments = {argv}')
     logging.info(f'parsed arguments = {args}')
