@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2018-11-10T17:57:55+0100
+# Last modified: 2018-12-08T10:47:05+0100
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -45,6 +45,9 @@ def main(argv):
         '-d', '--dummy', action="store_true", help="print commands but do not run them"
     )
     parser.add_argument(
+        '-e', '--detect', action="store_true", help="detect cropping automatically"
+    )
+    parser.add_argument(
         '-t',
         '--subtitle',
         type=str,
@@ -67,7 +70,7 @@ def main(argv):
     logging.info(f'started at {startstr}.')
     logging.info(f'using audio stream {args.audio}.')
     tc = 1
-    if not args.crop:
+    if not args.crop and args.detect:
         logging.info('looking for cropping.')
         args.crop = findcrop(args.fn)
         width, height, _, _ = args.crop.split(':')
@@ -180,7 +183,7 @@ def findcrop(path, start='00:10:00', duration='00:00:01'):
         '/dev/null'  # Write output to /dev/null
     ]
     proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
-    rv = Counter(re.findall('crop=(\d+:\d+:\d+:\d+)', proc.stderr))
+    rv = Counter(re.findall(r'crop=(\d+:\d+:\d+:\d+)', proc.stderr))
     return rv.most_common(1)[0][0]
 
 
@@ -217,9 +220,9 @@ def mkargs(fn, npass, tile_columns, crop=None, start=None, subf=None, subt=None,
     """
     if npass not in (1, 2):
         raise ValueError('npass must be 1 or 2')
-    if crop and not re.search('\d+:\d+:\d+:\d+', crop):
+    if crop and not re.search(r'\d+:\d+:\d+:\d+', crop):
         raise ValueError('cropping must be in the format W:H:X:Y')
-    if start and not re.search('\d{2}:\d{2}:\d{2}', start):
+    if start and not re.search(r'\d{2}:\d{2}:\d{2}', start):
         raise ValueError('starting time must be in the format HH:MM:SS')
     numthreads = str(os.cpu_count())
     basename = fn.rsplit('.', 1)[0]
