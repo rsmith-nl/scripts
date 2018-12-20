@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2018-12-16T23:24:02+0100
+# Last modified: 2018-12-19T18:19:07+0100
 """
 Convert a video to a webm file, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -101,17 +101,16 @@ def check_ffmpeg():
     return True
 
 
-def reporttime(p, start, end):
+def reporttime(p, dt):
     """
     Report the amount of time passed between start and end.
 
     Arguments:
         p: number of the pass.
-        start: datetime.datetime instance.
-        end: datetime.datetime instance.
+        dt: datetime.timedelta instance.
     """
-    dt = str(end - start)[:-7]
-    logging.info(f'pass {p} took {dt}.')
+    s = str(dt)[:-7]
+    logging.info(f'pass {p} took {s}.')
 
 
 def get_tc(name):
@@ -156,8 +155,8 @@ def mkargs(fn, npass, tile_columns, start=None):
         speed = '4'
     args += [
         '-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
-        str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', speed, '-tile-columns',
-        str(tile_columns)
+        str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', speed,
+        '-tile-columns', str(tile_columns)
     ]
     if npass == 2:
         args += ['-auto-alt-ref', '1', '-lag-in-frames', '25']
@@ -197,7 +196,10 @@ def encode(args1, args2):
         logging.error(f'pass 1 returned {proc.returncode}.')
         return origsize, 0
     else:
-        reporttime(1, start, end)
+        dt = end - start
+        reporttime(1, dt)
+        h, m = phasetwo(dt)
+        logging.info(f'pass 2 expected to take {h} hours and {m} minutes.')
     logging.info('running pass 2...')
     logging.debug('pass 2: {}'.format(' '.join(args2)))
     start = datetime.utcnow()
@@ -206,12 +208,23 @@ def encode(args1, args2):
     if proc.returncode:
         logging.error(f'pass 2 returned {proc.returncode}.')
     else:
-        reporttime(2, start, end)
+        dt = end - start
+        reporttime(2, dt)
     newsize = os.path.getsize(args2[-1])
     percentage = int(100 * newsize / origsize)
     ifn, ofn = args2[oidx], args2[-1]
     logging.info(f"the size of '{ofn}' is {percentage}% of the size of '{ifn}'.")
     return origsize, newsize  # both in bytes.
+
+
+def phasetwo(fase1):
+    """Expected time for phase 2"""
+    exp = 5.8504 * fase1.total_seconds() + 3798
+    seconds, minutes = math.modf(exp/60)
+    minutes, hours = math.modf(minutes/60)
+    minutes = int(minutes*60)
+    hours = int(hours)
+    return hours, minutes
 
 
 if __name__ == '__main__':
