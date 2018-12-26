@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2018-12-25T17:20:20+0100
+# Last modified: 2018-12-26T14:37:31+0100
 """
 Convert a video to a webm file, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -49,10 +49,14 @@ def main(argv):
     if not check_ffmpeg():
         return 1
     logging.info(f"processing '{args.fn}'.")
+    t1, t2 = expectedtime(args.fn)
     starttime = datetime.now()
     startstr = str(starttime)[:-7]
     tc = get_tc(args.fn)
     logging.info(f'started at {startstr}.')
+    t1 = str(starttime+t1)[:-7]
+    t2 = str(starttime+t2)[:-7]
+    logging.info(f'expected to finish between {t1} and {t2}')
     a1 = mkargs(
         args.fn,
         1,
@@ -198,10 +202,6 @@ def encode(args1, args2):
     else:
         dt = end - start
         reporttime(1, dt)
-        runtime = phasetwo(dt)
-        now = datetime.now()
-        exp = now + runtime
-        logging.info('pass 2 is expected to take until ' + str(exp)[:-7])
     logging.info('running pass 2...')
     logging.debug('pass 2: {}'.format(' '.join(args2)))
     start = datetime.utcnow()
@@ -219,10 +219,21 @@ def encode(args1, args2):
     return origsize, newsize  # both in bytes.
 
 
-def phasetwo(fase1):
-    """Expected time for phase 2"""
-    exp = 5.8504 * fase1.total_seconds() + 3798
-    return timedelta(seconds=exp)
+def expectedtime(fn):
+    """Calculate the expected time for conversion.
+
+    Arguments:
+        fn: file path.
+
+    Returns:
+        A 2-tuple of datetime.timedelta objects representing the minimal and maximal
+        conversion time.
+    """
+
+    minspeed, maxspeed = 60, 90  # KiB/s These speeds based on the author's machine!
+    size = os.stat(fn).st_size / 1024
+    minsecs, maxsecs = size / maxspeed, size / minspeed
+    return timedelta(seconds=minsecs), timedelta(seconds=maxsecs)
 
 
 if __name__ == '__main__':
