@@ -5,13 +5,13 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2018-12-19T18:19:07+0100
+# Last modified: 2018-12-25T17:20:20+0100
 """
 Convert a video to a webm file, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import argparse
 import logging
 import math
@@ -198,8 +198,10 @@ def encode(args1, args2):
     else:
         dt = end - start
         reporttime(1, dt)
-        h, m = phasetwo(dt)
-        logging.info(f'pass 2 expected to take {h} hours and {m} minutes.')
+        runtime = phasetwo(dt)
+        now = datetime.now()
+        exp = now + runtime
+        logging.info('pass 2 is expected to take until ' + str(exp)[:-7])
     logging.info('running pass 2...')
     logging.debug('pass 2: {}'.format(' '.join(args2)))
     start = datetime.utcnow()
@@ -220,11 +222,7 @@ def encode(args1, args2):
 def phasetwo(fase1):
     """Expected time for phase 2"""
     exp = 5.8504 * fase1.total_seconds() + 3798
-    seconds, minutes = math.modf(exp/60)
-    minutes, hours = math.modf(minutes/60)
-    minutes = int(minutes*60)
-    hours = int(hours)
-    return hours, minutes
+    return timedelta(seconds=exp)
 
 
 if __name__ == '__main__':
