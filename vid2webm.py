@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2018-12-26T14:37:31+0100
+# Last modified: 2018-12-26T14:40:10+0100
 """
 Convert a video to a webm file, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -222,6 +222,16 @@ def encode(args1, args2):
 def expectedtime(fn):
     """Calculate the expected time for conversion.
 
+    This is based on conversion data for 9 movies.
+
+    In [22]: data = [73.25, 84.42, 84.28, 75.46, 67.01, 73.23, 62.32, 91.69, 82.83]
+
+    In [31]: min(data)
+    Out[31]: 62.32
+
+    In [32]: max(data)
+    Out[32]: 91.69
+
     Arguments:
         fn: file path.
 
@@ -229,7 +239,6 @@ def expectedtime(fn):
         A 2-tuple of datetime.timedelta objects representing the minimal and maximal
         conversion time.
     """
-
     minspeed, maxspeed = 60, 90  # KiB/s These speeds based on the author's machine!
     size = os.stat(fn).st_size / 1024
     minsecs, maxsecs = size / maxspeed, size / minspeed
