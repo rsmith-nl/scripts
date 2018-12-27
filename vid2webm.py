@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2018-12-26T14:40:10+0100
+# Last modified: 2018-12-27T10:09:32+0100
 """
 Convert a video to a webm file, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -20,11 +20,11 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 def main(argv):
-    """Entry point for dvd2webm.py."""
+    """Entry point for vid2webm.py."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--log',
@@ -49,14 +49,16 @@ def main(argv):
     if not check_ffmpeg():
         return 1
     logging.info(f"processing '{args.fn}'.")
-    t1, t2 = expectedtime(args.fn)
+    t1, t2, t3 = expectedtime(args.fn)
     starttime = datetime.now()
     startstr = str(starttime)[:-7]
     tc = get_tc(args.fn)
     logging.info(f'started at {startstr}.')
-    t1 = str(starttime+t1)[:-7]
-    t2 = str(starttime+t2)[:-7]
-    logging.info(f'expected to finish between {t1} and {t2}')
+    t1 = str(starttime+t1)[:-10]
+    t2 = str(starttime+t2)[:-10]
+    t3 = str(starttime+t3)[:-10]
+    logging.info(f'encoding is expected to take until {t2} on average')
+    logging.info(f'but it could be anywhere between {t1} and {t3}')
     a1 = mkargs(
         args.fn,
         1,
@@ -222,27 +224,25 @@ def encode(args1, args2):
 def expectedtime(fn):
     """Calculate the expected time for conversion.
 
-    This is based on conversion data for 9 movies.
-
-    In [22]: data = [73.25, 84.42, 84.28, 75.46, 67.01, 73.23, 62.32, 91.69, 82.83]
-
-    In [31]: min(data)
-    Out[31]: 62.32
-
-    In [32]: max(data)
-    Out[32]: 91.69
+    Based on my machine, the average conversion speed is 75 kiB/s. The range is between
+    60 kiB/s and 90 kiB/s.
 
     Arguments:
         fn: file path.
 
     Returns:
-        A 2-tuple of datetime.timedelta objects representing the minimal and maximal
-        conversion time.
+        A 3-tuple of datetime.timedelta objects representing the minimal, average
+        and maximal expected conversion time.
     """
     minspeed, maxspeed = 60, 90  # KiB/s These speeds based on the author's machine!
     size = os.stat(fn).st_size / 1024
     minsecs, maxsecs = size / maxspeed, size / minspeed
-    return timedelta(seconds=minsecs), timedelta(seconds=maxsecs)
+    avgsecs = (minsecs + maxsecs) / 2
+    return (
+        timedelta(seconds=minsecs),
+        timedelta(seconds=avgsecs),
+        timedelta(seconds=maxsecs)
+    )
 
 
 if __name__ == '__main__':
