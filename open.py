@@ -5,14 +5,14 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2018-12-08T01:34:04+0100
+# Last modified: 2019-01-09T23:10:20+0100
 """
 Open file(s) given on the command line in the appropriate program.
 
 Some of the programs are X11 programs.
 """
 
-from os.path import isdir, isfile, exists
+from os.path import isdir, isfile, exists, basename
 from re import search, IGNORECASE
 from subprocess import Popen, run, PIPE
 from sys import argv
@@ -67,28 +67,10 @@ def main(argv):  # noqa
     logging.info(f'command line arguments = {argv}')
     logging.info(f'parsed arguments = {args}')
     fail = "opening '{}' failed: {}"
-    # Check for non-local files with `locate`.
-    try:
-        files = []
-        for nm in args.files:
-            if exists(nm):
-                files.append(nm)
-            else:
-                cp = run(['locate', nm], stdout=PIPE)
-                paths = cp.stdout.decode('utf-8').splitlines()
-                if len(paths) == 1:
-                    files.append(paths[0])
-                elif len(paths) == 0:
-                    logging.warning(f"path '{nm}' not found")
-                else:
-                    logging.warning(f"ambiguous path '{nm}' skipped")
-                    for p in paths:
-                        logging.warning(f"found '{p}'")
-    except FileNotFoundError:  # `locate` not available.
-        files = args.files
+    files = locate(args.files)
     # Open the file(s).
     for nm in files:
-        logging.info(f"Trying '{nm}'")
+        logging.info(f"trying '{nm}'")
         if not args.application:
             if isdir(nm):
                 cmds = othertypes['dir'] + [nm]
@@ -132,6 +114,39 @@ def matchfile(fdict, odict, fname):
     if b'text' in from_file(fname):
         return odict['txt'] + [fname]
     return None
+
+
+def locate(args):
+    """Check for local and non-local files."""
+    files = []
+    # Check for non-local files with `locate`.
+    try:
+        for nm in args:
+            if exists(nm):
+                files.append(nm)
+            else:
+                cp = run(['locate', nm], stdout=PIPE)
+                paths = cp.stdout.decode('utf-8').splitlines()
+                if len(paths) == 1:
+                    files.append(paths[0])
+                elif len(paths) == 0:
+                    logging.warning(f"path '{nm}' not found")
+                else:
+                    # more than one path found.
+                    basenames = []
+                    for p in paths:
+                        if basename(p) == nm:
+                            basenames.append(p)
+                            logging.info(f'found possible match "{p}"')
+                    if len(basenames) == 1:
+                        files.append(basenames[0])
+                    else:
+                        logging.warning(f"ambiguous path '{nm}' skipped")
+                        for p in basenames:
+                            logging.warning(f"found '{p}'")
+    except FileNotFoundError:  # `locate` not available.
+        files = args
+    return files
 
 
 if __name__ == '__main__':
