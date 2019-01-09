@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-01-09T23:10:20+0100
+# Last modified: 2019-01-09T23:12:05+0100
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -20,7 +20,7 @@ import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.8'
+__version__ = '1.9'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
