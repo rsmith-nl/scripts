@@ -2,21 +2,19 @@
 # file: foto4lb.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2018-07-07T18:49:17+0200
+# Last modified: 2019-01-27T13:54:59+0100
 """Shrink fotos to a size suitable for use in my logbook."""
 
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from os import cpu_count, mkdir, scandir, sep, utime
-from os.path import exists
-from time import mktime
 import argparse
+import concurrent.futures as cf
 import logging
-import sys
+import os
 import subprocess
+import sys
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -35,7 +33,11 @@ def main(argv):
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-w', '--width', default=886, type=int, help='width of the images in pixels (default 886)'
+        '-w',
+        '--width',
+        default=886,
+        type=int,
+        help='width of the images in pixels (default 886)'
     )
     parser.add_argument(
         '--log',
@@ -47,7 +49,8 @@ def main(argv):
     parser.add_argument('path', nargs='*', help='directory in which to work')
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
     )
     logging.debug(f'Command line arguments = {argv}')
     logging.debug(f'Parsed arguments = {args}')
@@ -59,11 +62,12 @@ def main(argv):
     pairs = []
     count = 0
     for path in args.path:
-        if exists(path + sep + outdir):
+        if os.path.exists(path + os.sep + outdir):
             logging.warning(f'"{outdir}" already exists in "{path}", skipping this path.')
             continue
         files = [
-            f.name for f in scandir(path) if f.is_file() and f.name.lower().endswith(extensions)
+            f.name for f in os.scandir(path)
+            if f.is_file() and f.name.lower().endswith(extensions)
         ]
         count += len(files)
         pairs.append((path, files))
@@ -75,17 +79,16 @@ def main(argv):
     logging.info(f'found {count} files.')
     logging.info('creating output directories.')
     for dirname, _ in pairs:
-        mkdir(dirname + sep + outdir)
-    with ThreadPoolExecutor(max_workers=cpu_count()) as tp:
+        os.mkdir(dirname + os.sep + outdir)
+    infodict = {
+        0: "file '{}' processed.",
+        1: "file '{}' is not an image, skipped.",
+        2: "error running convert on '{}'."
+    }
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         agen = ((p, fn, args.width) for p, flist in pairs for fn in flist)
         for fn, rv in tp.map(processfile, agen):
-            if rv == 0:
-                fps = f"file '{fn}' processed."
-            elif rv == 1:
-                fps = f"file '{fn}' is not an image, skipped."
-            elif rv == 2:
-                fps = f"error running convert on '{fn}'."
-            logging.info(fps)
+            logging.info(infodict[rv].format(fn))
 
 
 def checkfor(args, rv=0):
@@ -127,8 +130,8 @@ def processfile(packed):
         status 2 means a subprocess error.
     """
     path, name, newwidth = packed
-    fname = sep.join([path, name])
-    oname = sep.join([path, outdir, name.lower()])
+    fname = os.sep.join([path, name])
+    oname = os.sep.join([path, outdir, name.lower()])
 
     try:
         img = Image.open(fname)
@@ -139,25 +142,20 @@ def processfile(packed):
         want = set(['DateTime', 'DateTimeOriginal', 'CreateDate', 'DateTimeDigitized'])
         available = sorted(list(want.intersection(set(ld.keys()))))
         fields = ld[available[0]].replace(' ', ':').split(':')
-        dt = datetime(
-            int(fields[0]), int(fields[1]), int(fields[2]), int(fields[3]), int(fields[4]),
-            int(fields[5])
-        )
+        dt = datetime(*map(int, fields))
     except Exception:
         logging.warning('exception raised when reading the file time.')
-        ed = {}
         dt = datetime.today()
-        ed['CreateDate'] = f'{dt.year}:{dt.month}:{dt.day} {dt.hour}:{dt.minute}:{dt.second}'
     args = [
         'convert', fname, '-strip', '-resize',
-        str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp', '2x0.5+0.7+0',
-        '-quality', '80', oname
+        str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp',
+        '2x0.5+0.7+0', '-quality', '80', oname
     ]
     rp = subprocess.call(args)
     if rp != 0:
         return (name, 2)
-    modtime = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, 0, 0, -1))
-    utime(oname, (modtime, modtime))
+    modtime = dt.timestamp()
+    os.utime(oname, (modtime, modtime))
     return (fname, 0)
 
 
