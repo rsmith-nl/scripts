@@ -5,7 +5,7 @@
 # Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2019-01-27T13:54:59+0100
+# Last modified: 2019-01-27T14:17:27+0100
 """Shrink fotos to a size suitable for use in my logbook."""
 
 from datetime import datetime
@@ -15,6 +15,8 @@ import logging
 import os
 import subprocess
 import sys
+# For performance measurments
+# import time
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -57,8 +59,7 @@ def main(argv):
     if not args.path:
         parser.print_help()
         sys.exit(0)
-    checkfor('mogrify', rv=1)
-
+    checkfor('convert', rv=1)
     pairs = []
     count = 0
     for path in args.path:
@@ -85,10 +86,15 @@ def main(argv):
         1: "file '{}' is not an image, skipped.",
         2: "error running convert on '{}'."
     }
+    # For performance measurements.
+    # start = time.monotonic()
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         agen = ((p, fn, args.width) for p, flist in pairs for fn in flist)
         for fn, rv in tp.map(processfile, agen):
             logging.info(infodict[rv].format(fn))
+    # For performance measurements.
+    # dt = time.monotonic() - start
+    # logging.info(f'startup preparations took {dt:.2f} s')
 
 
 def checkfor(args, rv=0):
@@ -129,10 +135,11 @@ def processfile(packed):
         status 1 means that the input file was not a recognized image format,
         status 2 means a subprocess error.
     """
+    # For performance measurements.
+    # start = time.monotonic()
     path, name, newwidth = packed
     fname = os.sep.join([path, name])
     oname = os.sep.join([path, outdir, name.lower()])
-
     try:
         img = Image.open(fname)
         ld = {}
@@ -156,6 +163,9 @@ def processfile(packed):
         return (name, 2)
     modtime = dt.timestamp()
     os.utime(oname, (modtime, modtime))
+    # For performance measurements.
+    # dt = time.monotonic() - start
+    # logging.info(f'processfile took {dt:.2f} s')
     return (fname, 0)
 
 
