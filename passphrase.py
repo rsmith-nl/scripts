@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 # file: passphrase.py
 # vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2018-12-06T22:43:27+0100
+# Last modified: 2019-02-10T13:08:22+0100
 """
 Creates a passphrase.
 
@@ -16,10 +17,12 @@ import secrets
 import re
 import sys
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
-wordfile = '/usr/share/dict/opentaal-210G-basis-gekeurd'
-#wordfile = '/usr/share/dict/words'
+wordfiles = {
+    'en': '/usr/share/dict/words',
+    'nl': '/usr/share/dict/opentaal-210G-basis-gekeurd'
+}
 minwordlen = 4
 maxwordlen = 9
 fillchars = '!@#$%&*_-'
@@ -32,27 +35,33 @@ parser.add_argument(
     help='logging level (default: warning)'
 )
 parser.add_argument(
-    '-w',
-    '--words',
+    '-l',
+    '--language',
     type=str,
-    default=wordfile,
-    help='path to words file (default: {})'.format(wordfile)
+    default='en',
+    help='word file language (default: en)'
 )
-parser.add_argument('-c', '--count', type=int, default=3, help='number of words (default: 3)')
+parser.add_argument(
+    '-c',
+    '--count',
+    type=int,
+    default=3,
+    help='number of words (default: 3)'
+)
 parser.add_argument('-v', '--version', action='version', version=__version__)
 args = parser.parse_args(sys.argv[1:])
 logging.basicConfig(
     level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
 )
-
-logging.info('reading words database {}'.format(args.words))
-with open(args.words) as df:
+wf = wordfiles[args.language]
+logging.info('reading words database {}'.format(wf))
+with open(wf) as df:
     words = df.readlines()
 rx = re.compile('/[A-Z]+$')
 words = [rx.sub('', w).lower().strip() for w in words]
-logging.info('{} total words in {}'.format(len(words), args.words))
+logging.info('{} total words in {}'.format(len(words), wf))
 words = [w for w in words if minwordlen < len(w) < maxwordlen]
-logging.info('{} words of correct length in {}'.format(len(words), args.words))
+logging.info('{} words of correct length in {}'.format(len(words), wf))
 aantal = len(words) + 1
 choices = [secrets.choice(words) for _ in range(args.count)]
 filler = [secrets.choice(fillchars) for _ in range(args.count)]
