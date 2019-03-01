@@ -5,10 +5,11 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2018-07-07T00:03:14+0200
+# Last modified: 2019-03-01T21:40:18+0100
 """Find updated packages for FreeBSD."""
 
 from enum import Enum
+from functools import partial
 import argparse
 import concurrent.futures as cf
 import os
@@ -25,6 +26,13 @@ class Comparison(Enum):
     SAME = 0
     CHANGED = 1
     UNKNOWN = 2
+
+
+class Check(Enum):
+    UP_TO_DATE = 0
+    REBUILD_SOURCE = 1
+    NOT_IN_REMOTE = 2
+    USE_PACKAGE = 3
 
 
 def get_remote_pkgs(version, arch):
@@ -151,6 +159,21 @@ def remote_is_newer(local, remote):
         return True
 
 
+def checkpkg(localpkg, remotepkg):
+    """Worker function to check the status of a local package."""
+    name, version, origin = localpkg
+    if name in remotepkg:
+        c = uses_default_options(name, origin)
+        if remote_is_newer(version, remotepkg[name]):
+            if c == Comparison.SAME:
+                return (name, Check.USE_PACKAGE)
+            else:
+                return (name, Check.REBUILD_SOURCE)
+        else:
+            return (name, Check.UP_TO_DATE)
+    return (name, Check.NOT_IN_REMOTE)
+
+
 def main(argv):
     """
     Entry point for find-pkg-updates.py.
@@ -207,23 +230,22 @@ def main(argv):
             time.sleep(0.25)
         remotepkg = remote.result()
         localpkg = local.result()
-    not_remote = []
-    rebuild_from_source = []
-    for name, version, origin in localpkg:
-        if name in remotepkg:
-            c = uses_default_options(name, origin)
-            rv = remotepkg[name]
-            if remote_is_newer(version, rv):
-                if c == Comparison.SAME:
-                    print(f'{name}-{version}: remote has {rv}')
-                else:
-                    rebuild_from_source.append(name)
-        else:
-            not_remote.append(name)
+    choose = {Check.UP_TO_DATE: [], Check.REBUILD_SOURCE: [],
+              Check.NOT_IN_REMOTE: [], Check.USE_PACKAGE: []}
+    print('# Checking:', end=' ', flush=True)
+    with cf.ProcessPoolExecutor(max_workers=4) as chk:
+        for name, result in chk.map(partial(checkpkg, remotepkg=remotepkg), localpkg):
+            print('.', end='', flush=True)
+            choose[result].append(name)
+    if choose[Check.USE_PACKAGE]:
+        print('\n# Update from packages:')
+        print(' '.join(choose[Check.USE_PACKAGE]))
+    else:
+        print('\nNo packages to update!')
     print('# Should be rebuilt from source (non-default options):')
-    print('# ' + ' '.join(rebuild_from_source))
+    print('# ' + ' '.join(choose[Check.REBUILD_SOURCE]))
     print('# Not in remote repo:')
-    print('# ' + ' '.join(not_remote))
+    print('# ' + ' '.join(choose[Check.NOT_IN_REMOTE]))
 
 
 if __name__ == '__main__':
