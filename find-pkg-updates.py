@@ -5,12 +5,13 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-03-01T21:40:18+0100
+# Last modified: 2019-03-02T11:56:45+0100
 """Find updated packages for FreeBSD."""
 
 from enum import Enum
 from functools import partial
 import argparse
+import logging
 import concurrent.futures as cf
 import os
 import re
@@ -201,19 +202,28 @@ def main(argv):
         default=arch,
         help=f'FreeBSD architecture (default {arch})'
     )
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'info')"
+    )
     args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
     parser.parse_args(argv)
     if major == args.major:
         extra = '(detected)'
     else:
         extra = '(override)'
-    print(f'# FreeBSD major version: {args.major} {extra}')
+    logging.info(f'FreeBSD major version: {args.major} {extra}')
     if arch == args.arch:
         extra = '(detected)'
     else:
         extra = '(override)'
-    print(f'# FreeBSD processor architecture: {args.arch} {extra}')
-    print('# Retrieving local and remote package lists')
+    logging.info(f'FreeBSD processor architecture: {args.arch} {extra}')
+    logging.info('retrieving local and remote package lists')
     # I'm using concurrent.futures here because especially get_remote_pkgs
     # can take a long time. This way we can reduce the time as much as possible.
     with cf.ProcessPoolExecutor(max_workers=2) as ex:
@@ -223,29 +233,34 @@ def main(argv):
         while not (rd and ld):
             if remote.done() and not rd:
                 rd = True
-                print('# * Finished retrieving remote packages.')
+                logging.info('finished retrieving remote packages.')
             if local.done() and not ld:
                 ld = True
-                print('# * Finished retrieving local packages.')
+                logging.info('finished retrieving local packages.')
             time.sleep(0.25)
         remotepkg = remote.result()
+        logging.debug('{len(remotepkg)} remote packages')
         localpkg = local.result()
     choose = {Check.UP_TO_DATE: [], Check.REBUILD_SOURCE: [],
               Check.NOT_IN_REMOTE: [], Check.USE_PACKAGE: []}
-    print('# Checking:', end=' ', flush=True)
     with cf.ProcessPoolExecutor(max_workers=4) as chk:
+        total = len(localpkg)
+        i = 1
+        logging.info('checking packages')
         for name, result in chk.map(partial(checkpkg, remotepkg=remotepkg), localpkg):
-            print('.', end='', flush=True)
+            print(f'\r{i:3d}/{total:3d}', end='', flush=True)
+            i += 1
             choose[result].append(name)
+    print()
     if choose[Check.USE_PACKAGE]:
-        print('\n# Update from packages:')
+        logging.info('Update from packages:')
         print(' '.join(choose[Check.USE_PACKAGE]))
     else:
-        print('\nNo packages to update!')
-    print('# Should be rebuilt from source (non-default options):')
-    print('# ' + ' '.join(choose[Check.REBUILD_SOURCE]))
-    print('# Not in remote repo:')
-    print('# ' + ' '.join(choose[Check.NOT_IN_REMOTE]))
+        print('No packages to update!')
+    logging.info('the following should be rebuilt from source (non-default options):')
+    logging.info(' '.join(choose[Check.REBUILD_SOURCE]))
+    logging.info('not found in remote repo:')
+    logging.info(' '.join(choose[Check.NOT_IN_REMOTE]))
 
 
 if __name__ == '__main__':
