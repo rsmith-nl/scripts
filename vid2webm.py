@@ -5,9 +5,9 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2018-12-27T10:09:32+0100
+# Last modified: 2019-03-09T00:59:43+0100
 """
-Convert a video to a webm file, using 2-pass constrained rate VP9
+Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
 """
 
@@ -20,7 +20,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 def main(argv):
@@ -39,7 +39,7 @@ def main(argv):
     parser.add_argument(
         '-d', '--dummy', action="store_true", help="print commands but do not run them"
     )
-    parser.add_argument('fn', metavar='filename', help='video file to process')
+    parser.add_argument("files", metavar='files', nargs='+', help="one or more files to process")
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
@@ -48,44 +48,45 @@ def main(argv):
     logging.debug(f'parsed arguments = {args}')
     if not check_ffmpeg():
         return 1
-    logging.info(f"processing '{args.fn}'.")
-    t1, t2, t3 = expectedtime(args.fn)
-    starttime = datetime.now()
-    startstr = str(starttime)[:-7]
-    tc = get_tc(args.fn)
-    logging.info(f'started at {startstr}.')
-    t1 = str(starttime+t1)[:-10]
-    t2 = str(starttime+t2)[:-10]
-    t3 = str(starttime+t3)[:-10]
-    logging.info(f'encoding is expected to take until {t2} on average')
-    logging.info(f'but it could be anywhere between {t1} and {t3}')
-    a1 = mkargs(
-        args.fn,
-        1,
-        tc,
-        start=args.start,
-    )
-    a2 = mkargs(
-        args.fn,
-        2,
-        tc,
-        start=args.start,
-    )
-    if not args.dummy:
-        origbytes, newbytes = encode(a1, a2)
-    else:
-        logging.basicConfig(level='INFO')
-        logging.info('first pass: ' + ' '.join(a1))
-        logging.info('second pass: ' + ' '.join(a2))
-        return
-    stoptime = datetime.now()
-    stopstr = str(stoptime)[:-7]
-    logging.info(f'ended at {stopstr}.')
-    runtime = stoptime - starttime
-    runstr = str(runtime)[:-7]
-    logging.info(f'total running time {runstr}.')
-    encspeed = origbytes / (runtime.seconds * 1000)
-    logging.info(f'average input encoding speed {encspeed:.2f} kB/s.')
+    for fn in args.files:
+        logging.info(f"processing '{fn}'.")
+        t1, t2, t3 = expectedtime(fn)
+        starttime = datetime.now()
+        startstr = str(starttime)[:-7]
+        tc = get_tc(fn)
+        logging.info(f'started at {startstr}.')
+        t1 = str(starttime+t1)[:-10]
+        t2 = str(starttime+t2)[:-10]
+        t3 = str(starttime+t3)[:-10]
+        logging.info(f'encoding is expected to take until {t2} on average')
+        logging.info(f'but it could be anywhere between {t1} and {t3}')
+        a1 = mkargs(
+            fn,
+            1,
+            tc,
+            start=args.start,
+        )
+        a2 = mkargs(
+            fn,
+            2,
+            tc,
+            start=args.start,
+        )
+        if not args.dummy:
+            origbytes, newbytes = encode(a1, a2)
+        else:
+            logging.basicConfig(level='INFO')
+            logging.info('first pass: ' + ' '.join(a1))
+            logging.info('second pass: ' + ' '.join(a2))
+            return
+        stoptime = datetime.now()
+        stopstr = str(stoptime)[:-7]
+        logging.info(f'ended at {stopstr}.')
+        runtime = stoptime - starttime
+        runstr = str(runtime)[:-7]
+        logging.info(f'total running time {runstr}.')
+        encspeed = origbytes / (runtime.seconds * 1000)
+        logging.info(f'average input encoding speed {encspeed:.2f} kB/s.')
 
 
 def check_ffmpeg():
