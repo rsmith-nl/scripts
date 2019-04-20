@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-# file: find-pkg-updates.py
+# file: find-pkg-upgrades.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-03-02T11:56:45+0100
-"""Find updated packages for FreeBSD."""
+# Last modified: 2019-04-20T17:45:35+0200
+"""Find newer packages for FreeBSD."""
 
 from enum import Enum
 from functools import partial
@@ -177,7 +177,7 @@ def checkpkg(localpkg, remotepkg):
 
 def main(argv):
     """
-    Entry point for find-pkg-updates.py.
+    Entry point for find-pkg-upgrades.py.
 
 
     Arguments:
@@ -253,10 +253,10 @@ def main(argv):
             choose[result].append(name)
     print()
     if choose[Check.USE_PACKAGE]:
-        logging.info('Update from packages:')
+        logging.info('Upgrade from packages:')
         print(' '.join(choose[Check.USE_PACKAGE]))
     else:
-        print('No packages to update!')
+        print('No packages to upgrade!')
     logging.info('the following should be rebuilt from source (non-default options):')
     logging.info(' '.join(choose[Check.REBUILD_SOURCE]))
     logging.info('not found in remote repo:')
