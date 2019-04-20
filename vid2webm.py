@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2019-03-09T00:59:43+0100
+# Last modified: 2019-03-09T16:01:49+0100
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -78,7 +78,7 @@ def main(argv):
             logging.basicConfig(level='INFO')
             logging.info('first pass: ' + ' '.join(a1))
             logging.info('second pass: ' + ' '.join(a2))
-            return
+            continue
         stoptime = datetime.now()
         stopstr = str(stoptime)[:-7]
         logging.info(f'ended at {stopstr}.')
