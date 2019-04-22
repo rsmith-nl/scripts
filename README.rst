@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2018-11-17T13:16:05+0100
+.. Last modified: 2019-04-22T11:30:21+0200
 
 Introduction
 ============
@@ -175,8 +175,8 @@ been modified up to a given number of days ago.
 .. _find: https://www.freebsd.org/cgi/man.cgi?query=find
 
 
-find-pkg-updates.py
--------------------
+find-pkg-upgrades.py
+--------------------
 
 Script for FreeBSD to compare the versions of locally installed packages to
 the versions available from the FreeBSD `package repo mirror`_. It will tell
