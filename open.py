@@ -2,10 +2,10 @@
 # file: open.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-01-09T23:12:05+0100
+# Last modified: 2019-06-13T21:58:20+0200
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -14,13 +14,13 @@ Some of the programs are X11 programs.
 
 from os.path import isdir, isfile, exists, basename
 from re import search, IGNORECASE
-from subprocess import Popen, run, PIPE
+from subprocess import Popen, run, PIPE, DEVNULL
 from sys import argv
 import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.9'
+__version__ = '1.10'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
@@ -57,6 +57,10 @@ def main(argv):  # noqa
         help="logging level (defaults to 'warning')"
     )
     opts.add_argument(
+        '-n', '--noisy', action='store_true',
+        help='do not hide messages on stderr'
+    )
+    opts.add_argument(
         "files", metavar='file', nargs='*', help="one or more files to process"
     )
     args = opts.parse_args(argv)
@@ -68,6 +72,9 @@ def main(argv):  # noqa
     logging.info(f'parsed arguments = {args}')
     fail = "opening '{}' failed: {}"
     files = locate(args.files)
+    stream = None
+    if not args.noisy:
+        stream = DEVNULL
     # Open the file(s).
     for nm in files:
         logging.info(f"trying '{nm}'")
@@ -84,7 +91,7 @@ def main(argv):  # noqa
             logging.warning(f"do not know how to open '{nm}'")
             continue
         try:
-            Popen(cmds)
+            Popen(cmds, stdout=stream, stderr=stream)
         except OSError as e:
             logging.error(fail.format(nm, e))
     else:  # No files named
