@@ -3,8 +3,9 @@
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
+# SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2019-06-16T20:47:20+0200
+# Last modified: 2019-06-16T21:52:22+0200
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
 
 import argparse
