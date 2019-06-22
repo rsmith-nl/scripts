@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-04-22T11:30:21+0200
+.. Last modified: 2019-06-16T22:51:16+0200
 
 Introduction
 ============
@@ -636,6 +636,25 @@ serve-git.sh
 
 Start a ``git daemon`` for every directory under the current working directory
 that is under git_ control.
+
+
+set-ornata-chroma-rgb.py
+------------------------
+
+This changes the color or the LEDs on a Razer Ornata Chroma keyboard to
+a static RGB color. It should work on operating systems that support pyusb_,
+without requiring a kernel driver like the `openrazer driver`_ for Linux.
+
+.. _pyusb: https://github.com/pyusb/pyusb
+.. _openrazer driver: https://github.com/openrazer/openrazer
+
+The `openrazer driver`_ served as an inspiration and source of information
+about Razer's USB protocol. At first I contemplated porting this driver to
+FreeBSD. But the differences between Linux and FreeBSD would make that
+a complete rewrite. Not to mention that the openrazer driver contains much
+more functionality than I need. Since FreeBSD comes with ``libusb``, and
+supports ``pyusb`` you can pretty much control USB devices from user space
+with Python. So that's what I did.
 
 
 set-title.sh
