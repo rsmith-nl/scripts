@@ -5,16 +5,15 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2019-06-22T19:43:10+0200
+# Last modified: 2019-06-22T23:56:38+0200
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
 
-import array
 import argparse
 import logging
 import sys
 import usb.core
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 def static_color_msg(red, green, blue):
@@ -22,7 +21,7 @@ def static_color_msg(red, green, blue):
     Create a message to set the Razer Ornata Croma lights to a static color.
     All arguments should convert to an integer in the range 0-255.
 
-    Returns an array.array containing the message ready to feed into a ctrl_transfer.
+    Returns an bytes object containing the message ready to feed into a ctrl_transfer.
     """
 
     def _chk(name, channel):
@@ -46,13 +45,13 @@ def static_color_msg(red, green, blue):
     # 0x3f = transaction id, 0x09 = variable data length, 0x0f = command class,
     # 0x02 = command id, 0x01 = VARSTORE, 0x05 = BACKLIGHT_LED, 0x01 = effect id,
     # 0x01 =  unknown
-    msg = array.array('B', b'\x00\x3f\x00\x00\x00\x09\x0f\x02\x01\x05\x01\x00\x00\x01')
-    msg.extend([red, green, blue])
-    crc = 0
-    for j in msg[2:]:
-        crc ^= j
-    msg.extend(bytes(71))
-    msg.extend([crc, 0])
+    msg = b'\x00\x3f\x00\x00\x00\x09\x0f\x02\x01\x05\x01\x00\x00\x01'
+    msg += bytes([red, green, blue])  # Add color.
+    chksum = 0
+    for j in msg[2:]:  # Calculate the checksum
+        chksum ^= j
+    msg += bytes(71)  # Add filler; the variable message buffer is 80 bytes.
+    msg += bytes([chksum, 0])  # Add checksum in penultimate byte
     return msg
 
 
