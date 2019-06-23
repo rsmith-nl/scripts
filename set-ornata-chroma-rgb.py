@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2019-06-23T15:25:46+0200
+# Last modified: 2019-06-23T21:39:49+0200
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color
 and / or change the brightness."""
 
@@ -57,7 +57,6 @@ def static_color_msg(red, green, blue):
     # Meaning of the nonzero bytes, in sequence: 0x01 = VARSTORE, 0x05
     # = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
     arguments = b'\x01\x05\x01\x00\x00\x01'
-    #msg = b'\x00\x3f\x00\x00\x00\x09\x0f\x02\x01\x05\x01\x00\x00\x01'
     msg = hdr + arguments + bytes([red, green, blue])  # Add color.
     chksum = 0
     for j in msg[2:]:  # Calculate the checksum
@@ -78,7 +77,7 @@ def brightness_message(brightness):
     # = length of used arguments, 0x0f = command class, 0x04 = command id
     hdr = b'\x00\x3f\x00\x00\x00\x03\x0f\x04'
     # Meaning of the nonzero bytes in sequence:
-    # 0x01 = VARSTORE, 0x05 = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
+    # 0x01 = VARSTORE, 0x05 = BACKLIGHT_LED
     arguments = b'\x01\x05'
     msg = hdr + arguments + bytes([brightness])  # Add color.
     chksum = 0
@@ -118,12 +117,15 @@ def main(argv):
 
     color = True
     if args.red == 0 and args.green == 0 and args.blue == 0:
+        logging.debug('no color change requested')
         color = False
         if args.brightness == -1:
+            logging.debug('also no brightness change requested')
+            logging.debug('exiting')
             sys.exit(0)
     dev = usb.core.find(idVendor=0x1532, idProduct=0x021e)
     if dev is None:
-        logging.error('No Razer Ornata Chroma keyboard found')
+        logging.error('no Razer Ornata Chroma keyboard found')
         sys.exit(1)
     logging.debug(str(dev))
     if color:
