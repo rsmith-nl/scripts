@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2019-06-23T14:39:46+0200
+# Last modified: 2019-06-23T15:25:46+0200
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color
 and / or change the brightness."""
 
@@ -19,21 +19,24 @@ __version__ = '0.4'
 
 def _chk(name, value):
     """
-    Check that a value is in the range 0 - 255.
+    Check that a value is an integer in the range 0 - 255.
     Log an error and exit when this is not the case.
 
-    Returns the value.
+    Otherwise returns the integer value.
     """
-    if (
-        isinstance(value, str) and len(value) > 2 and value[0] == '0' and
-        value[1] in 'bBoOxX'
-    ):
-        # Decode binary, octal and hexadecimal numbers.
-        value = int(value, {'b': 2, 'o': 8, 'x': 16}[value[1].lower()])
-    else:
-        value = int(value)
-    if value < 0 or value > 255:
-        logging.error(f'{name} value should be in the range 0 to 255')
+    try:
+        if (
+            isinstance(value, str) and len(value) > 2 and value[0] == '0' and
+            value[1] in 'bBoOxX'
+        ):
+            # Decode binary, octal and hexadecimal numbers.
+            value = int(value, {'b': 2, 'o': 8, 'x': 16}[value[1].lower()])
+        else:
+            value = int(value)
+        if value < 0 or value > 255:
+            raise ValueError
+    except ValueError:
+        logging.error(f'{name} value should be an integer in the range 0 to 255')
         # There is no point continuing with an invalid input
         # *in this case* of a command-line script.
         sys.exit(2)
@@ -42,14 +45,12 @@ def _chk(name, value):
 
 def static_color_msg(red, green, blue):
     """
-    Create a message to set the Razer Ornata Croma lights to a static color.
+    Create a message to set the Razer Ornata Chroma lights to a static color.
     All arguments should convert to an integer in the range 0-255.
 
     Returns an bytes object containing the message ready to feed into a ctrl_transfer.
     """
-
     red, green, blue = _chk('red', red), _chk('green', green), _chk('blue', blue)
-
     # Meaning of the nonzero bytes, in sequence: 0x3f = transaction id, 0x09
     # = length of used arguments, 0x0f = command class, 0x02 = command id
     hdr = b'\x00\x3f\x00\x00\x00\x09\x0f\x02'
@@ -61,12 +62,17 @@ def static_color_msg(red, green, blue):
     chksum = 0
     for j in msg[2:]:  # Calculate the checksum
         chksum ^= j
-    msg += bytes(80-9)  # Add filler; the variable message buffer is 80 bytes.
+    msg += bytes(80 - 9)  # Add filler; the variable message buffer is 80 bytes.
     msg += bytes([chksum, 0])  # Add checksum in penultimate byte
     return msg
 
 
 def brightness_message(brightness):
+    """
+    Create a message that sets the brightness on a Razer Ornata Chroma
+
+    Returns an bytes object containing the message ready to feed into a ctrl_transfer.
+    """
     brightness = _chk('brightness', brightness)
     # Meaning of the nonzero bytes, in sequence: 0x3f = transaction id, 0x03
     # = length of used arguments, 0x0f = command class, 0x04 = command id
@@ -78,7 +84,7 @@ def brightness_message(brightness):
     chksum = 0
     for j in msg[2:]:  # Calculate the checksum
         chksum ^= j
-    msg += bytes(80-3)  # Add filler; the variable message buffer is 80 bytes.
+    msg += bytes(80 - 3)  # Add filler; the variable message buffer is 80 bytes.
     msg += bytes([chksum, 0])  # Add checksum in penultimate byte
     return msg
 
