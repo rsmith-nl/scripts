@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2018-07-07T13:09:49+0200
+# Last modified: 2019-06-23T17:16:40+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -13,26 +13,39 @@ Find all directories in the user's home directory that are managed with
 git, and run ``git gc`` on them unless they have uncommitted changes.
 """
 
+import argparse
 import os
 import subprocess
 import sys
 import logging
 
 
-def main(args):
+def main(argv):
     """
     Entry point of git-check-all.
 
     Arguments:
-        args: Command line arguments minus the program name.
+        argv: Command line arguments minus the program name.
     """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'info')"
+    )
+    parser.add_argument('-v', '--verbose', action='store_true')
+    args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'Command line arguments = {argv}')
+    logging.debug(f'Parsed arguments = {args}')
     checkfor(['git', '--version'])
-    verbose = False
-    if '-v' in args:
-        verbose = True
     for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
         if '.git' in dirnames:
-            runchecks(dirpath, verbose)
+            runchecks(dirpath, args.verbose)
 
 
 def checkfor(args, rv=0):
@@ -54,7 +67,7 @@ def checkfor(args, rv=0):
         rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if rc != rv:
             raise OSError
-        logging.info(f'found required program "{args[0]}"')
+        logging.debug(f'found required program "{args[0]}"')
     except OSError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -73,10 +86,10 @@ def runchecks(d, verbose=False):
     os.chdir(d)
     outp = gitcmd('status', True)
     if 'clean' not in outp:
-        print(f"'{d}' is not clean, skipping.")
+        logging.info(f"'{d}' is not clean, skipping.")
         return
     if verbose:
-        print(f"Running check on '{d}'")
+        logging.info(f"Running check on '{d}'")
     rv = gitcmd(['gc', '--auto', '--quiet'])
     if rv:
         print(f"git gc failed on '{d}'!")
@@ -100,7 +113,12 @@ def gitcmd(cmds, output=False):
         cmds = [cmds]
     cmds = ['git'] + cmds
     if output:
-        rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT).decode()
+        try:
+            rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT).decode()
+        except UnicodeDecodeError as e:
+            logging.error(' '.join(cmds) + ' in ' + os.getcwd())
+            logging.error(e)
+            return ''
     else:
         rv = subprocess.call(cmds, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return rv
