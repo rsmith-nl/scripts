@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-06-16T22:51:16+0200
+.. Last modified: 2019-06-28T23:33:32+0200
 
 Introduction
 ============
@@ -697,6 +697,15 @@ It assumes that:
 * That host exposes ``/home`` as the ``[home]`` module.
 * You are syncronizing a directory in your $HOME to the same directory on the
   other host.
+
+
+texfilehash.py
+--------------
+
+When given a TeX file name, this program determines the short hash of last
+``git`` commit that changed this file. When the original filename is
+``<filename>.tex``, this is written to a <filename>.hash. An limited
+alternative to the ``vc`` bundle from CTAN.
 
 
 texfonts.sh
