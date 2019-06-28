@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-06-28T23:33:32+0200
+.. Last modified: 2019-06-29T17:41:08+0200
 
 Introduction
 ============
@@ -702,10 +702,11 @@ It assumes that:
 texfilehash.py
 --------------
 
-When given a TeX file name, this program determines the short hash of last
-``git`` commit that changed this file. When the original filename is
-``<filename>.tex``, this is written to a <filename>.hash. An limited
-alternative to the ``vc`` bundle from CTAN.
+When given TeX file names, this program determines the short hash of last
+``git`` commit that changed these file. When the original filename is
+``<filename>.tex``, this is written to a ``<filename>.hash``. In the TeX file
+you can use ``\input`` to include the hash into the document.  It is meant as
+a limited alternative to the ``vc`` bundle from CTAN.
 
 
 texfonts.sh
