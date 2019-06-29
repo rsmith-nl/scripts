@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-28T16:13:39+0200
-# Last modified: 2019-06-29T17:55:17+0200
+# Last modified: 2019-06-29T17:58:01+0200
 """
 Create a file containing the abbreviated git commit hash for TeX source files.
 If the file has uncommitted changes, it appends the status in red text.
@@ -30,6 +30,10 @@ args = parser.parse_args(sys.argv[1:])
 logging.basicConfig(
     level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
 )
+
+if not args.filenames:
+    logging.warning('no filenames given')
+    sys.exit(1)
 
 for infn in args.filenames:
     logging.debug(f'processing file {infn}')
@@ -56,5 +60,3 @@ for infn in args.filenames:
     with open(outfn, 'wt') as outf:
         outf.write(logdata)
         logging.info(f'wrote "{outfn}"')
-else:
-    logging.warning('no filenames given')
