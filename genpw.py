@@ -5,7 +5,7 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2018-04-16T22:04:07+0200
+# Last modified: 2019-06-30T10:48:57+0200
 """
 Generate random passwords.
 
@@ -13,12 +13,12 @@ The passwords are random data from ``os.urandom`` which is encoded in base64
 format.
 """
 
-from base64 import b64encode
-from os import urandom
 import argparse
+import base64
+import os
 import sys
 
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 
 
 def main(argv):
@@ -32,7 +32,11 @@ def main(argv):
         help='# of random character for password (default 16)'
     )
     parser.add_argument(
-        '-r', '--repeat', default=1, type=int, help='number of passwords to generate (default: 1)'
+        '-r',
+        '--repeat',
+        default=1,
+        type=int,
+        help='number of passwords to generate (default: 1)'
     )
     parser.add_argument(
         '-g',
@@ -45,7 +49,7 @@ def main(argv):
     parser.add_argument('-v', '--version', action='version', version=__version__)
     args = parser.parse_args(argv)
     for _ in range(args.repeat):
-        pw = genpw(args.length).decode('ascii')
+        pw = genpw(args.length)
         if args.groupby > 0:
             n = args.groupby
             count = len(pw) // n
@@ -64,9 +68,8 @@ def genpw(length):
         A password string.
     """
     n = roundup(length)
-    d = urandom(n)
-    s = b64encode(d, b'__')
-    return s
+    d = os.urandom(n)
+    return base64.b64encode(d, b'__').decode()
 
 
 def roundup(characters):
