@@ -5,7 +5,7 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2019-06-30T10:48:57+0200
+# Last modified: 2019-06-30T10:55:17+0200
 """
 Generate random passwords.
 
@@ -18,7 +18,7 @@ import base64
 import os
 import sys
 
-__version__ = '2.0.2'
+__version__ = '2.1'
 
 
 def main(argv):
@@ -69,7 +69,7 @@ def genpw(length):
     """
     n = roundup(length)
     d = os.urandom(n)
-    return base64.b64encode(d, b'__').decode()
+    return base64.b64encode(d, b'__').decode()[:length]
 
 
 def roundup(characters):
