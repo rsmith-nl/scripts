@@ -5,17 +5,18 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-02T02:28:36+0200
+# Last modified: 2019-07-03T00:13:37+0200
 """Generate status line for i3 on my machine."""
 
 import ctypes
+import ctypes.util
 import os
+import mmap
 import statistics as stat
 import struct
-import subprocess as sp
 import time
 
-__version__ = 1.99
+__version__ = 1.999
 
 # Low level functions.
 
@@ -67,44 +68,33 @@ def sysctl(name, buflen=4, convert=None):
     oldlenp = ctypes.byref(oldlen)
     oldp = ctypes.create_string_buffer(buflen)
     rv = libc.sysctl(
-        name_in, ctypes.c_int(cnt), oldp, oldlenp, None, ctypes.c_size_t(0)
+        ctypes.byref(name_in), ctypes.c_uint(cnt), oldp, oldlenp, None, ctypes.c_size_t(0)
     )
     if rv != 0:
-        raise ValueError(f'sysctl error')
+        errno = ctypes.get_errno()
+        raise ValueError(f'sysctl error: {errno}')
     if convert:
         return convert(oldp.raw[:buflen])
     return oldp.raw[:buflen]
-
-
-def netstat(interface):
-    """Return network statistics for named interface."""
-    lines = sp.check_output(['netstat', '-b', '-n', '-I', interface],
-                            encoding='ascii').splitlines()
-    tm = time.time()
-    if len(lines) == 1:
-        return None
-    items = lines[1].split()
-    ibytes = int(items[7])
-    obytes = int(items[10])
-    return ibytes, obytes, tm
 
 
 # High level functions
 
 def network():
     global netdata
-    ifaces = {'Ext': 'age0', 'Int': 'rl0'}
+    cnt = sysctlbyname('net.link.generic.system.ifcount', convert=to_int)
     items = []
-    for desc, i in ifaces.items():
-        data = netstat(i)
-        if data:
-            dt = data[2] - netdata[i][2]
-            delta_in = int((data[0] - netdata[i][0])/dt)
-            delta_out = int((data[1] - netdata[i][1])/dt)
-            netdata[i] = data
-            items.append(f'{desc}: {delta_in}B/{delta_out}B')
-        else:
-            items.append(f'{desc}: 0B/0B')
+    for n in range(1, cnt):
+        tm = time.time()
+        data = sysctl([4, 18, 0, 2, n, 1], buflen=208)
+        name = data[:16].strip(b'\x00').decode('ascii')
+        ibytes = to_int(data[120:128])
+        obytes = to_int(data[128:138])
+        dt = tm - netdata[name][2]
+        d_in = int((ibytes - netdata[name][0])/dt)
+        d_out = int((obytes - netdata[name][1])/dt)
+        netdata[name] = (ibytes, obytes, tm)
+        items.append(f'{name}: {d_in}B/{d_out}B')
     return ' '.join(items)
 
 
@@ -114,10 +104,23 @@ def mail():
     newtime = os.stat(mboxname).st_mtime
     if newtime > lastmail['time']:
         with open(mboxname) as mbox:
-            lines = mbox.readlines()
-        # This is faster than regex.
-        read = len([ln for ln in lines if ln.startswith('Status: R')])
-        total = len([ln for ln in lines if ln.startswith('From ')])
+            mm = mmap.mmap(mbox.fileno(), 0, prot=mmap.PROT_READ)
+            start, total = 0, 0
+            while True:
+                rv = mm.find(b'\n\nFrom ', start)
+                if rv == -1:
+                    break
+                else:
+                    total += 1
+                    start = rv+7
+            start, read = 0, 0
+            while True:
+                rv = mm.find(b'\nStatus: R', start)
+                if rv == -1:
+                    break
+                else:
+                    read += 1
+                    start = rv+10
         mailcount = total - read
         lastmail = {'count': mailcount, 'time': newtime}
     else:
@@ -178,7 +181,7 @@ def main():
 netdata = {'age0': (0, 0, 0), 'rl0': (0, 0, 0)}
 lastmail = {'count': -1, 'time': 0}
 cpusage = {'used': 0, 'total': 0}
-libc = ctypes.CDLL('libc.so.7')
+libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 if __name__ == '__main__':
     main()
