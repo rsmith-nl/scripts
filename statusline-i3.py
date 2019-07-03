@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-03T23:14:39+0200
+# Last modified: 2019-07-04T00:08:24+0200
 """Generate status line for i3 on my machine."""
 
 import ctypes
@@ -52,7 +52,8 @@ def sysctlbyname(name, buflen=4, convert=None):
     oldp = ctypes.create_string_buffer(buflen)
     rv = libc.sysctlbyname(name_in, oldp, oldlenp, None, ctypes.c_size_t(0))
     if rv != 0:
-        raise ValueError(f'sysctlbyname error')
+        errno = ctypes.get_errno()
+        raise ValueError(f'sysctlbyname error: {errno}')
     if convert:
         return convert(oldp.raw[:buflen])
     return oldp.raw[:buflen]
