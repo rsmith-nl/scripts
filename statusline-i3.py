@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-03T22:14:40+0200
+# Last modified: 2019-07-03T23:03:42+0200
 """Generate status line for i3 on my machine."""
 
 import ctypes
@@ -17,7 +17,7 @@ import struct
 import time
 
 # Global data
-__version__ = 1.999
+__version__ = 2.0
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 # Low level functions.
@@ -93,7 +93,7 @@ def network(previous):
     Report on bytes in/out for the network interfaces.
 
     Arguments:
-        previous: A dict of {interface: (inbytes, outbytes, time)}.
+        previous: A dict of {interface: (inbytes, outbytes, time)} or None.
 
     Returns:
         A new dict of {interface: (inbytes, outbytes, time)}, and a formatted
@@ -216,7 +216,7 @@ def main():
     netdata, _ = network(None)
     maildata, _ = mail(None)
     cpusage, _ = cpu(None)
-    time.sleep(0.1)  # LEst we get divide by zero in cpu()
+    time.sleep(0.1)  # Lest we get divide by zero in cpu()
     while True:
         start = time.time()
         netdata, netstr = network(netdata)
