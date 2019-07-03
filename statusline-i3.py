@@ -5,15 +5,16 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-03T23:03:42+0200
+# Last modified: 2019-07-03T23:14:39+0200
 """Generate status line for i3 on my machine."""
 
 import ctypes
 import ctypes.util
-import os
 import mmap
+import os
 import statistics as stat
 import struct
+import sys
 import time
 
 # Global data
@@ -223,6 +224,7 @@ def main():
         maildata, mailstr = mail(maildata)
         cpusage, cpustr = cpu(cpusage)
         print(' | '.join([netstr, mailstr, memory(), cpustr, date()]))
+        sys.stdout.flush()
         end = time.time()
         delta = end - start
         # print(f"DEBUG: cycle time = {delta:.3f} s")
