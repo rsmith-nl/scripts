@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-04T00:08:24+0200
+# Last modified: 2019-07-04T20:13:06+0200
 """Generate status line for i3 on my machine."""
 
 import ctypes
@@ -88,6 +88,17 @@ def sysctl(name, buflen=4, convert=None):
     return oldp.raw[:buflen]
 
 
+def fmt(nbytes):
+    nbytes = int(nbytes)
+    if nbytes >= 1000000:
+        nbytes /= 1000000
+        return f'{nbytes:.1f}MiB'
+    if nbytes > 1000:
+        nbytes /= 1000
+        return f'{nbytes:.1f}kiB'
+    return f'{nbytes}B'
+
+
 # High level functions
 
 def network(previous):
@@ -113,9 +124,9 @@ def network(previous):
         # print("DEBUG: ibytes, obytes = ", ibytes, obytes)
         if previous:
             dt = tm - previous[name][2]
-            d_in = int((ibytes - previous[name][0])/dt)
-            d_out = int((obytes - previous[name][1])/dt)
-            items.append(f'{name}: {d_in}B/{d_out}B')
+            d_in = fmt((ibytes - previous[name][0])/dt)
+            d_out = fmt((obytes - previous[name][1])/dt)
+            items.append(f'{name}: {d_in}/{d_out}')
         else:
             items.append(f'{name}: 0B/0B')
         newdata[name] = (ibytes, obytes, tm)
