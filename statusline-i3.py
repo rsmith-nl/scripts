@@ -5,9 +5,12 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-04T20:13:06+0200
-"""Generate status line for i3 on my machine."""
+# Last modified: 2019-07-04T21:05:48+0200
+"""
+Generate a status line for i3 on FreeBSD.
+"""
 
+import argparse
 import ctypes
 import ctypes.util
 import mmap
@@ -18,7 +21,7 @@ import sys
 import time
 
 # Global data
-__version__ = 2.0
+__version__ = '2.0'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 # Low level functions.
@@ -89,6 +92,7 @@ def sysctl(name, buflen=4, convert=None):
 
 
 def fmt(nbytes):
+    """Format network byte amounts."""
     nbytes = int(nbytes)
     if nbytes >= 1000000:
         nbytes /= 1000000
@@ -133,7 +137,7 @@ def network(previous):
     return newdata, '  '.join(items)
 
 
-def mail(previous):
+def mail(previous, mboxname):
     """
     Report unread mail.
 
@@ -142,8 +146,10 @@ def mail(previous):
 
     Returns: A new 2-tuple (unread, time) and a string to display.
     """
-    mboxname = '/home/rsmith/Mail/received'
-    newtime = os.stat(mboxname).st_mtime
+    stats = os.stat(mboxname)
+    if stats.st_size == 0:
+        return previous, 'Mail: 0'
+    newtime = stats.st_mtime
     if previous is None or newtime > previous[1]:
         with open(mboxname) as mbox:
             with mmap.mmap(mbox.fileno(), 0, prot=mmap.PROT_READ) as mm:
@@ -222,24 +228,37 @@ def date():
     return time.strftime('%a %Y-%m-%d %H:%M:%S')
 
 
+def parse_args(argv):
+    opts = argparse.ArgumentParser(prog='open', description=__doc__)
+    opts.add_argument('-v', '--version', action='version', version=__version__)
+    opts.add_argument(
+        '-m', '--mailbox',
+        type=str,
+        default=os.environ['MAIL'],
+        help="Location of the mailbox (defaults to MAIL environment variable)"
+    )
+    args = opts.parse_args(argv)
+    return args
+
+
 def main():
     """
     Entry point for statusline-i3.py
     """
+    args = parse_args(sys.argv[1:])
     netdata, _ = network(None)
-    maildata, _ = mail(None)
+    maildata, _ = mail(None, args.mailbox)
     cpusage, _ = cpu(None)
     time.sleep(0.1)  # Lest we get divide by zero in cpu()
     while True:
         start = time.time()
         netdata, netstr = network(netdata)
-        maildata, mailstr = mail(maildata)
+        maildata, mailstr = mail(maildata, args.mailbox)
         cpusage, cpustr = cpu(cpusage)
         print(' | '.join([netstr, mailstr, memory(), cpustr, date()]))
         sys.stdout.flush()
         end = time.time()
         delta = end - start
-        # print(f"DEBUG: cycle time = {delta:.3f} s")
         if delta < 1:
             time.sleep(1 - delta)
 
