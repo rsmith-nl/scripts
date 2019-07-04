@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-06-29T17:41:08+0200
+.. Last modified: 2019-07-04T21:40:57+0200
 
 Introduction
 ============
@@ -683,6 +683,16 @@ standalone.sh
 
 Compiles a LaTeX file with the standalone documentclass to Encapsulated
 PostScript format.
+
+
+statusline-i3
+-------------
+
+A small Python script that replaces conky_ for me on FreeBSD with the i3_ window
+manager.
+
+.. _conky: https://github.com/brndnmtthws/conky/wiki
+.. _i3: https://i3wm.org/
 
 
 sync-to.sh
