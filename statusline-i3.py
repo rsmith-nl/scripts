@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-05T19:03:39+0200
+# Last modified: 2019-07-05T19:06:26+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -265,11 +265,9 @@ def main():
     try:
         bat = False
         if sysctlbyname('hw.acpi.battery.units', convert=to_int) > 0:
-            print("DEBUG: Found battery!")
             bat = True
     except ValueError:
         bat = False
-        print("DEBUG: Battery not found!")
     while True:
         start = time.time()
         netdata, netstr = network(netdata)
