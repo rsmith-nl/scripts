@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-05T18:37:13+0200
+# Last modified: 2019-07-05T19:03:39+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -23,6 +23,8 @@ import time
 # Global data
 __version__ = '2.0'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+# Battery states acc. to /usr/src/sys/dev/acpica/acpiio.h
+_lookup = {0: 'on AC', 1: 'discharging', 2: 'charging', 3: 'invalid', 4: 'CRITICAL!'}
 
 # Low level functions.
 
@@ -225,6 +227,14 @@ def cpu(previous):
     return (used, total), f'CPU: {frac}%, {T}°C'
 
 
+def battery():
+    """Return battery condition."""
+    idx = sysctlbyname('hw.acpi.battery.state', convert=to_int)
+    state = _lookup[idx]
+    percent = sysctlbyname('hw.acpi.battery.life', convert=to_int)
+    return f'Bat: {percent}% ({state})'
+
+
 def date():
     """Return the date formatted for display."""
     return time.strftime('%a %Y-%m-%d %H:%M:%S')
@@ -252,12 +262,23 @@ def main():
     maildata, _ = mail(None, args.mailbox)
     cpusage, _ = cpu(None)
     time.sleep(0.1)  # Lest we get divide by zero in cpu()
+    try:
+        bat = False
+        if sysctlbyname('hw.acpi.battery.units', convert=to_int) > 0:
+            print("DEBUG: Found battery!")
+            bat = True
+    except ValueError:
+        bat = False
+        print("DEBUG: Battery not found!")
     while True:
         start = time.time()
         netdata, netstr = network(netdata)
         maildata, mailstr = mail(maildata, args.mailbox)
         cpusage, cpustr = cpu(cpusage)
-        print(' | '.join([netstr, mailstr, memory(), cpustr, date()]))
+        if bat:
+            print(' | '.join([netstr, mailstr, memory(), cpustr, battery(), date()]))
+        else:
+            print(' | '.join([netstr, mailstr, memory(), cpustr, date()]))
         sys.stdout.flush()
         end = time.time()
         delta = end - start
