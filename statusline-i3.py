@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-04T21:05:48+0200
+# Last modified: 2019-07-05T18:37:13+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -123,6 +123,8 @@ def network(previous):
         tm = time.time()
         data = sysctl([4, 18, 0, 2, n, 1], buflen=208)
         name = data[:16].strip(b'\x00').decode('ascii')
+        if name.startswith('lo'):
+            continue
         ibytes = to_int(data[120:128])
         obytes = to_int(data[128:136])
         # print("DEBUG: ibytes, obytes = ", ibytes, obytes)
