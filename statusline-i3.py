@@ -5,11 +5,12 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-05T19:06:26+0200
+# Last modified: 2019-07-06T11:04:32+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
 
+from functools import partial
 import argparse
 import ctypes
 import ctypes.util
@@ -21,10 +22,8 @@ import sys
 import time
 
 # Global data
-__version__ = '2.0'
+__version__ = '2.1'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
-# Battery states acc. to /usr/src/sys/dev/acpica/acpiio.h
-_lookup = {0: 'on AC', 1: 'discharging', 2: 'charging', 3: 'invalid', 4: 'CRITICAL!'}
 
 # Low level functions.
 
@@ -36,7 +35,7 @@ def to_int(value):
 
 def to_degC(value):
     """Convert binary sysctl value to degree Centigrade."""
-    return round(int.from_bytes(value, byteorder='little')/10 - 273.15, 1)
+    return round(int.from_bytes(value, byteorder='little') / 10 - 273.15, 1)
 
 
 def sysctlbyname(name, buflen=4, convert=None):
@@ -83,7 +82,8 @@ def sysctl(name, buflen=4, convert=None):
     oldlenp = ctypes.byref(oldlen)
     oldp = ctypes.create_string_buffer(buflen)
     rv = libc.sysctl(
-        ctypes.byref(name_in), ctypes.c_uint(cnt), oldp, oldlenp, None, ctypes.c_size_t(0)
+        ctypes.byref(name_in), ctypes.c_uint(cnt), oldp, oldlenp, None,
+        ctypes.c_size_t(0)
     )
     if rv != 0:
         errno = ctypes.get_errno()
@@ -107,19 +107,19 @@ def fmt(nbytes):
 
 # High level functions
 
-def network(previous):
+
+def network(storage):
     """
     Report on bytes in/out for the network interfaces.
 
     Arguments:
-        previous: A dict of {interface: (inbytes, outbytes, time)} or None.
+        storage: A dict of {interface: (inbytes, outbytes, time)} or an empty dict.
+            This dict will be *modified* by this function.
 
     Returns:
-        A new dict of {interface: (inbytes, outbytes, time)}, and a formatted
-        string to display.
+        A string to display.
     """
     cnt = sysctlbyname('net.link.generic.system.ifcount', convert=to_int)
-    newdata = {}
     items = []
     for n in range(1, cnt):
         tm = time.time()
@@ -129,32 +129,34 @@ def network(previous):
             continue
         ibytes = to_int(data[120:128])
         obytes = to_int(data[128:136])
-        # print("DEBUG: ibytes, obytes = ", ibytes, obytes)
-        if previous:
-            dt = tm - previous[name][2]
-            d_in = fmt((ibytes - previous[name][0])/dt)
-            d_out = fmt((obytes - previous[name][1])/dt)
+        if storage and name in storage:
+            dt = tm - storage[name][2]
+            d_in = fmt((ibytes - storage[name][0]) / dt)
+            d_out = fmt((obytes - storage[name][1]) / dt)
             items.append(f'{name}: {d_in}/{d_out}')
         else:
             items.append(f'{name}: 0B/0B')
-        newdata[name] = (ibytes, obytes, tm)
-    return newdata, '  '.join(items)
+        # Save values for the next run.
+        storage[name] = (ibytes, obytes, tm)
+    return '  '.join(items)
 
 
-def mail(previous, mboxname):
+def mail(storage, mboxname):
     """
     Report unread mail.
 
     Arguments:
-        previous: a 2-tuple (unread, time) from the previous call, or None
+        storage: a dict with keys (unread, time) from the previous call or an empty dict.
+            This dict will be *modified* by this function.
+        mboxname (str): name of the mailbox to read.
 
-    Returns: A new 2-tuple (unread, time) and a string to display.
+    Returns: A string to display.
     """
     stats = os.stat(mboxname)
     if stats.st_size == 0:
-        return previous, 'Mail: 0'
+        return 'Mail: 0'
     newtime = stats.st_mtime
-    if previous is None or newtime > previous[1]:
+    if not storage or newtime > storage['time']:
         with open(mboxname) as mbox:
             with mmap.mmap(mbox.fileno(), 0, prot=mmap.PROT_READ) as mm:
                 start, total = 0, 1  # First mail is not found; it starts on first line...
@@ -164,7 +166,7 @@ def mail(previous, mboxname):
                         break
                     else:
                         total += 1
-                        start = rv+7
+                        start = rv + 7
                 start, read = 0, 0
                 while True:
                     rv = mm.find(b'\nStatus: R', start)
@@ -172,20 +174,20 @@ def mail(previous, mboxname):
                         break
                     else:
                         read += 1
-                        start = rv+10
+                        start = rv + 10
         unread = total - read
-        newdata = (unread, newtime)
+        # Save values for the next run.
+        storage['unread'], storage['time'] = unread, newtime
     else:
-        unread = previous[0]
-        newdata = previous
-    return newdata, f'Mail: {unread}'
+        unread = storage['unread']
+    return f'Mail: {unread}'
 
 
 def memory():
     """
     Report on the RAM usage on FreeBSD.
 
-    Returns: a formatted string to display.
+    Returns: a string to display.
     """
     suffixes = ('page_count', 'free_count', 'inactive_count', 'cache_count')
     stats = {
@@ -198,20 +200,18 @@ def memory():
     return f'RAM: {free}%'
 
 
-def cpu(previous):
+def cpu(storage):
     """
     Report the CPU usage and temperature.
 
     Argument:
-        previous: A 2-tuple (used, total) from the previous run.
+        storage: A dict with keys (used, total) from the previous run or an empty dict.
+            This dict will be *modified* by this function.
 
     Returns:
-        A 2-tuple (used, total) and a string to display.
+        A string to display.
     """
-    temps = [
-        sysctlbyname(f'dev.cpu.{n}.temperature', convert=to_degC)
-        for n in range(4)
-    ]
+    temps = [sysctlbyname(f'dev.cpu.{n}.temperature', convert=to_degC) for n in range(4)]
     T = round(stat.mean(temps))
     resbuf = sysctlbyname('kern.cp_time', buflen=40)
     states = struct.unpack('5L', resbuf)
@@ -219,32 +219,38 @@ def cpu(previous):
     # USER, NICE, SYS, INT, IDLE
     total = sum(states)
     used = total - states[-1]
-    if previous:
-        prevused, prevtotal = previous
+    if storage:
+        prevused, prevtotal = storage['used'], storage['total']
         frac = int((used - prevused) / (total - prevtotal) * 100)
     else:
         frac = 0
-    return (used, total), f'CPU: {frac}%, {T}°C'
+    # Save values for the next run.
+    storage['used'], storage['total'] = used, total
+    return f'CPU: {frac}%, {T}°C'
 
 
 def battery():
-    """Return battery condition."""
+    """Return battery condition as a string."""
+    # Battery states acc. to /usr/src/sys/dev/acpica/acpiio.h
+    lookup = {0: 'on AC', 1: 'discharging', 2: 'charging', 3: 'invalid', 4: 'CRITICAL!'}
     idx = sysctlbyname('hw.acpi.battery.state', convert=to_int)
-    state = _lookup[idx]
+    state = lookup[idx]
     percent = sysctlbyname('hw.acpi.battery.life', convert=to_int)
     return f'Bat: {percent}% ({state})'
 
 
 def date():
-    """Return the date formatted for display."""
+    """Return the date as a string."""
     return time.strftime('%a %Y-%m-%d %H:%M:%S')
 
 
 def parse_args(argv):
+    """Handle the command line arguments"""
     opts = argparse.ArgumentParser(prog='open', description=__doc__)
     opts.add_argument('-v', '--version', action='version', version=__version__)
     opts.add_argument(
-        '-m', '--mailbox',
+        '-m',
+        '--mailbox',
         type=str,
         default=os.environ['MAIL'],
         help="Location of the mailbox (defaults to MAIL environment variable)"
@@ -253,30 +259,34 @@ def parse_args(argv):
     return args
 
 
+def hasbattery():
+    bat = False
+    try:
+        if sysctlbyname('hw.acpi.battery.units', convert=to_int) > 0:
+            bat = True
+    except ValueError:
+        pass
+    return bat
+
+
 def main():
     """
     Entry point for statusline-i3.py
     """
+    maildata = {}
+    cpudata = {}
+    netdata = {}
     args = parse_args(sys.argv[1:])
-    netdata, _ = network(None)
-    maildata, _ = mail(None, args.mailbox)
-    cpusage, _ = cpu(None)
-    time.sleep(0.1)  # Lest we get divide by zero in cpu()
-    try:
-        bat = False
-        if sysctlbyname('hw.acpi.battery.units', convert=to_int) > 0:
-            bat = True
-    except ValueError:
-        bat = False
+    items = [
+        partial(network, storage=netdata),
+        partial(mail, storage=maildata, mboxname=args.mailbox), memory,
+        partial(cpu, storage=cpudata), date
+    ]
+    if hasbattery():
+        items.insert(-1, battery)
     while True:
         start = time.time()
-        netdata, netstr = network(netdata)
-        maildata, mailstr = mail(maildata, args.mailbox)
-        cpusage, cpustr = cpu(cpusage)
-        if bat:
-            print(' | '.join([netstr, mailstr, memory(), cpustr, battery(), date()]))
-        else:
-            print(' | '.join([netstr, mailstr, memory(), cpustr, date()]))
+        print(' | '.join(item() for item in items))
         sys.stdout.flush()
         end = time.time()
         delta = end - start
