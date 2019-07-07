@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-06T11:04:32+0200
+# Last modified: 2019-07-07T23:52:42+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -22,7 +22,7 @@ import sys
 import time
 
 # Global data
-__version__ = '2.1'
+__version__ = '2.2'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 # Low level functions.
@@ -103,6 +103,18 @@ def fmt(nbytes):
         nbytes /= 1000
         return f'{nbytes:.1f}kiB'
     return f'{nbytes}B'
+
+
+def setproctitle(name):
+    """
+    Change the name of the process
+
+    Arguments:
+        name (bytes): the new name for the process.
+    """
+    fmt = ctypes.c_char_p(b'-%s')
+    value = ctypes.c_char_p(name)
+    libc.setproctitle(fmt, value)
 
 
 # High level functions
@@ -273,6 +285,7 @@ def main():
     """
     Entry point for statusline-i3.py
     """
+    setproctitle(b'statusline-i3')
     maildata = {}
     cpudata = {}
     netdata = {}
