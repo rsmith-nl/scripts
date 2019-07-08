@@ -5,7 +5,7 @@
 # Copyright © 2014-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-02-27T00:15:14+0100
-# Last modified: 2019-02-20T16:23:35+0100
+# Last modified: 2019-07-08T09:23:29+0200
 
 if [ $# -lt 1 ]; then
     echo "Usage: $(basename $0) file"
@@ -26,7 +26,7 @@ TMPNAME=$(mktemp)
 INNAME=$1
 
 set -e
-gs -DNOPAUSE -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
+gs -DNOPAUSE -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
     -sOutputFile=$TMPNAME $INNAME -c quit >/dev/null 2>&1
 mv $INNAME ${INNAME%.pdf}-orig.pdf
 cp $TMPNAME $INNAME
