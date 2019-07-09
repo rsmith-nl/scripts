@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-07T23:52:42+0200
+# Last modified: 2019-07-10T00:19:29+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -158,7 +158,7 @@ def mail(storage, mboxname):
     Report unread mail.
 
     Arguments:
-        storage: a dict with keys (unread, time) from the previous call or an empty dict.
+        storage: a dict with keys (unread, time, size) from the previous call or an empty dict.
             This dict will be *modified* by this function.
         mboxname (str): name of the mailbox to read.
 
@@ -167,8 +167,12 @@ def mail(storage, mboxname):
     stats = os.stat(mboxname)
     if stats.st_size == 0:
         return 'Mail: 0'
-    newtime = stats.st_mtime
-    if not storage or newtime > storage['time']:
+    # When mutt modifies the mailbox, it seems to only change the
+    # ctime, not the mtime! This is probably releated to how mutt saves the
+    # file. See also stat(2).
+    newtime = stats.st_ctime
+    newsize = stats.st_size
+    if not storage or newtime > storage['time'] or newsize != storage['size']:
         with open(mboxname) as mbox:
             with mmap.mmap(mbox.fileno(), 0, prot=mmap.PROT_READ) as mm:
                 start, total = 0, 1  # First mail is not found; it starts on first line...
@@ -189,7 +193,7 @@ def mail(storage, mboxname):
                         start = rv + 10
         unread = total - read
         # Save values for the next run.
-        storage['unread'], storage['time'] = unread, newtime
+        storage['unread'], storage['time'], storage['size'] = unread, newtime, newsize
     else:
         unread = storage['unread']
     return f'Mail: {unread}'
