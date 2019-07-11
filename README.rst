@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-04T21:40:57+0200
+.. Last modified: 2019-07-11T22:18:42+0200
 
 Introduction
 ============
@@ -556,6 +556,13 @@ osversion.py
 ------------
 
 Prints the value __FreeBSD_version, aka OSVERSION.
+
+
+pdfdiff.py
+----------
+
+Uses ``pdftotext`` and ``diff`` to generate a unified diff between two PDF
+files.
 
 
 pdfselect.sh
