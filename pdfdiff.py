@@ -4,7 +4,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-11T00:22:30+0200
-# Last modified: 2019-07-12T20:47:58+0200
+# Last modified: 2019-07-12T22:03:53+0200
 """
 Script to try and show a diff between two PDF files.
 
@@ -12,24 +12,17 @@ Requires pdftotext from the poppler utilities,
 and a diff that supports the -w option to ignore whitespace.
 """
 
-from enum import IntEnum
+from types import SimpleNamespace
 import binascii
 import os
 import subprocess as sp
 import sys
 
-
-class Color(IntEnum):
-    """Standard ANSI colors."""
-
-    black = 0
-    red = 1
-    green = 2
-    yellow = 3
-    blue = 4
-    magenta = 5
-    cyan = 6
-    white = 7
+# Standard ANSI colors.
+fgcolor = SimpleNamespace(
+    brightred='\033[31;1m', brightgreen='\033[32;1m', brightyellow='\033[33;1m',
+    brightmagenta='\033[35;1m', reset='\033[0m'
+)
 
 
 def pdftotext(path):
@@ -39,17 +32,6 @@ def pdftotext(path):
     args = ['pdftotext', '-layout', path, '-']
     result = sp.run(args, capture_output=True)
     return result.stdout.decode('utf-8')
-
-
-def brightprint(s, fg=None):
-    """
-    Print a text with bright foreground color using ansi escape sequences.
-
-    Arguments
-        s (str): Text to print.
-        fg (int): Optional foreground color.
-    """
-    print(f'\033[{30+fg};1m' if fg else '', s, '\033[0m')
 
 
 def colordiff(txt):
@@ -62,18 +44,18 @@ def colordiff(txt):
     for line in txt:
         line = line.rstrip()
         if line.startswith(('+++ ', '--- ')):
-            brightprint(line, fg=Color.yellow)
+            print(fgcolor.brightyellow, line)
             continue
         if line.startswith('+'):
-            brightprint(line, fg=Color.green)
+            print(fgcolor.brightgreen, line)
             continue
         if line.startswith('-'):
-            brightprint(line, fg=Color.red)
+            print(fgcolor.brightred, line)
             continue
         if line.startswith('@@'):
-            brightprint(line, fg=Color.magenta)
+            print(fgcolor.brightmagenta, line)
             continue
-        print(line)
+        print(fgcolor.reset, line)
 
 
 def main(argv):
