@@ -4,7 +4,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-11T00:22:30+0200
-# Last modified: 2019-07-11T22:17:12+0200
+# Last modified: 2019-07-12T20:47:58+0200
 """
 Script to try and show a diff between two PDF files.
 
@@ -41,24 +41,15 @@ def pdftotext(path):
     return result.stdout.decode('utf-8')
 
 
-def ansiprint(s, fg='', bg='', i=False):
+def brightprint(s, fg=None):
     """
-    Print a colored text with ansi escape sequences.
+    Print a text with bright foreground color using ansi escape sequences.
 
     Arguments
-        fg: Optional foreground color.
-        bg: Optional background color.
-        i: Boolean to indicate intense colors (default False)
+        s (str): Text to print.
+        fg (int): Optional foreground color.
     """
-    esc = '\033[{:d}{}m'
-    iv = ''
-    if i:
-        iv = ";1"
-    if fg != '':
-        fg = esc.format(30 + fg, iv)
-    if bg != '':
-        bg = esc.format(40 + bg, iv)
-    print(''.join([fg, bg, s, esc.format(0, '')]))
+    print(f'\033[{30+fg};1m' if fg else '', s, '\033[0m')
 
 
 def colordiff(txt):
@@ -71,16 +62,16 @@ def colordiff(txt):
     for line in txt:
         line = line.rstrip()
         if line.startswith(('+++ ', '--- ')):
-            ansiprint(line, fg=Color.yellow, i=True)
+            brightprint(line, fg=Color.yellow)
             continue
         if line.startswith('+'):
-            ansiprint(line, fg=Color.green, i=True)
+            brightprint(line, fg=Color.green)
             continue
         if line.startswith('-'):
-            ansiprint(line, fg=Color.red, i=True)
+            brightprint(line, fg=Color.red)
             continue
         if line.startswith('@@'):
-            ansiprint(line, fg=Color.magenta, i=True)
+            brightprint(line, fg=Color.magenta)
             continue
         print(line)
 
@@ -101,14 +92,16 @@ def main(argv):
         with open(tmpnam[j], 'w') as f:
             f.write(pdftotext(argv[j]))
     diffargs = ['diff', '-d', '-u', '-w'] + tmpnam
-    print("DEBUG: diffargs = ", diffargs)
     result = sp.run(diffargs, capture_output=True)
     lines = result.stdout.decode('utf-8').splitlines()
     os.remove(tmpnam[0])
     os.remove(tmpnam[1])
     lines[0] = lines[0].replace(tmpnam[0], argv[0])
     lines[1] = lines[1].replace(tmpnam[1], argv[1])
-    colordiff(lines)
+    try:
+        colordiff(lines)
+    except BrokenPipeError:
+        pass
 
 
 if __name__ == '__main__':
