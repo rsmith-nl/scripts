@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-01-17T15:48:11+01:00
-# Last modified: 2018-07-07T13:42:40+0200
+# Last modified: 2019-07-14T14:43:56+0200
 """Check executables in the given directory for missing shared libraries."""
 
 import argparse
@@ -91,14 +91,14 @@ def check_missing_libs(path):
         A tuple of the path and a list of missing libraries.
     """
     logging.info(f"checking {path}")
-    try:
-        p = sp.run(
-            ['ldd', path], stdout=sp.PIPE, stderr=sp.DEVNULL, universal_newlines=True, check=True
-        )
-        rv = [ln for ln in p.stdout.splitlines() if 'missing' in ln or 'not found' in ln]
-    except sp.CalledProcessError:
-        logging.warning(f'ldd failed on {path}')
+    p = sp.run(
+        ['ldd', path], stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True
+    )
+    if 'not a dynamic executable' in p.stderr:
+        logging.info(f'"path" is not a dynamic executable')
         rv = []
+    else:
+        rv = [ln for ln in p.stdout.splitlines() if 'missing' in ln or 'not found' in ln]
     return (path, rv)
 
 
