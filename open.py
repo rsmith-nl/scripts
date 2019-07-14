@@ -5,7 +5,7 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-06-13T21:58:20+0200
+# Last modified: 2019-07-14T11:38:20+0200
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -20,7 +20,7 @@ import argparse
 import logging
 from magic import from_file
 
-__version__ = '1.10'
+__version__ = '1.11'
 
 # You should adjust the programs called to suit your preferences.
 filetypes = {
@@ -118,7 +118,7 @@ def matchfile(fdict, odict, fname):
     for k, v in fdict.items():
         if search(k, fname, IGNORECASE) is not None:
             return v + [fname]
-    if b'text' in from_file(fname):
+    if 'text' in from_file(fname):
         return odict['txt'] + [fname]
     return None
 
