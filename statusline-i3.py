@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-14T18:14:37+0200
+# Last modified: 2019-07-15T22:58:21+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -14,13 +14,13 @@ from functools import partial
 import argparse
 import ctypes
 import ctypes.util
-import logging
-import logging.handlers
 import mmap
 import os
 import statistics as stat
 import struct
 import sys
+import syslog
+import traceback
 import time
 
 # Global data
@@ -287,18 +287,15 @@ def hasbattery():
     return bat
 
 
-def configure_logging():
-    root = logging.getLogger()
-    logging.basicConfig(format='statusline-i3[%(process)d]:%(levelname)s: %(message)s')
-    handler = logging.handlers.SysLogHandler(address='/dev/log')
-    root.addHandler(handler)
+def info(s):
+    syslog.syslog(syslog.LOG_NOTICE | syslog.LOG_USER, s)
 
 
 def main():
     """
     Entry point for statusline-i3.py
     """
-    configure_logging()
+    syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_NOTICE)
     setproctitle(b'statusline-i3')
     maildata = {}
     cpudata = {}
@@ -311,6 +308,7 @@ def main():
     ]
     if hasbattery():
         items.insert(-1, battery)
+    info('starting')
     try:
         while True:
             start = time.time()
@@ -320,8 +318,8 @@ def main():
             delta = end - start
             if delta < 1:
                 time.sleep(1 - delta)
-    except Exception as e:
-        logging.critical(e)
+    except:  # noqa
+        info('caught exception: ' + traceback.format_exc())
         sys.exit(1)
 
 
