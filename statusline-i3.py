@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-15T22:58:21+0200
+# Last modified: 2019-07-24T16:03:17+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -19,12 +19,12 @@ import os
 import statistics as stat
 import struct
 import sys
-import syslog
+import logging
 import traceback
 import time
 
 # Global data
-__version__ = '2.2'
+__version__ = '2.3'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 # Low level functions.
@@ -136,7 +136,7 @@ def network(storage):
     cnt = sysctlbyname('net.link.generic.system.ifcount', convert=to_int)
     items = []
     for n in range(1, cnt):
-        tm = time.time()
+        tm = time.monotonic()
         data = sysctl([4, 18, 0, 2, n, 1], buflen=208)
         name = data[:16].strip(b'\x00').decode('ascii')
         if name.startswith('lo'):
@@ -287,15 +287,15 @@ def hasbattery():
     return bat
 
 
-def info(s):
-    syslog.syslog(syslog.LOG_NOTICE | syslog.LOG_USER, s)
-
-
 def main():
     """
     Entry point for statusline-i3.py
     """
-    syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_NOTICE)
+    logging.basicConfig(
+        level='INFO',
+        filename='{}/statusline-i3-{}.log'.format(os.environ['HOME'], os.getpid()),
+        format='%(levelname)s: %(message)s'
+    )
     setproctitle(b'statusline-i3')
     maildata = {}
     cpudata = {}
@@ -308,19 +308,25 @@ def main():
     ]
     if hasbattery():
         items.insert(-1, battery)
-    info('starting')
+    logging.info('starting')
     try:
         while True:
-            start = time.time()
+            start = time.monotonic()
             print(' | '.join(item() for item in items))
             sys.stdout.flush()
-            end = time.time()
+            end = time.monotonic()
             delta = end - start
             if delta < 1:
                 time.sleep(1 - delta)
-    except:  # noqa
-        info('caught exception: ' + traceback.format_exc())
-        sys.exit(1)
+    except Exception:
+        # Occasionally, statusline-i3 dies, and I don't know why.
+        # This should catch what happens next time. :-)
+        logging.error('caught exception: ' + traceback.format_exc())
+        sys.exit(2)
+    except KeyboardInterrupt:
+        # This is mainly for when testing from the command-line.
+        logging.info('caught KeyboardInterrupt; exiting')
+        sys.exit(0)
 
 
 if __name__ == '__main__':
