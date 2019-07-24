@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-24T16:03:17+0200
+# Last modified: 2019-07-24T16:04:50+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -100,10 +100,10 @@ def fmt(nbytes):
     nbytes = int(nbytes)
     if nbytes >= 1000000:
         nbytes /= 1000000
-        return f'{nbytes:.1f}MiB'
+        return f'{nbytes:.1f}MB'
     if nbytes > 1000:
         nbytes /= 1000
-        return f'{nbytes:.1f}kiB'
+        return f'{nbytes:.1f}kB'
     return f'{nbytes}B'
 
 
