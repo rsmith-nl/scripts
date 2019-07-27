@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-22T00:12:03+01:00
-# Last modified: 2018-07-07T18:56:22+0200
+# Last modified: 2019-07-27T14:54:25+0200
 """
 Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
 
@@ -35,7 +35,7 @@ import concurrent.futures as cf
 import json
 import logging
 import os
-import subprocess
+import subprocess as sp
 import sys
 
 __version__ = '2.2.0'
@@ -96,14 +96,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def runflac(idx, data):
@@ -125,8 +131,8 @@ def runflac(idx, data):
         '-TDATE=' + str(data['year']), '-TGENRE=' + data['genre'],
         f'-TTRACKNUM={num:02d}', '-o', f'track{num:02d}.flac', ifn
     ]
-    rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return (idx, rv)
+    p = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    return (idx, p.returncode)
 
 
 if __name__ == '__main__':

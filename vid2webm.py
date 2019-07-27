@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2019-03-09T16:01:49+0100
+# Last modified: 2019-07-27T14:36:44+0200
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -93,7 +93,7 @@ def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
     args = ['ffmpeg']
-    proc = sp.run(args, universal_newlines=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
+    proc = sp.run(args, text=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
     verre = r'ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright'
     major, minor, patch, *rest = re.findall(verre, proc.stderr)[0]
     if int(major) < 3 and int(minor) < 3:

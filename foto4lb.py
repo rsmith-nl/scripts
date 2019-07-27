@@ -5,7 +5,7 @@
 # Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2019-01-27T14:17:27+0100
+# Last modified: 2019-07-27T14:52:19+0200
 """Shrink fotos to a size suitable for use in my logbook."""
 
 from datetime import datetime
@@ -13,7 +13,7 @@ import argparse
 import concurrent.futures as cf
 import logging
 import os
-import subprocess
+import subprocess as sp
 import sys
 # For performance measurments
 # import time
@@ -21,7 +21,7 @@ import sys
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-__version__ = '2.1.0'
+__version__ = '2.1'
 outdir = 'foto4lb'
 extensions = ('.jpg', '.jpeg', '.raw')
 
@@ -112,14 +112,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def processfile(packed):
@@ -158,7 +164,7 @@ def processfile(packed):
         str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp',
         '2x0.5+0.7+0', '-quality', '80', oname
     ]
-    rp = subprocess.call(args)
+    rp = sp.call(args)
     if rp != 0:
         return (name, 2)
     modtime = dt.timestamp()

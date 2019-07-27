@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-01-17T15:48:11+01:00
-# Last modified: 2019-07-14T14:43:56+0200
+# Last modified: 2019-07-27T14:03:11+0200
 """Check executables in the given directory for missing shared libraries."""
 
 import argparse
@@ -16,7 +16,7 @@ import os
 import subprocess as sp
 from enum import Enum
 
-__version__ = '2.1.0'
+__version__ = '2.1'
 
 
 class Ftype(Enum):

@@ -5,14 +5,14 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-05T01:26:59+01:00
-# Last modified: 2018-07-07T18:53:42+0200
+# Last modified: 2019-07-27T13:56:36+0200
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse
 import configparser
 import logging
 import os
-import subprocess
+import subprocess as sp
 import sys
 
 __version__ = '1.6.0'
@@ -73,8 +73,6 @@ Otherwise, the defaults apply.
     logging.debug(f'parsed arguments = {args}')
     args.width *= 72 / 25.4  # convert to points
     args.height *= 72 / 25.4  # convert to points
-    checkfor(['gs', '-v'])
-    checkfor(['identify', '--version'])
     if not args.file:
         parser.print_help()
         sys.exit(0)
@@ -135,31 +133,6 @@ def from_config():
     return values
 
 
-def checkfor(args, rv=0):
-    """
-    Ensure that a program necessary for using this script is available.
-
-    If the required utility is not found, this function will exit the program.
-
-    Arguments:
-        args: String or list of strings of commands. A single string may not
-            contain spaces.
-        rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
-    try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
-        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
-        sys.exit(1)
-
-
 def getpdfbb(fn):
     """
     Get the BoundingBox of a PostScript or PDF file.
@@ -174,8 +147,8 @@ def getpdfbb(fn):
     gsopts = [
         'gs', '-q', '-dFirstPage=1', '-dLastPage=1', '-dNOPAUSE', '-dBATCH', '-sDEVICE=bbox', fn
     ]
-    gsres = subprocess.check_output(gsopts, stderr=subprocess.STDOUT)
-    bbs = gsres.decode().splitlines()[0]
+    gsres = sp.run(gsopts, stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
+    bbs = gsres.stdout.decode().splitlines()[0]
     return bbs.split(' ')[1:]
 
 
@@ -190,8 +163,8 @@ def getpicsize(fn):
         Width, hight of the image in points.
     """
     args = ['identify', '-verbose', fn]
-    rv = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    lines = rv.stdout.decode('utf-8').splitlines()
+    rv = sp.run(args, stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
+    lines = rv.stdout.decode().splitlines()
     data = {}
     for ln in lines:
         k, v = ln.strip().split(':', 1)

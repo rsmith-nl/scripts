@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-29T21:02:55+02:00
-# Last modified: 2018-07-07T19:00:40+0200
+# Last modified: 2019-07-27T14:55:49+0200
 """
 Convert TIFF files to PDF format.
 
@@ -18,7 +18,7 @@ import concurrent.futures as cf
 import logging
 import os
 import re
-import subprocess
+import subprocess as sp
 import sys
 
 __version__ = '1.4'
@@ -79,14 +79,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def tiffconv(fname, jpeg=False, quality=85):
@@ -103,8 +109,8 @@ def tiffconv(fname, jpeg=False, quality=85):
     """
     try:
         args = ['tiffinfo', fname]
-        txt = subprocess.check_output(args, stderr=subprocess.DEVNULL)
-        txt = txt.decode('utf-8').split()
+        p = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
+        txt = p.stdout.decode().split()
         if 'Width:' not in txt:
             raise ValueError('no width in TIF')
         index = txt.index('Width:')
@@ -134,9 +140,9 @@ def tiffconv(fname, jpeg=False, quality=85):
         else:
             args = program + args
         logging.info(f'calling "{args}"')
-        rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info(f'created "{outname}"')
-        return (fname, rv)
+        return (fname, rv.returncode)
     except Exception as e:
         logging.error(f'starting conversion of "{fname}" failed: {e}')
         return (fname, 0)

@@ -5,7 +5,7 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-07-14T11:38:20+0200
+# Last modified: 2019-07-27T14:10:45+0200
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -14,10 +14,10 @@ Some of the programs are X11 programs.
 
 from os.path import isdir, isfile, exists, basename
 from re import search, IGNORECASE
-from subprocess import Popen, run, PIPE, DEVNULL
 from sys import argv
 import argparse
 import logging
+import subprocess as sp
 from magic import from_file
 
 __version__ = '1.11'
@@ -74,7 +74,7 @@ def main(argv):  # noqa
     files = locate(args.files)
     stream = None
     if not args.noisy:
-        stream = DEVNULL
+        stream = sp.DEVNULL
     # Open the file(s).
     for nm in files:
         logging.info(f"trying '{nm}'")
@@ -91,13 +91,13 @@ def main(argv):  # noqa
             logging.warning(f"do not know how to open '{nm}'")
             continue
         try:
-            Popen(cmds, stdout=stream, stderr=stream)
+            sp.Popen(cmds, stdout=stream, stderr=stream)
         except OSError as e:
             logging.error(fail.format(nm, e))
     else:  # No files named
         if args.application:
             try:
-                Popen([args.application])
+                sp.Popen([args.application])
             except OSError as e:
                 logging.error(fail.format(args.application, e))
 
@@ -132,8 +132,8 @@ def locate(args):
             if exists(nm):
                 files.append(nm)
             else:
-                cp = run(['locate', nm], stdout=PIPE)
-                paths = cp.stdout.decode('utf-8').splitlines()
+                cp = sp.run(['locate', nm], stdout=sp.PIPE)
+                paths = cp.stdout.decode().splitlines()
                 if len(paths) == 1:
                     files.append(paths[0])
                 elif len(paths) == 0:

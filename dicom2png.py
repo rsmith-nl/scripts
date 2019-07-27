@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2018-11-04T12:59:03+0100
+# Last modified: 2019-07-27T14:50:40+0200
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
@@ -23,7 +23,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = '1.4.0'
+__version__ = '1.4'
 
 
 def convert(filename, quality, level):
@@ -55,27 +55,33 @@ def convert(filename, quality, level):
 
 def checkfor(args, rv=0):
     """
-    Ensure that a necessary program is available.
+    Ensure that a program necessary for using this script is available.
+
+    If the required utility is not found, this function will exit the program.
 
     Arguments:
-        args: String or list of strings of commands. A single string may
-            not contain spaces.
+        args: String or list of strings of commands. A single string may not
+            contain spaces.
         rv: Expected return value from evoking the command.
     """
     if isinstance(args, str):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        with open(os.devnull, 'w') as bb:
-            rc = sp.call(args, stdout=bb, stderr=bb)
-        if rc != rv:
-            raise OSError
-    except OSError as oops:
-        p = args[0]
-        errs = oops.strerror
-        print(f"Required program '{p}' not found: {errs}.")
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
+        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def main(argv):

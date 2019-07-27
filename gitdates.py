@@ -5,13 +5,13 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-10-28T14:07:21+01:00
-# Last modified: 2018-07-07T13:10:21+0200
+# Last modified: 2019-07-27T13:42:12+0200
 """Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
-import subprocess
+import subprocess as sp
 import sys
 import time
 
@@ -19,15 +19,14 @@ import time
 def main():
     """Entry point for gitdates."""
     logging.basicConfig(level='WARNING', format='%(levelname)s: %(message)s')
-    checkfor(['git', '--version'])
-    # Get a list of all files
+    # List of all files
     allfiles = []
     # Get a list of excluded files.
     if '.git' not in os.listdir('.'):
         logging.error('This directory is not managed by git.')
         sys.exit(0)
     exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
-    exc = subprocess.check_output(exargs).split()
+    exc = sp.check_output(exargs).split()
     for root, dirs, files in os.walk('.'):
         for d in ['.git', '__pycache__']:
             try:
@@ -48,31 +47,6 @@ def main():
         print(f'{name}|{tag}|{ds}')
 
 
-def checkfor(args, rv=0):
-    """
-    Ensure that a program necessary for using this script is available.
-
-    If the required utility is not found, this function will exit the program.
-
-    Arguments:
-        args: String or list of strings of commands. A single string may not
-            contain spaces.
-        rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
-    try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
-        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
-        sys.exit(1)
-
-
 def filecheck(fname):
     """
     Start a git process to get file info.
@@ -89,13 +63,13 @@ def filecheck(fname):
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
-        b = subprocess.check_output(args)
+        b = sp.check_output(args)
         if len(b) == 0:
             return None
         data = b.decode()[:-1]
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
-    except (subprocess.CalledProcessError, ValueError):
+    except (sp.CalledProcessError, ValueError):
         logging.error('git log failed for "{}"'.format(fname))
         return None
     return out

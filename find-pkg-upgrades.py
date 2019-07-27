@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-04-20T17:45:35+0200
+# Last modified: 2019-07-27T13:22:10+0200
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -64,6 +64,10 @@ def run(args):
     Returns:
         Standard output of the program, converted to UTF-8 and split into lines.
     """
+    if not isinstance(args, (list, tuple)):
+        raise ValueError('args should be a list or tuple')
+    if not all(isinstance(x, str) for x in args):
+        raise ValueError('args should be a list or tuple of strings')
     comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
     return comp.stdout.decode('utf-8').splitlines()
 

@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-11T22:18:42+0200
+.. Last modified: 2019-07-27T15:16:57+0200
 
 Introduction
 ============
@@ -28,6 +28,32 @@ other BSD systems, Linux or OS-X without major problems.
 All scripts use Python 3 specific features. Most recently I converted
 ``str.format`` calls to f-strings, meaning that you'll need Python 3.6 or
 later for the Python scripts.
+
+Running tests
+=============
+
+Tests for some of the functions used in the scripts are contained in
+``scripts-tests.py``. Running the tests requires ``pytest``. Running the tests
+is done as follows::
+
+    pytest scripts-tests.py
+
+Tests for security issues can be done with ``bandit``. I've run the tests as
+follows::
+
+    bandit -s B404 -x scripts-tests.py *.py | less
+
+One might consider adding B603 and B607 to the exclusion list. These are:
+
+* B603 subprocess_without_shell_equals_true
+* B607 start_process_with_partial_path
+
+When run with::
+
+    bandit -s B404,B603,B607 -x scripts-tests.py *.py
+
+The result should be: ``No issues identified.``
+
 
 The programs
 ============

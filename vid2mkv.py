@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2018-07-07T19:01:51+0200
+# Last modified: 2019-07-27T15:05:56+0200
 """Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
@@ -13,7 +13,7 @@ import argparse
 import concurrent.futures as cf
 import logging
 import os
-import subprocess
+import subprocess as sp
 import sys
 
 __version__ = '1.4.1'
@@ -76,14 +76,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def runencoder(fname, vq, aq):
@@ -112,8 +118,8 @@ def runencoder(fname, vq, aq):
     ]
     logging.debug(' '.join(args))
     logging.info(f'starting conversion of "{fname}".')
-    rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return fname, rv
+    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    return fname, cp.returncode
 
 
 if __name__ == '__main__':

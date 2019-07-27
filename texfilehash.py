@@ -5,14 +5,14 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-28T16:13:39+0200
-# Last modified: 2019-06-29T17:58:01+0200
+# Last modified: 2019-07-27T14:22:54+0200
 """
 Create a file containing the abbreviated git commit hash for TeX source files.
 If the file has uncommitted changes, it appends the status in red text.
 It produces a file <filename>.hash for every <filename>.tex.
 """
 import argparse
-import subprocess
+import subprocess as sp
 import logging
 import sys
 
@@ -43,12 +43,14 @@ for infn in args.filenames:
 
     outfn = infn[:-4] + '.hash'
 
-    logcmd = ['git', '--no-pager', 'log', '-1', '--pretty=format:%h', sys.argv[1]]
-    logdata = subprocess.check_output(logcmd).decode('ascii')
+    logcmd = ['git', '--no-pager', 'log', '-1', '--pretty=format:%h', infn]
+    cp = sp.run(logcmd, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
+    logdata = cp.stdout.decode()
     logging.debug(f'logdata: "{logdata}"')
 
-    statcmd = ['git', '--no-pager', 'status', '-s', '--', sys.argv[1]]
-    statdata = subprocess.check_output(statcmd)[:2].decode('ascii').strip()
+    statcmd = ['git', '--no-pager', 'status', '-s', '--', infn]
+    cp = sp.run(statcmd, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
+    statdata = cp.stdout[:2].decode().strip()
     logging.debug(f'statdata: "{statdata}"')
 
     if statdata:

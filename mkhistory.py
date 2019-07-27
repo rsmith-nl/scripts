@@ -5,12 +5,12 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T01:41:21+02:00
-# Last modified: 2018-07-07T13:43:20+0200
+# Last modified: 2019-07-27T14:05:17+0200
 """Script to format a Git log for LaTeX."""
 
 import os
 import re
-import subprocess
+import subprocess as sp
 import sys
 
 # The following texts determine how the commits are generated. Change them to
@@ -59,8 +59,9 @@ def main(argv):
     fn = argv[1]
     try:
         args = ['git', 'log', '--oneline']
-        txt = subprocess.check_output(args).decode()
-    except subprocess.CalledProcessError:
+        p = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
+        txt = p.stdout.decode()
+    except sp.CalledProcessError:
         print("Git not found! Stop.")
         sys.exit(1)
     if fn == '-':

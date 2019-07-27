@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2019-06-23T17:16:40+0200
+# Last modified: 2019-07-27T14:52:57+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -15,7 +15,7 @@ git, and run ``git gc`` on them unless they have uncommitted changes.
 
 import argparse
 import os
-import subprocess
+import subprocess as sp
 import sys
 import logging
 
@@ -63,14 +63,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.debug(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def runchecks(d, verbose=False):
@@ -114,13 +120,13 @@ def gitcmd(cmds, output=False):
     cmds = ['git'] + cmds
     if output:
         try:
-            rv = subprocess.check_output(cmds, stderr=subprocess.STDOUT).decode()
+            rv = sp.check_output(cmds, stderr=sp.STDOUT).decode()
         except UnicodeDecodeError as e:
             logging.error(' '.join(cmds) + ' in ' + os.getcwd())
             logging.error(e)
             return ''
     else:
-        rv = subprocess.call(cmds, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        rv = sp.call(cmds, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return rv
 
 

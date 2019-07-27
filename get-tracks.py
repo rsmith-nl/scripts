@@ -5,14 +5,14 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-09-10T12:15:13+02:00
-# Last modified: 2018-07-07T13:09:20+0200
+# Last modified: 2019-07-27T14:51:43+0200
 """Retrieve the numbered tracks from a dvd."""
 
 import logging
 import sys
-import subprocess
+import subprocess as sp
 
-__version__ = '1.1.0'
+__version__ = '1.1'
 
 
 def checkfor(args, rv=0):
@@ -30,14 +30,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def main(argv):
@@ -74,7 +80,7 @@ def retrieve(dvddev, num):
     trackname = f'track{num:02d}.mpg'
     logging.info(f'writing track {num} as "{trackname}"... ')
     with open(trackname, 'wb') as outf:
-        subprocess.run(args, stdout=outf, stderr=subprocess.DEVNULL)
+        sp.run(args, stdout=outf, stderr=sp.DEVNULL)
     logging.info('done.')
 
 

@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-04-06T13:08:02+0200
-# Last modified: 2018-04-16T22:32:33+0200
+# Last modified: 2019-07-27T15:11:11+0200
 """
 Tests for functions in python files in the scripts directory.
 
@@ -50,13 +50,8 @@ def test_roundup():
 
 
 def test_genpw():
-    assert len(genpw(1)) == 4
-    assert len(genpw(2)) == 4
-    assert len(genpw(3)) == 4
-    assert len(genpw(4)) == 4
-    assert len(genpw(5)) == 8
-    assert len(genpw(8)) == 8
-    assert len(genpw(12)) == 12
+    for n in range(12):
+        assert len(genpw(n)) == n
 
 
 def test_fixname():

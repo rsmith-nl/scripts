@@ -5,11 +5,11 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-01-03T16:31:09+01:00
-# Last modified: 2018-07-07T11:06:17+0200
+# Last modified: 2019-07-27T13:36:13+0200
 """Report when arguments were checked into git."""
 
 import os.path
-import subprocess
+import subprocess as sp
 import sys
 
 __version__ = '1.0.1'
@@ -31,10 +31,10 @@ def main(argv):
     try:
         for fn in argv:
             args = ['git', 'log', '--diff-filter=A', '--format=%ai', '--', fn]
-            date = subprocess.check_output(args, stderr=subprocess.PIPE)
+            date = sp.check_output(args, stderr=sp.PIPE)
             date = date.decode('utf-8').strip()
             print(f'{fn}: {date}')
-    except subprocess.CalledProcessError as e:
+    except sp.CalledProcessError as e:
         if e.returncode == 128:
             print("Not a git repository! Exiting.")
         else:

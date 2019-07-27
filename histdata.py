@@ -5,12 +5,12 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-07-23T01:18:29+02:00
-# Last modified: 2018-07-07T11:13:39+0200
+# Last modified: 2019-07-27T13:50:29+0200
 """Make a histogram and calculate entropy of files."""
 
 import math
 import os.path
-import subprocess
+import subprocess as sp
 import sys
 
 
@@ -116,8 +116,7 @@ def histogram_gnuplot(counts, sz, name):
         pl += [f'{n} {v}']
     pl += ['e']
     pt = '\n'.join(pl)
-    gp = subprocess.Popen(['gnuplot'], stdin=subprocess.PIPE)
-    gp.communicate(pt.encode('utf-8'))
+    sp.run(['gnuplot'], input=pt.encode('utf-8'), check=True)
 
 
 if __name__ == '__main__':

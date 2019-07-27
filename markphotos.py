@@ -5,7 +5,7 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-06T20:28:07+01:00
-# Last modified: 2018-07-07T13:40:50+0200
+# Last modified: 2019-07-27T15:06:51+0200
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -14,7 +14,7 @@ import argparse
 import concurrent.futures as cf
 import logging
 import os.path
-import subprocess
+import subprocess as sp
 import sys
 
 __version__ = '1.2.1'
@@ -65,14 +65,20 @@ def checkfor(args, rv=0):
         if ' ' in args:
             raise ValueError('no spaces in single command allowed')
         args = [args]
+    else:
+        if not isinstance(args, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in args):
+            raise ValueError('args should be a list or tuple of strings')
     try:
-        rc = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if rc != rv:
-            raise OSError
-        logging.info(f'found required program "{args[0]}"')
-    except OSError as oops:
+        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
+    if cp.returncode != rv:
+        logging.error(f'returncode {cp.returncode} should be {rv}')
+        sys.exit(1)
+    logging.info(f'found required program "{args[0]}"')
 
 
 def processfile(name):
@@ -86,7 +92,7 @@ def processfile(name):
         A 2-tuple of the file path and the return value of exiftool.
     """
     args = ['exiftool', '-CreateDate', name]
-    createdate = subprocess.check_output(args).decode()
+    createdate = sp.check_output(args).decode()
     fields = createdate.split(":")
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
@@ -95,7 +101,7 @@ def processfile(name):
         'exiftool', f'-Copyright="Copyright (C) {year} {cr}"',
         f'-Comment="{cmt}"', '-overwrite_original', '-q', name
     ]
-    rv = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    rv = sp.call(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     modtime = int(
         mktime(
             (
