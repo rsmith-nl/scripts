@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-29T21:02:55+02:00
-# Last modified: 2019-07-27T16:04:35+0200
+# Last modified: 2019-07-27T21:13:29+0200
 """
 Convert TIFF files to PDF format.
 
@@ -50,8 +50,16 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    checkfor('tiffinfo', 255)
-    checkfor(['tiff2pdf', '-v'])
+    # Check for requisites
+    try:
+        sp.run(['tiffinfo'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info('found “tiffinfo”')
+        sp.run(['tiff2pdf'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info('found “tiff2pdf”')
+    except FileNotFoundError:
+        logging.error('a required program cannot be found')
+        sys.exit(1)
+    # Work starts here.
     func = tiffconv
     if args.jpeg:
         logging.info('using JPEG compression.')
@@ -62,37 +70,6 @@ def main(argv):
                 logging.info(f'finished "{fn}"')
             else:
                 logging.error(f'conversion of {fn} failed, return code {rv}')
-
-
-def checkfor(args, rv=0):
-    """
-    Ensure that a program necessary for using this script is available.
-
-    If the required utility is not found, this function will exit the program.
-
-    Arguments:
-        args: String or list of strings of commands. A single string may not
-            contain spaces.
-        rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
-    else:
-        if not isinstance(args, (list, tuple)):
-            raise ValueError('args should be a list or tuple')
-        if not all(isinstance(x, str) for x in args):
-            raise ValueError('args should be a list or tuple of strings')
-    try:
-        cp = sp.run(args)
-    except FileNotFoundError as oops:
-        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
-        sys.exit(1)
-    if cp.returncode != rv:
-        logging.error(f'returncode {cp.returncode} should be {rv}')
-        sys.exit(1)
-    logging.info(f'found required program "{args[0]}"')
 
 
 def tiffconv(fname, jpeg=False, quality=85):
@@ -140,7 +117,7 @@ def tiffconv(fname, jpeg=False, quality=85):
         else:
             args = program + args
         logging.info(f'calling "{args}"')
-        rv = sp.run(args)
+        rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info(f'created "{outname}"')
         return (fname, rv.returncode)
     except Exception as e:

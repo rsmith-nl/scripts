@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2019-07-27T16:02:59+0200
+# Last modified: 2019-07-27T21:16:04+0200
 """
 Fix PDF file titles.
 
@@ -63,7 +63,7 @@ def decrypt(path, fn, tempdir):
     """
     tmppath = tempdir + os.sep + fn
     args = ['qpdf', '--decrypt', path, tmppath]
-    rv = sp.run(args)
+    rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     if rv.returncode == 0:
         os.remove(path)
         shutil.copyfile(tmppath, path)
@@ -90,7 +90,7 @@ def set_title(path, fn, tempdir, newtitle):
         'gs', '-q', '-dBATCH', '-dNOPAUSE', '-sDEVICE=pdfwrite', '-sOutputFile=withmarks.pdf',
         path, 'pdfmarks'
     ]
-    rv = sp.run(args)
+    rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     os.remove('pdfmarks')
     os.chdir(orig)
     if rv.returncode != 0:

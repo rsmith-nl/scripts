@@ -5,7 +5,7 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-07-27T14:10:45+0200
+# Last modified: 2019-07-27T21:09:03+0200
 """
 Open file(s) given on the command line in the appropriate program.
 
@@ -132,7 +132,7 @@ def locate(args):
             if exists(nm):
                 files.append(nm)
             else:
-                cp = sp.run(['locate', nm], stdout=sp.PIPE)
+                cp = sp.run(['locate', nm], stdout=sp.PIPE, stderr=sp.DEVNULL)
                 paths = cp.stdout.decode().splitlines()
                 if len(paths) == 1:
                     files.append(paths[0])

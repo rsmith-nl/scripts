@@ -5,7 +5,7 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-06T20:28:07+01:00
-# Last modified: 2019-07-27T16:04:01+0200
+# Last modified: 2019-07-27T21:14:01+0200
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -42,43 +42,19 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    checkfor(['exiftool', '-ver'])
+    # Check for requisites
+    try:
+        sp.run(['exiftool'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info('found “exiftool”')
+    except FileNotFoundError:
+        logging.error('the “exiftool” program cannot be found')
+        sys.exit(1)
+    # Work starts here.
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for fn, rv in tp.map(processfile, args.files):
             logging.info(f'file "{fn}" processed.')
             if rv != 0:
                 logging.error(f'error processing "{fn}": {rv}')
-
-
-def checkfor(args, rv=0):
-    """
-    Ensure that a program necessary for using this script is available.
-
-    If the required utility is not found, this function will exit the program.
-
-    Arguments:
-        args: String or list of strings of commands. A single string may not
-            contain spaces.
-        rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
-    else:
-        if not isinstance(args, (list, tuple)):
-            raise ValueError('args should be a list or tuple')
-        if not all(isinstance(x, str) for x in args):
-            raise ValueError('args should be a list or tuple of strings')
-    try:
-        cp = sp.run(args)
-    except FileNotFoundError as oops:
-        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
-        sys.exit(1)
-    if cp.returncode != rv:
-        logging.error(f'returncode {cp.returncode} should be {rv}')
-        sys.exit(1)
-    logging.info(f'found required program "{args[0]}"')
 
 
 def processfile(name):
@@ -101,7 +77,7 @@ def processfile(name):
         'exiftool', f'-Copyright="Copyright (C) {year} {cr}"',
         f'-Comment="{cmt}"', '-overwrite_original', '-q', name
     ]
-    cp = sp.run(args)
+    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     modtime = int(
         mktime(
             (

@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-22T00:12:03+01:00
-# Last modified: 2019-07-27T16:00:11+0200
+# Last modified: 2019-07-27T21:12:18+0200
 """
 Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
 
@@ -57,7 +57,13 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    checkfor('flac')
+    # Check for requisites
+    try:
+        sp.run(['flac'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info('found “flac”')
+    except FileNotFoundError:
+        logging.error('the program “flac” cannot be found')
+        sys.exit(1)
     tfn = 'album.json'
     with open(tfn) as jf:
         data = json.load(jf)
@@ -81,37 +87,6 @@ def main(argv):
                 logging.error(f'conversion of track {tnum} failed, return code {rv}')
 
 
-def checkfor(args, rv=0):
-    """
-    Ensure that a program necessary for using this script is available.
-
-    If the required utility is not found, this function will exit the program.
-
-    Arguments:
-        args: String or list of strings of commands. A single string may not
-            contain spaces.
-        rv: Expected return value from evoking the command.
-    """
-    if isinstance(args, str):
-        if ' ' in args:
-            raise ValueError('no spaces in single command allowed')
-        args = [args]
-    else:
-        if not isinstance(args, (list, tuple)):
-            raise ValueError('args should be a list or tuple')
-        if not all(isinstance(x, str) for x in args):
-            raise ValueError('args should be a list or tuple of strings')
-    try:
-        cp = sp.run(args)
-    except FileNotFoundError as oops:
-        logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
-        sys.exit(1)
-    if cp.returncode != rv:
-        logging.error(f'returncode {cp.returncode} should be {rv}')
-        sys.exit(1)
-    logging.info(f'found required program "{args[0]}"')
-
-
 def runflac(idx, data):
     """
     Use the flac(1) program to convert a music file to FLAC format.
@@ -131,7 +106,7 @@ def runflac(idx, data):
         '-TDATE=' + str(data['year']), '-TGENRE=' + data['genre'],
         f'-TTRACKNUM={num:02d}', '-o', f'track{num:02d}.flac', ifn
     ]
-    p = sp.run(args)
+    p = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return (idx, p.returncode)
 
 
