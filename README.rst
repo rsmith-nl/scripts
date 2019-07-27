@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-27T15:16:57+0200
+.. Last modified: 2019-07-27T16:28:17+0200
 
 Introduction
 ============
@@ -43,7 +43,8 @@ follows::
 
     bandit -s B404 -x scripts-tests.py *.py | less
 
-One might consider adding B603 and B607 to the exclusion list. These are:
+One might consider adding B603 and B607 to the exclusion list when the use of
+``subprocess`` calls has been audited. These are:
 
 * B603 subprocess_without_shell_equals_true
 * B607 start_process_with_partial_path
@@ -51,6 +52,10 @@ One might consider adding B603 and B607 to the exclusion list. These are:
 When run with::
 
     bandit -s B404,B603,B607 -x scripts-tests.py *.py
+
+The file ``scripts-tests.py`` is excluded because it contains lots of
+``assert`` calls as part of the testing mechanism. In this case, these are no
+cause for alarm.
 
 The result should be: ``No issues identified.``
 
