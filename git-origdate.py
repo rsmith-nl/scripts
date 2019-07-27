@@ -5,14 +5,14 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-01-03T16:31:09+01:00
-# Last modified: 2019-07-27T15:55:17+0200
+# Last modified: 2019-07-27T16:24:50+0200
 """Report when arguments were checked into git."""
 
 import os.path
 import subprocess as sp
 import sys
 
-__version__ = '1.0.1'
+__version__ = '1.1'
 
 
 def main(argv):
@@ -34,8 +34,10 @@ def main(argv):
                 'git', '--no-pager', 'log', '--diff-filter=A', '--format=%ai', '--', fn
             ]
             cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True, check=True)
-            date = cp.stdout.strip()
-            print(f'{fn}: {date}')
+            # Sometimes this git command will return *multiple dates*!
+            # In that case, select the oldest.
+            date = cp.stdout.strip().splitlines()[-1]
+            print(f'"{fn}": {date}')
     except sp.CalledProcessError as e:
         if e.returncode == 128:
             print("Not a git repository! Exiting.")
