@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2019-07-27T15:05:56+0200
+# Last modified: 2019-07-27T16:03:26+0200
 """Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
@@ -82,7 +82,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -118,7 +118,7 @@ def runencoder(fname, vq, aq):
     ]
     logging.debug(' '.join(args))
     logging.info(f'starting conversion of "{fname}".')
-    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    cp = sp.run(args)
     return fname, cp.returncode
 
 

@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-29T21:02:55+02:00
-# Last modified: 2019-07-27T14:55:49+0200
+# Last modified: 2019-07-27T16:04:35+0200
 """
 Convert TIFF files to PDF format.
 
@@ -85,7 +85,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -140,7 +140,7 @@ def tiffconv(fname, jpeg=False, quality=85):
         else:
             args = program + args
         logging.info(f'calling "{args}"')
-        rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        rv = sp.run(args)
         logging.info(f'created "{outname}"')
         return (fname, rv.returncode)
     except Exception as e:

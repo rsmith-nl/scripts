@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2018-12-08T10:47:05+0100
+# Last modified: 2019-07-27T15:57:54+0200
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -286,7 +286,7 @@ def encode(args1, args2):
     logging.info('running pass 1...')
     logging.debug('pass 1: {}'.format(' '.join(args1)))
     start = datetime.utcnow()
-    proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    proc = sp.run(args1)
     end = datetime.utcnow()
     if proc.returncode:
         logging.error(f'pass 1 returned {proc.returncode}.')
@@ -296,7 +296,7 @@ def encode(args1, args2):
     logging.info('running pass 2...')
     logging.debug('pass 2: {}'.format(' '.join(args2)))
     start = datetime.utcnow()
-    proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    proc = sp.run(args2)
     end = datetime.utcnow()
     if proc.returncode:
         logging.error(f'pass 2 returned {proc.returncode}.')

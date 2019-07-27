@@ -4,7 +4,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-13T01:39:03+01:00
-# Last modified: 2019-07-27T14:47:51+0200
+# Last modified: 2019-07-27T15:56:25+0200
 
 import logging
 import subprocess as sp
@@ -32,7 +32,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)

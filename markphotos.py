@@ -5,7 +5,7 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-06T20:28:07+01:00
-# Last modified: 2019-07-27T15:06:51+0200
+# Last modified: 2019-07-27T16:04:01+0200
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -71,7 +71,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -92,8 +92,8 @@ def processfile(name):
         A 2-tuple of the file path and the return value of exiftool.
     """
     args = ['exiftool', '-CreateDate', name]
-    createdate = sp.check_output(args).decode()
-    fields = createdate.split(":")
+    cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+    fields = cp.stdout.split(":")
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
     cmt = f"Copyright © {year} {cr}"
@@ -101,7 +101,7 @@ def processfile(name):
         'exiftool', f'-Copyright="Copyright (C) {year} {cr}"',
         f'-Comment="{cmt}"', '-overwrite_original', '-q', name
     ]
-    rv = sp.call(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    cp = sp.run(args)
     modtime = int(
         mktime(
             (
@@ -111,7 +111,7 @@ def processfile(name):
         )
     )
     utime(name, (modtime, modtime))
-    return name, rv
+    return name, cp.returncode
 
 
 if __name__ == '__main__':

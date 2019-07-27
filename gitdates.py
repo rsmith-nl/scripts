@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-10-28T14:07:21+01:00
-# Last modified: 2019-07-27T13:42:12+0200
+# Last modified: 2019-07-27T15:43:33+0200
 """Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
@@ -26,7 +26,7 @@ def main():
         logging.error('This directory is not managed by git.')
         sys.exit(0)
     exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
-    exc = sp.check_output(exargs).split()
+    exc = sp.run(exargs, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL).stdout.split()
     for root, dirs, files in os.walk('.'):
         for d in ['.git', '__pycache__']:
             try:
@@ -63,10 +63,10 @@ def filecheck(fname):
     """
     args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
     try:
-        b = sp.check_output(args)
+        b = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True, check=True).stdout
         if len(b) == 0:
             return None
-        data = b.decode()[:-1]
+        data = b[:-1]
         h, t = data.split('|')
         out = (fname[2:], h, time.gmtime(float(t)))
     except (sp.CalledProcessError, ValueError):

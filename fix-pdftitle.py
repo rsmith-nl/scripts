@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2018-07-07T09:11:55+0200
+# Last modified: 2019-07-27T16:02:59+0200
 """
 Fix PDF file titles.
 
@@ -39,12 +39,12 @@ def pdfinfo(path):
         non-existing key will return an empty string.
     """
     args = ['pdfinfo', path]
-    rv = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
-    if rv.returncode != 0:
+    cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    if cp.returncode != 0:
         return defaultdict(lambda: '')
     pairs = [
         (k, v.strip())
-        for k, v in [ln.split(':', 1) for ln in rv.stdout.decode('utf-8').splitlines()]
+        for k, v in [ln.split(':', 1) for ln in cp.stdout.decode().splitlines()]
     ]
     return defaultdict(lambda: '', pairs)
 
@@ -90,7 +90,7 @@ def set_title(path, fn, tempdir, newtitle):
         'gs', '-q', '-dBATCH', '-dNOPAUSE', '-sDEVICE=pdfwrite', '-sOutputFile=withmarks.pdf',
         path, 'pdfmarks'
     ]
-    rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    rv = sp.run(args)
     os.remove('pdfmarks')
     os.chdir(orig)
     if rv.returncode != 0:

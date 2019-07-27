@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2019-07-27T14:50:40+0200
+# Last modified: 2019-07-27T15:57:15+0200
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
@@ -49,8 +49,8 @@ def convert(filename, quality, level):
     if level:
         args += ['-level', '-35%,70%,0.5']
     args.append(outname)
-    rv = sp.call(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-    return (filename, outname, rv)
+    cp = sp.run(args)
+    return (filename, outname, cp.returncode)
 
 
 def checkfor(args, rv=0):
@@ -74,7 +74,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)

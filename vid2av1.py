@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-05-11T19:49:00+0200
-# Last modified: 2019-07-27T14:33:29+0200
+# Last modified: 2019-07-27T15:58:53+0200
 """
 Convert videos to an MP4 container with AV1 video and Opus audio.
 """
@@ -154,7 +154,7 @@ def encode(args):
     logging.info('running enciding...')
     logging.debug('encoding command: {}'.format(' '.join(args)))
     start = datetime.utcnow()
-    proc = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    proc = sp.run(args)
     end = datetime.utcnow()
     if proc.returncode:
         logging.error(f'encoding returned {proc.returncode}.')

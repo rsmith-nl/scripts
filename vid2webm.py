@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2019-07-27T14:36:44+0200
+# Last modified: 2019-07-27T16:05:20+0200
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -123,7 +123,7 @@ def reporttime(p, dt):
 def get_tc(name):
     """Determine the amount of tile columns to use."""
     args = ['ffprobe', '-hide_banner', '-select_streams', 'v', '-show_streams', name]
-    proc = sp.run(args, universal_newlines=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
     lines = proc.stdout.splitlines()
     d = {}
     for ln in lines[1:-1]:
@@ -197,7 +197,7 @@ def encode(args1, args2):
     logging.info('running pass 1...')
     logging.debug('pass 1: {}'.format(' '.join(args1)))
     start = datetime.utcnow()
-    proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    proc = sp.run(args1)
     end = datetime.utcnow()
     if proc.returncode:
         logging.error(f'pass 1 returned {proc.returncode}.')
@@ -208,7 +208,7 @@ def encode(args1, args2):
     logging.info('running pass 2...')
     logging.debug('pass 2: {}'.format(' '.join(args2)))
     start = datetime.utcnow()
-    proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    proc = sp.run(args2)
     end = datetime.utcnow()
     if proc.returncode:
         logging.error(f'pass 2 returned {proc.returncode}.')

@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-07-27T13:22:10+0200
+# Last modified: 2019-07-27T15:48:15+0200
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -187,7 +187,8 @@ def main(argv):
     Arguments:
         argv: Command line arguments.
     """
-    uname = sp.check_output(['uname', '-p', '-U']).decode('ascii').split()
+    cp = sp.run(['uname', '-p', '-U'], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+    uname = cp.stdout.split()
     major = int(uname[1][:2])
     arch = uname[0]
     parser = argparse.ArgumentParser(description=__doc__)

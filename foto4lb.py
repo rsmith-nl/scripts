@@ -5,7 +5,7 @@
 # Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2019-07-27T14:52:19+0200
+# Last modified: 2019-07-27T15:58:22+0200
 """Shrink fotos to a size suitable for use in my logbook."""
 
 from datetime import datetime
@@ -118,7 +118,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -164,8 +164,8 @@ def processfile(packed):
         str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp',
         '2x0.5+0.7+0', '-quality', '80', oname
     ]
-    rp = sp.call(args)
-    if rp != 0:
+    rp = sp.run(args)
+    if rp.returncode != 0:
         return (name, 2)
     modtime = dt.timestamp()
     os.utime(oname, (modtime, modtime))

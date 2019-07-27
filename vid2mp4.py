@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2019-07-27T14:56:34+0200
+# Last modified: 2019-07-27T16:01:46+0200
 """Convert video files to H.264/AAC streams in an MP4 container."""
 
 from functools import partial
@@ -34,8 +34,8 @@ def main(argv):
         '--preset',
         default='medium',
         choices=[
-            'ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower',
-            'veryslow'
+            'ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow',
+            'slower', 'veryslow'
         ],
         help='preset (default medium) slower is smaller file'
     )
@@ -46,10 +46,13 @@ def main(argv):
         help="logging level (defaults to 'warning')"
     )
     parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
+    parser.add_argument(
+        "files", metavar='file', nargs='+', help="one or more files to process"
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
@@ -88,7 +91,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -112,7 +115,8 @@ def runencoder(fname, crf, preset):
     """
     basename, ext = os.path.splitext(fname)
     known = [
-        '.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv', '.mkv', '.webm', '.gif'
+        '.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv', '.mkv', '.webm',
+        '.gif'
     ]
     if ext.lower() not in known:
         return fname, -1
@@ -123,7 +127,7 @@ def runencoder(fname, crf, preset):
     ]
     logging.debug(' '.join(args))
     logging.info(f'starting conversion of "{fname}".')
-    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    cp = sp.run(args)
     return fname, cp.returncode
 
 

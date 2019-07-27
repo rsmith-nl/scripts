@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-01-03T16:31:09+01:00
-# Last modified: 2019-07-27T13:36:13+0200
+# Last modified: 2019-07-27T15:55:17+0200
 """Report when arguments were checked into git."""
 
 import os.path
@@ -30,9 +30,11 @@ def main(argv):
     del argv[0]  # delete the name of the script.
     try:
         for fn in argv:
-            args = ['git', 'log', '--diff-filter=A', '--format=%ai', '--', fn]
-            date = sp.check_output(args, stderr=sp.PIPE)
-            date = date.decode('utf-8').strip()
+            args = [
+                'git', '--no-pager', 'log', '--diff-filter=A', '--format=%ai', '--', fn
+            ]
+            cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True, check=True)
+            date = cp.stdout.strip()
             print(f'{fn}: {date}')
     except sp.CalledProcessError as e:
         if e.returncode == 128:

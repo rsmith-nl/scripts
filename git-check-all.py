@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2019-07-27T14:52:57+0200
+# Last modified: 2019-07-27T16:00:59+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -69,7 +69,7 @@ def checkfor(args, rv=0):
         if not all(isinstance(x, str) for x in args):
             raise ValueError('args should be a list or tuple of strings')
     try:
-        cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        cp = sp.run(args)
     except FileNotFoundError as oops:
         logging.error(f'required program "{args[0]}" not found: {oops.strerror}.')
         sys.exit(1)
@@ -103,7 +103,7 @@ def runchecks(d, verbose=False):
 
 def gitcmd(cmds, output=False):
     """
-    Run the specified git command.
+    Run the specified git subcommand.
 
     Arguments:
         cmds: command string or list of strings of command and arguments.
@@ -117,17 +117,18 @@ def gitcmd(cmds, output=False):
         if ' ' in cmds:
             raise ValueError('No spaces in single command allowed.')
         cmds = [cmds]
+    else:
+        if not isinstance(cmds, (list, tuple)):
+            raise ValueError('args should be a list or tuple')
+        if not all(isinstance(x, str) for x in cmds):
+            raise ValueError('args should be a list or tuple of strings')
     cmds = ['git'] + cmds
     if output:
-        try:
-            rv = sp.check_output(cmds, stderr=sp.STDOUT).decode()
-        except UnicodeDecodeError as e:
-            logging.error(' '.join(cmds) + ' in ' + os.getcwd())
-            logging.error(e)
-            return ''
+        cp = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, text=True)
+        return cp.stdout
     else:
-        rv = sp.call(cmds, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-    return rv
+        cp = sp.run(cmds)
+    return cp.returncode
 
 
 if __name__ == '__main__':
