@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-24T16:04:50+0200
+# Last modified: 2019-07-27T23:36:22+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -239,7 +239,10 @@ def cpu(storage):
     used = total - states[-1]
     if storage:
         prevused, prevtotal = storage['used'], storage['total']
-        frac = int((used - prevused) / (total - prevtotal) * 100)
+        if total != prevtotal:
+            frac = int((used - prevused) / (total - prevtotal) * 100)
+        else:  # divide by 0!
+            frac = '?'
     else:
         frac = 0
     # Save values for the next run.
