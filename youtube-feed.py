@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2019-07-28T20:17:29+0200
+# Last modified: 2019-07-28T22:07:52+0200
 """Get the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -56,7 +56,7 @@ for channel_title, channel_id in channels.items():
     items = tuple(
         (html.unescape(title), link, date)
         for title, link, date in zip(titles, links, published)
-        if 'channel' not in link and (now-date).days < limit
+        if 'watch' in link and (now-date).days < limit
     )
     if not items:
         print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
