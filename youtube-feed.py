@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2019-07-28T22:07:52+0200
+# Last modified: 2019-07-29T00:56:41+0200
 """Get the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -46,12 +46,11 @@ for channel_title, channel_id in channels.items():
     if not res.ok:
         print(f'Could not retrieve data for “{channel_title}”, skipping it.\n')
         continue
-    # nonewlines = ''.join(res.text.splitlines())
-    titles = re.findall('<title>(.*?)</title>', res.text, re.IGNORECASE)
-    links = re.findall('<link rel="alternate" href="(.*?)"/>', res.text, re.IGNORECASE)
+    titles = re.findall('<title>(.*)</title>', res.text, re.IGNORECASE)
+    links = re.findall('<link rel="alternate" href="(.*)"/>', res.text, re.IGNORECASE)
     published = [
         datetime.datetime.fromisoformat(pt) for pt in
-        re.findall('<published>(.*?)</published>', res.text, re.IGNORECASE)
+        re.findall('<published>(.*)</published>', res.text, re.IGNORECASE)
     ]
     items = tuple(
         (html.unescape(title), link, date)
