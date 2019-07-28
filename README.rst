@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-27T16:28:17+0200
+.. Last modified: 2019-07-28T20:29:34+0200
 
 Introduction
 ============
@@ -28,6 +28,7 @@ other BSD systems, Linux or OS-X without major problems.
 All scripts use Python 3 specific features. Most recently I converted
 ``str.format`` calls to f-strings, meaning that you'll need Python 3.6 or
 later for the Python scripts.
+
 
 Running tests
 =============
@@ -814,3 +815,15 @@ Convert video files to VP9_ video and Vorbis_ audio streams in a webm_
 container, using a 2-pass process.
 
 .. _webm: https://en.wikipedia.org/wiki/WebM
+
+
+youtube-feed.py
+---------------
+
+Checks youtube for the latest video's from your favorite channels.
+Requires the `requests module`_ (version 2.x).
+
+.. _requests module: https://2.python-requests.org/en/master/
+
+It also requires you to have a JSON-file called ``.youtube-feedrc`` in your
+``$HOME`` directory. What this file should contain is documented in the script.
