@@ -5,38 +5,24 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-07-27T21:09:03+0200
+# Last modified: 2019-07-29T14:46:16+0200
 """
 Open file(s) given on the command line in the appropriate program.
-
-Some of the programs are X11 programs.
+The appropriate program is read from a configuration file called “.openrc” in
+the user's $HOME directory.
 """
 
 from os.path import isdir, isfile, exists, basename
 from re import search, IGNORECASE
 from sys import argv
 import argparse
+import json
 import logging
+import os
 import subprocess as sp
 from magic import from_file
 
-__version__ = '1.11'
-
-# You should adjust the programs called to suit your preferences.
-filetypes = {
-    r'\.(pdf|epub)$': ['mupdf'],
-    r'\.(txt|tex|md|rst|py|sh)$': ['gvim', '--nofork'],
-    r'\.html$': ['firefox'],
-    r'\.xcf$': ['gimp'],
-    r'\.e?ps$': ['gv'],
-    r'\.(jpe?g|png|gif|tiff?|p[abgp]m|bmp|svg)$': ['gpicview'],
-    r'\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$': ['tar', 'tf'],
-    r'\.(tar\.|t)(z|gz|bz2?|xz)$': ['tar', 'tf'],
-    r'\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm|vob)$': ['mpv'],
-    r'\.(s3m|xm|mod|mid)$':
-    ['urxvt', '-title', 'Timidity++', '-e', 'timidity', '-in', '-A30a']
-}
-othertypes = {'dir': ['rox'], 'txt': ['gvim', '--nofork']}
+__version__ = '2.0'
 
 
 def main(argv):  # noqa
@@ -45,6 +31,7 @@ def main(argv):  # noqa
     Arguments:
         argv: command line arguments; list of strings.
     """
+    filetypes, othertypes = readconfig()
     if argv[0].endswith(('open', 'open.py')):
         del argv[0]
     opts = argparse.ArgumentParser(prog='open', description=__doc__)
@@ -100,6 +87,42 @@ def main(argv):  # noqa
                 sp.Popen([args.application])
             except OSError as e:
                 logging.error(fail.format(args.application, e))
+
+
+def readconfig():
+    """
+    Read the configuration from ~/.openrc in JSON format.
+
+    The contents of that file could look something like this:
+
+    {
+        "filetypes": {
+            "\\.(pdf|epub)$": [ "mupdf" ],
+            "\\.(txt|tex|md|rst|py|sh)$": [ "gvim", "--nofork" ],
+            "\\.html$": [ "firefox" ],
+            "\\.xcf$": [ "gimp" ],
+            "\\.e?ps$": [ "gv" ],
+            "\\.(jpe?g|png|gif|tiff?|p[abgp]m|bmp|svg)$": [ "gpicview" ],
+            "\\.(pax|cpio|zip|jar|ar|xar|rpm|7z)$": [ "tar", "tf" ],
+            "\\.(tar\\.|t)(z|gz|bz2?|xz)$": [ "tar", "tf" ],
+            "\\.(mp4|mkv|avi|flv|mpg|movi?|m4v|webm|vob)$": [ "mpv" ],
+            "\\.(s3m|xm|mod|mid)$":
+              [ "urxvt", "-title", "Timidity++", "-e", "timidity", "-in", "-A30a" ]
+        },
+        "othertypes": {
+            "dir": [ "rox" ],
+            "txt": [ "gvim", "--nofork" ]
+        }
+    }
+
+    You should change the programs linked to “filetypes”, and add or remove
+    them to suit your preferences.  It is recommended to not remove the keys
+    “dir” and “txt” in “othertypes”.
+    """
+    rcpath = os.environ['HOME'] + os.sep + '.openrc'
+    with open(rcpath) as rcfile:
+        config = json.load(rcfile)
+    return config['filetypes'], config['othertypes']
 
 
 def matchfile(fdict, odict, fname):
