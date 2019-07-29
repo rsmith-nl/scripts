@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-29T13:21:03+0200
+.. Last modified: 2019-07-29T15:42:08+0200
 
 Introduction
 ============
@@ -61,6 +61,9 @@ The file ``scripts-tests.py`` is excluded because it contains lots of
 cause for alarm.
 
 The result should be: ``No issues identified.``
+
+Further general testing of Python scripts is done with ``pylama``.
+The aim is to have no warnings or errors.
 
 
 The programs

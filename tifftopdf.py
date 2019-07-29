@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-29T21:02:55+02:00
-# Last modified: 2019-07-27T21:13:29+0200
+# Last modified: 2019-07-29T15:37:23+0200
 """
 Convert TIFF files to PDF format.
 
@@ -99,7 +99,7 @@ def tiffconv(fname, jpeg=False, quality=85):
             yres = float(txt[index + 2])
         except ValueError:
             xres, yres = None, None
-        outname = re.sub('\.tif{1,2}?$', '.pdf', fname, flags=re.IGNORECASE)
+        outname = re.sub(r'\.tif{1,2}?$', '.pdf', fname, flags=re.IGNORECASE)
         program = ['tiff2pdf']
         if xres:
             args = [

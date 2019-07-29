@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-03T08:47:30+02:00
-# Last modified: 2018-04-16T21:51:14+0200
+# Last modified: 2019-07-29T15:35:14+0200
 """
 Summarize the deny log messages from ipfw.
 
@@ -34,7 +34,7 @@ def services(filename='/etc/services'):
     """
     with open(filename) as serv:
         data = serv.read()
-    matches = re.findall('\n(\S+)\s+(\d+)/', data)
+    matches = re.findall('\n' + r'(\S+)\s+(\d+)/', data)
     return {int(num): name for name, num in set(matches)}
 
 
@@ -54,8 +54,8 @@ def parselogfile(filename):
         df = open(filename)
     data = df.read()
     df.close()
-    patt = 'ipfw: (\d+) Deny (?:\S+) ' \
-           '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in'
+    patt = r'ipfw: (\d+) Deny (?:\S+) ' \
+           r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in'
     return tuple(set(re.findall(patt, data)))
 
 

@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T01:41:21+02:00
-# Last modified: 2019-07-27T14:05:17+0200
+# Last modified: 2019-07-29T15:40:17+0200
 """Script to format a Git log for LaTeX."""
 
 import os
@@ -32,14 +32,14 @@ def fmtlog(txt):
         A LaTeX formatted version of the input.
     """
     # Replace TeX special characters in the whole text.
-    specials = ('_', '#', '%', '\$', '{', '}')
+    specials = ('_', '#', '%', r'\$', '{', '}')
     for s in specials:
         txt = re.sub(r'(?<!\\)' + s, '\\' + s, txt)
     # Remove periods at the end of lines.
-    txt = re.sub('\.$', '', txt, flags=re.MULTILINE)
+    txt = re.sub(r'\.$', '', txt, flags=re.MULTILINE)
     lines = txt.split('\n')
     # Remove reference to HEAD
-    lines[0] = re.sub('\(.*\) ', '', lines[0])
+    lines[0] = re.sub(r'\(.*\) ', '', lines[0])
     # Use typewriter font for the commit id.
     lines = [r'\texttt{' + re.sub(' ', r'} ', ln, count=1) for ln in lines if ln]
     return '\\\\\n'.join(lines)

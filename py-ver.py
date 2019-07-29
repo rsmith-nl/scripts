@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-04-28T23:25:35+0200
-# Last modified: 2018-07-07T15:07:05+0200
+# Last modified: 2019-07-29T15:36:51+0200
 """Recursively list or set the __version__ string in Python files."""
 
 import argparse
@@ -13,7 +13,7 @@ import os
 import re
 import sys
 
-_vre = re.compile('^__version__\s+=\s+[\'\"].+', flags=re.M)
+_vre = re.compile(r'^__version__\s+=\s+' + '[\'\"].+', flags=re.M)
 _vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
 
 
