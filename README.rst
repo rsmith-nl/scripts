@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-28T20:29:34+0200
+.. Last modified: 2019-07-29T13:21:03+0200
 
 Introduction
 ============
@@ -15,6 +15,8 @@ to save me from having to recall the options every time I need them.
 
 Another portion are basically Python_ front-ends to run a utility in parallel
 on different files.
+
+.. _Python: http://www.python.org/
 
 All the functions in the python scripts come with documentation strings to
 explain what they do. The shell scripts have comments where necessary. They
@@ -33,14 +35,14 @@ later for the Python scripts.
 Running tests
 =============
 
-Tests for some of the functions used in the scripts are contained in
+Tests for some of the functions used in the Python scripts are contained in
 ``scripts-tests.py``. Running the tests requires ``pytest``. Running the tests
 is done as follows::
 
     pytest scripts-tests.py
 
-Tests for security issues can be done with ``bandit``. I've run the tests as
-follows::
+Tests for security issues of the Python scripts can be done with ``bandit``.
+I've run the tests as follows::
 
     bandit -s B404 -x scripts-tests.py *.py | less
 
@@ -64,45 +66,11 @@ The result should be: ``No issues identified.``
 The programs
 ============
 
-backup-local.sh
----------------
-
-Backs up mount points to other mount points. This script is designed to be run
-from cron_ as ``root``.
-
-.. _cron: http://en.wikipedia.org/wiki/Cron
-
-
-.. NOTE::
-    You should *not* run this script as-is!
-
-Change the ``__mkbackup`` calls at the end of the script to reflect your
-situation.
-
-
-checkfor.py
------------
-
-This is more of a snippet of Python_ code. It provides a function called
-``checkfor`` that detects the availability of a required program. It is
-designed to be called from the main part of a script and terminates the script
-if the required program is not found.
-
-.. _Python: http://www.python.org/
-
-
 clean.sh
 --------
 
 This script removes several types of generated files from the directory it is
 called from.
-
-
-clock.sh
---------
-
-Prints the time in several timezones that interest me in my locale.
-You should probably change the timezone and locale to suit your preferences.
 
 
 csv2tbl.py
@@ -527,10 +495,12 @@ nospaces.py
 
 Replaces whitespace in filenames with underscores.
 
+
 ntpclient.py
 ------------
 
-A very simple NTP query and time setting program.
+A *very simple* NTP query and time setting program. It doesn't pretend to be
+extremely accurate.
 
 
 offsetsrt.py
