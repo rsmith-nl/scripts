@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2019-07-29T00:56:41+0200
+# Last modified: 2019-07-30T22:18:51+0200
 """Get the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -14,6 +14,7 @@ import json
 import os
 import re
 import requests
+import sys
 
 base = 'https://www.youtube.com/feeds/videos.xml?channel_id='
 now = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -40,6 +41,8 @@ with open(rcpath) as rc:
     else:
         limit = 7
 
+# Flush after every line.
+sys.stdout.reconfigure(line_buffering=True)
 # Retrieve and print video information
 for channel_title, channel_id in channels.items():
     res = requests.get(base + channel_id)
