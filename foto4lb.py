@@ -5,7 +5,7 @@
 # Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2019-07-27T21:14:45+0200
+# Last modified: 2019-07-30T15:30:46+0200
 """Shrink fotos to a size suitable for use in my logbook."""
 
 from datetime import datetime
@@ -59,10 +59,10 @@ def main(argv):
     if not args.path:
         parser.print_help()
         sys.exit(0)
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “convert”')
+        logging.debug('found “convert”')
     except FileNotFoundError:
         logging.error('the program “convert” cannot be found')
         sys.exit(1)

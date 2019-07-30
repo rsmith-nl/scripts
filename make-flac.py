@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-22T00:12:03+01:00
-# Last modified: 2019-07-27T21:12:18+0200
+# Last modified: 2019-07-30T15:32:05+0200
 """
 Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
 
@@ -57,10 +57,10 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['flac'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “flac”')
+        logging.debug('found “flac”')
     except FileNotFoundError:
         logging.error('the program “flac” cannot be found')
         sys.exit(1)

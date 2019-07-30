@@ -5,7 +5,7 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-06T20:28:07+01:00
-# Last modified: 2019-07-27T21:14:01+0200
+# Last modified: 2019-07-30T15:39:33+0200
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -42,10 +42,10 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['exiftool'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “exiftool”')
+        logging.debug('found “exiftool”')
     except FileNotFoundError:
         logging.error('the “exiftool” program cannot be found')
         sys.exit(1)

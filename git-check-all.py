@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2019-07-27T21:11:22+0200
+# Last modified: 2019-07-30T15:31:31+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -42,7 +42,7 @@ def main(argv):
     )
     logging.debug(f'Command line arguments = {argv}')
     logging.debug(f'Parsed arguments = {args}')
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['git'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info('found “git”')

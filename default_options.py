@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-03-26T23:04:50+02:00
-# Last modified: 2019-07-30T15:05:30+0200
+# Last modified: 2019-07-30T15:51:39+0200
 """
 Get a list of installed packages. For each package, determine if the options
 are identical compared to the default options. If so, print out the package name.
@@ -45,7 +45,7 @@ def run(args):  # {{{1
         Standard output of the program, converted to UTF-8 string.
     """
     comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
-    return comp.stdout.decode('utf-8')
+    return comp.stdout.decode()
 
 
 def check(line):  # {{{1
@@ -83,6 +83,13 @@ def main(argv):  # {{{1
     Arguments:
         argv: command line arguments
     """
+    # Look for required programs.
+    try:
+        for prog in ('pkg', 'make'):
+            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    except FileNotFoundError:
+        print('ERROR: required program “{prog}” not found')
+        sys.exit(1)
     data = run(['pkg', 'info', '-a', '-o'])
     packagelines = data.splitlines()
     print('# List of packages with default options.')
@@ -92,7 +99,7 @@ def main(argv):  # {{{1
             if result == Comparison.SAME:
                 print(pkg)
             elif result == Comparison.UNKNOWN:
-                print('#', pkg, 'is unknown in the ports tree.')
+                print(f'# “{pkg}” is unknown in the ports tree.')
 
 
 if __name__ == '__main__':

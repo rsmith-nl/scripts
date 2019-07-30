@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-07-27T15:48:15+0200
+# Last modified: 2019-07-30T15:49:57+0200
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -64,12 +64,8 @@ def run(args):
     Returns:
         Standard output of the program, converted to UTF-8 and split into lines.
     """
-    if not isinstance(args, (list, tuple)):
-        raise ValueError('args should be a list or tuple')
-    if not all(isinstance(x, str) for x in args):
-        raise ValueError('args should be a list or tuple of strings')
     comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
-    return comp.stdout.decode('utf-8').splitlines()
+    return comp.stdout.decode().splitlines()
 
 
 def uses_default_options(name, origin):
@@ -227,6 +223,14 @@ def main(argv):
         extra = '(detected)'
     else:
         extra = '(override)'
+    # Look for required programs.
+    try:
+        for prog in ('pkg', 'make'):
+            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+            logging.debug(f'found “{prog}”')
+    except FileNotFoundError:
+        logging.error('required program “{prog}” not found')
+        sys.exit(1)
     logging.info(f'FreeBSD processor architecture: {args.arch} {extra}')
     logging.info('retrieving local and remote package lists')
     # I'm using concurrent.futures here because especially get_remote_pkgs
@@ -236,16 +240,15 @@ def main(argv):
         local = ex.submit(get_local_pkgs)
         rd, ld = False, False
         while not (rd and ld):
-            if remote.done() and not rd:
+            if (not rd) and remote.done():
                 rd = True
-                logging.info('finished retrieving remote packages.')
-            if local.done() and not ld:
+                remotepkg = remote.result()
+                logging.info(f'finished retrieving {len(remotepkg)} remote packages.')
+            if (not ld) and local.done():
                 ld = True
-                logging.info('finished retrieving local packages.')
+                localpkg = local.result()
+                logging.info('finished retrieving {len(localpkg)} local packages.')
             time.sleep(0.25)
-        remotepkg = remote.result()
-        logging.debug('{len(remotepkg)} remote packages')
-        localpkg = local.result()
     choose = {Check.UP_TO_DATE: [], Check.REBUILD_SOURCE: [],
               Check.NOT_IN_REMOTE: [], Check.USE_PACKAGE: []}
     with cf.ProcessPoolExecutor(max_workers=4) as chk:

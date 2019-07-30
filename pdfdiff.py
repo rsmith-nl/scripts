@@ -4,7 +4,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-11T00:22:30+0200
-# Last modified: 2019-07-27T14:13:46+0200
+# Last modified: 2019-07-30T15:51:58+0200
 """
 Script to try and show a diff between two PDF files.
 
@@ -31,7 +31,7 @@ def pdftotext(path):
     """
     args = ['pdftotext', '-layout', path, '-']
     result = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
-    return result.stdout.decode('utf-8')
+    return result.stdout.decode()
 
 
 def colordiff(txt):

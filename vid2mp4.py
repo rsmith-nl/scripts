@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2019-07-27T21:10:32+0200
+# Last modified: 2019-07-30T15:38:29+0200
 """Convert video files to H.264/AAC streams in an MP4 container."""
 
 from functools import partial
@@ -56,10 +56,10 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['ffmpeg'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “ffmpeg”')
+        logging.debug('found “ffmpeg”')
     except FileNotFoundError:
         logging.error('the “ffmpeg” program cannot be found')
         sys.exit(1)

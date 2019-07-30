@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2019-07-27T21:07:13+0200
+# Last modified: 2019-07-30T15:28:17+0200
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -86,7 +86,7 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    # Check for requisites
+    # Check for required programs
     try:
         sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info('found “convert”')

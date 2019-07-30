@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-09-10T12:15:13+02:00
-# Last modified: 2019-07-27T20:36:08+0200
+# Last modified: 2019-07-30T15:31:11+0200
 """Retrieve the numbered tracks from a dvd."""
 
 import logging
@@ -28,7 +28,7 @@ def main(argv):
         print('get-tracks version', __version__)
         print('Example: get-tracks 3 4 5 retrieves tracks 3, 4 and 5')
         exit(0)
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['tccat'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info('found “tccat”')

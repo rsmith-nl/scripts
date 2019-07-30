@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-22T01:26:10+01:00
-# Last modified: 2019-07-27T21:11:52+0200
+# Last modified: 2019-07-30T15:32:51+0200
 """
 Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to MP3 format.
 
@@ -57,7 +57,7 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {argv}')
     logging.debug(f'parsed arguments = {args}')
-    # Check for requisites
+    # Check for required programs.
     try:
         sp.run(['lame'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info('found “lame”')
