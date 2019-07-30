@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2019-07-30T22:18:51+0200
+# Last modified: 2019-07-30T23:56:08+0200
 """Get the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -65,7 +65,7 @@ for channel_title, channel_id in channels.items():
         continue
     print(f"Channel “{channel_title}”")
     for title, link, date in items:
-        print(f"* title: “{title}”")
+        print(f"∙ title: “{title}”")
         print(f"   date: {date}")
         print(f"   link: “{link}”")
     print()
