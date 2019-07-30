@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-07-30T15:49:57+0200
+# Last modified: 2019-07-30T22:53:42+0200
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -175,18 +175,16 @@ def checkpkg(localpkg, remotepkg):
     return (name, Check.NOT_IN_REMOTE)
 
 
-def main(argv):
-    """
-    Entry point for find-pkg-upgrades.py.
-
-
-    Arguments:
-        argv: Command line arguments.
-    """
+def configure(argv):
+    """Configure the application at start-up."""
+    # Get FreeBSD major version and architecture.
     cp = sp.run(['uname', '-p', '-U'], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
     uname = cp.stdout.split()
     major = int(uname[1][:2])
     arch = uname[0]
+    # Set standard output to flush after every line
+    sys.stdout.reconfigure(line_buffering=True)
+    # Process the command-line arguments.
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument(
@@ -210,10 +208,20 @@ def main(argv):
         help="logging level (defaults to 'info')"
     )
     args = parser.parse_args(argv)
+    # Configure logging
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
     )
-    parser.parse_args(argv)
+    # Look for required programs.
+    try:
+        for prog in ('pkg', 'make'):
+            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+            logging.debug(f'found “{prog}”')
+    except FileNotFoundError:
+        logging.error('required program “{prog}” not found')
+        sys.exit(1)
+    # Print info for the user.
     if major == args.major:
         extra = '(detected)'
     else:
@@ -223,16 +231,20 @@ def main(argv):
         extra = '(detected)'
     else:
         extra = '(override)'
-    # Look for required programs.
-    try:
-        for prog in ('pkg', 'make'):
-            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-            logging.debug(f'found “{prog}”')
-    except FileNotFoundError:
-        logging.error('required program “{prog}” not found')
-        sys.exit(1)
     logging.info(f'FreeBSD processor architecture: {args.arch} {extra}')
     logging.info('retrieving local and remote package lists')
+    return args
+
+
+def main(argv):
+    """
+    Entry point for find-pkg-upgrades.py.
+
+
+    Arguments:
+        argv: Command line arguments.
+    """
+    args = configure(argv)
     # I'm using concurrent.futures here because especially get_remote_pkgs
     # can take a long time. This way we can reduce the time as much as possible.
     with cf.ProcessPoolExecutor(max_workers=2) as ex:
@@ -247,7 +259,7 @@ def main(argv):
             if (not ld) and local.done():
                 ld = True
                 localpkg = local.result()
-                logging.info('finished retrieving {len(localpkg)} local packages.')
+                logging.info(f'finished retrieving {len(localpkg)} local packages.')
             time.sleep(0.25)
     choose = {Check.UP_TO_DATE: [], Check.REBUILD_SOURCE: [],
               Check.NOT_IN_REMOTE: [], Check.USE_PACKAGE: []}
@@ -256,7 +268,7 @@ def main(argv):
         i = 1
         logging.info('checking packages')
         for name, result in chk.map(partial(checkpkg, remotepkg=remotepkg), localpkg):
-            print(f'\r{i:3d}/{total:3d}', end='', flush=True)
+            print(f'\r{i:3d}/{total:3d}', end='')
             i += 1
             choose[result].append(name)
     print()
