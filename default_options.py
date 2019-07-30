@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-03-26T23:04:50+02:00
-# Last modified: 2019-07-27T13:23:29+0200
+# Last modified: 2019-07-30T15:05:30+0200
 """
 Get a list of installed packages. For each package, determine if the options
 are identical compared to the default options. If so, print out the package name.
@@ -44,10 +44,6 @@ def run(args):  # {{{1
     Returns:
         Standard output of the program, converted to UTF-8 string.
     """
-    if not isinstance(args, (list, tuple)):
-        raise ValueError('args should be a list or tuple')
-    if not all(isinstance(x, str) for x in args):
-        raise ValueError('args should be a list or tuple of strings')
     comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
     return comp.stdout.decode('utf-8')
 
