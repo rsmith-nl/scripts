@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-27T23:36:22+0200
+# Last modified: 2019-07-30T22:36:49+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -312,11 +312,11 @@ def main():
     if hasbattery():
         items.insert(-1, battery)
     logging.info('starting')
+    sys.stdout.reconfigure(line_buffering=True)  # Flush every line.
     try:
         while True:
             start = time.monotonic()
             print(' | '.join(item() for item in items))
-            sys.stdout.flush()
             end = time.monotonic()
             delta = end - start
             if delta < 1:
