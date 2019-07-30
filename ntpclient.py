@@ -5,13 +5,12 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2018-12-06T22:37:44+0100
+# Last modified: 2019-07-30T19:47:58+0200
 """
 Simple NTP query program. This program does not strive for high accuracy.
 Use this only as a client, never for a time server!
 """
 
-from contextlib import closing
 from datetime import datetime
 from socket import socket, AF_INET, SOCK_DGRAM
 import os
@@ -31,7 +30,7 @@ _query = b'\x1b' + 47 * b'\0'
 
 def get_ntp_time(host="pool.ntp.org", port=123):
     fmt = "!12I"
-    with closing(socket(AF_INET, SOCK_DGRAM)) as s:
+    with socket(AF_INET, SOCK_DGRAM) as s:
         s.sendto(_query, (host, port))
         msg, address = s.recvfrom(1024)
     unpacked = struct.unpack(fmt, msg[0:struct.calcsize(fmt)])
