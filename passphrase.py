@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2019-02-10T13:08:22+0100
+# Last modified: 2019-08-13T01:41:00+0200
 """
 Creates a passphrase.
 
@@ -17,7 +17,7 @@ import secrets
 import re
 import sys
 
-__version__ = '1.1.0'
+__version__ = '1.2'
 
 wordfiles = {
     'en': '/usr/share/dict/words',
@@ -45,6 +45,13 @@ parser.add_argument(
     '-c',
     '--count',
     type=int,
+    default=1,
+    help='number of passphrases to generate (default: 1)'
+)
+parser.add_argument(
+    '-w',
+    '--words',
+    type=int,
     default=3,
     help='number of words (default: 3)'
 )
@@ -63,7 +70,8 @@ logging.info('{} total words in {}'.format(len(words), wf))
 words = [w for w in words if minwordlen < len(w) < maxwordlen]
 logging.info('{} words of correct length in {}'.format(len(words), wf))
 aantal = len(words) + 1
-choices = [secrets.choice(words) for _ in range(args.count)]
-filler = [secrets.choice(fillchars) for _ in range(args.count)]
-phrase = ''.join([k for t in zip(choices, filler) for k in t])[:-1]
-print(phrase)
+for n in range(args.count):
+    choices = [secrets.choice(words) for _ in range(args.words)]
+    filler = [secrets.choice(fillchars) for _ in range(args.words)]
+    phrase = ''.join([k for t in zip(choices, filler) for k in t])[:-1]
+    print(phrase)
