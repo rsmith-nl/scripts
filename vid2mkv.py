@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2019-07-30T15:37:58+0200
+# Last modified: 2019-08-22T21:26:19+0200
 """Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
@@ -47,7 +47,7 @@ def main(argv):
     )
     logging.debug(f'command line arguments = {args}')
     logging.debug(f'parsed arguments = {args}')
-    # Check for rewuired programs.
+    # Check for required programs.
     try:
         sp.run(['ffmpeg'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.debug('found “ffmpeg”')
