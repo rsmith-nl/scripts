@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-07-30T22:53:42+0200
+# Last modified: 2019-08-22T21:48:12+0200
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -20,7 +20,7 @@ import sys
 import time
 import requests
 
-__version__ = '2.0'
+__version__ = '2.1'
 
 
 class Comparison(Enum):
@@ -277,10 +277,15 @@ def main(argv):
         print(' '.join(choose[Check.USE_PACKAGE]))
     else:
         print('No packages to upgrade!')
-    logging.info('the following should be rebuilt from source (non-default options):')
-    logging.info(' '.join(choose[Check.REBUILD_SOURCE]))
-    logging.info('not found in remote repo:')
-    logging.info(' '.join(choose[Check.NOT_IN_REMOTE]))
+    if choose[Check.REBUILD_SOURCE]:
+        logging.info('the following should be rebuilt from source (non-default options):')
+        logging.info(' '.join(choose[Check.REBUILD_SOURCE]))
+    choose[Check.NOT_IN_REMOTE] = [
+        pn for pn in choose[Check.NOT_IN_REMOTE] if not pn.startswith('py37-')
+    ]
+    if choose[Check.NOT_IN_REMOTE]:
+        logging.info('not found in remote repo:')
+        logging.info(' '.join(choose[Check.NOT_IN_REMOTE]))
 
 
 if __name__ == '__main__':
