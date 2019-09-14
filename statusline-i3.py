@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-07-30T22:36:49+0200
+# Last modified: 2019-09-14T14:05:03+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -119,8 +119,58 @@ def setproctitle(name):
     libc.setproctitle(fmt, value)
 
 
-# High level functions
+def readmbox(mboxname, storage):
+    """
+    Report unread mail.
 
+    Arguments:
+        mboxname (str): name of the mailbox to read.
+        storage: a dict with keys (unread, time, size) from the previous call
+            or an empty dict. This dict will be *modified* by this function.
+
+    Returns: The number of unread messages in this mailbox.
+    """
+    stats = os.stat(mboxname)
+    # When mutt modifies the mailbox, it seems to only change the
+    # ctime, not the mtime! This is probably releated to how mutt saves the
+    # file. See also stat(2).
+    newtime = stats.st_ctime
+    newsize = stats.st_size
+    if stats.st_size == 0:
+        storage['unread'] = 0
+        storage['time'] = newtime
+        storage['size'] = 0
+        return 0
+    if not storage or newtime > storage['time'] or newsize != storage['size']:
+        with open(mboxname) as mbox:
+            with mmap.mmap(mbox.fileno(), 0, prot=mmap.PROT_READ) as mm:
+                start, total = 0, 1  # First mail is not found; it starts on first line...
+                while True:
+                    rv = mm.find(b'\n\nFrom ', start)
+                    if rv == -1:
+                        break
+                    else:
+                        total += 1
+                        start = rv + 7
+                start, read = 0, 0
+                while True:
+                    rv = mm.find(b'\nStatus: R', start)
+                    if rv == -1:
+                        break
+                    else:
+                        read += 1
+                        start = rv + 10
+        unread = total - read
+        if unread < 0:
+            unread = 0
+        # Save values for the next run.
+        storage['unread'], storage['time'], storage['size'] = unread, newtime, newsize
+    else:
+        unread = storage['unread']
+    return unread
+
+
+# High level functions
 
 def network(storage):
     """
@@ -155,49 +205,18 @@ def network(storage):
     return '  '.join(items)
 
 
-def mail(storage, mboxname):
+def mail(mailboxes):
     """
     Report unread mail.
 
     Arguments:
-        storage: a dict with keys (unread, time, size) from the previous call or an empty dict.
-            This dict will be *modified* by this function.
-        mboxname (str): name of the mailbox to read.
+        mailboxes: a dict of mailbox info with the paths as the keys.
 
     Returns: A string to display.
     """
-    stats = os.stat(mboxname)
-    if stats.st_size == 0:
-        return 'Mail: 0'
-    # When mutt modifies the mailbox, it seems to only change the
-    # ctime, not the mtime! This is probably releated to how mutt saves the
-    # file. See also stat(2).
-    newtime = stats.st_ctime
-    newsize = stats.st_size
-    if not storage or newtime > storage['time'] or newsize != storage['size']:
-        with open(mboxname) as mbox:
-            with mmap.mmap(mbox.fileno(), 0, prot=mmap.PROT_READ) as mm:
-                start, total = 0, 1  # First mail is not found; it starts on first line...
-                while True:
-                    rv = mm.find(b'\n\nFrom ', start)
-                    if rv == -1:
-                        break
-                    else:
-                        total += 1
-                        start = rv + 7
-                start, read = 0, 0
-                while True:
-                    rv = mm.find(b'\nStatus: R', start)
-                    if rv == -1:
-                        break
-                    else:
-                        read += 1
-                        start = rv + 10
-        unread = total - read
-        # Save values for the next run.
-        storage['unread'], storage['time'], storage['size'] = unread, newtime, newsize
-    else:
-        unread = storage['unread']
+    unread = 0
+    for k, v in mailboxes.items():
+        unread += readmbox(k, v)
     return f'Mail: {unread}'
 
 
@@ -274,7 +293,7 @@ def parse_args(argv):
         '--mailbox',
         type=str,
         default=os.environ['MAIL'],
-        help="Location of the mailbox (defaults to MAIL environment variable)"
+        help="Location of the mailboxes. A string of mailbox names separated by ‘:’"
     )
     args = opts.parse_args(argv)
     return args
@@ -300,13 +319,13 @@ def main():
         format='%(levelname)s: %(message)s'
     )
     setproctitle(b'statusline-i3')
-    maildata = {}
+    args = parse_args(sys.argv[1:])
+    mailboxes = {name: {} for name in args.mailbox.split(':')}
     cpudata = {}
     netdata = {}
-    args = parse_args(sys.argv[1:])
     items = [
         partial(network, storage=netdata),
-        partial(mail, storage=maildata, mboxname=args.mailbox), memory,
+        partial(mail, mailboxes=mailboxes), memory,
         partial(cpu, storage=cpudata), date
     ]
     if hasbattery():
