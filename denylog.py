@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-03T08:47:30+02:00
-# Last modified: 2019-07-29T15:35:14+0200
+# Last modified: 2019-09-16T21:56:07+0200
 """
 Summarize the deny log messages from ipfw.
 
@@ -19,44 +19,7 @@ import logging
 import re
 import sys
 
-__version__ = '0.4.1'
-
-
-def services(filename='/etc/services'):
-    """
-    Generate a dictionary of the available services from /etc/services.
-
-    Arguments:
-        filename: Name of the services file.
-
-    Returns:
-        A dict in the form of {25: 'smtp', 80: 'http', ...}
-    """
-    with open(filename) as serv:
-        data = serv.read()
-    matches = re.findall('\n' + r'(\S+)\s+(\d+)/', data)
-    return {int(num): name for name, num in set(matches)}
-
-
-def parselogfile(filename):
-    """
-    Extract deny rules for incoming packets from file and parse them.
-
-    Arguments:
-        filename: Name of the file to read.
-
-    Returns:
-        A tuple of (rule, source IP, port) tuples
-    """
-    if filename.endswith('.bz2'):
-        df = bz2.open(filename, 'rt')
-    else:
-        df = open(filename)
-    data = df.read()
-    df.close()
-    patt = r'ipfw: (\d+) Deny (?:\S+) ' \
-           r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in'
-    return tuple(set(re.findall(patt, data)))
+__version__ = '0.5'
 
 
 def main(argv):
@@ -95,6 +58,43 @@ def main(argv):
             continue
         for rule, IP, port in matches:
             print(reps.format(IP + ',', serv[int(port)] + ',', rule))
+
+
+def services(filename='/etc/services'):
+    """
+    Generate a dictionary of the available services from /etc/services.
+
+    Arguments:
+        filename: Name of the services file.
+
+    Returns:
+        A dict in the form of {25: 'smtp', 80: 'http', ...}
+    """
+    with open(filename) as serv:
+        data = serv.read()
+    matches = re.findall('\n' + r'(\S+)\s+(\d+)/', data)
+    return {int(num): name for name, num in set(matches)}
+
+
+def parselogfile(filename):
+    """
+    Extract deny rules for incoming packets from file and parse them.
+
+    Arguments:
+        filename: Name of the file to read.
+
+    Returns:
+        A tuple of (rule, source IP, port) tuples
+    """
+    if filename.endswith('.bz2'):
+        df = bz2.open(filename, 'rt')
+    else:
+        df = open(filename)
+    data = df.read()
+    df.close()
+    patt = r'ipfw: (\d+) Deny (?:\S+) ' \
+           r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in'
+    return tuple(set(re.findall(patt, data)))
 
 
 if __name__ == '__main__':

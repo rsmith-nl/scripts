@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-03-26T23:04:50+02:00
-# Last modified: 2019-07-30T15:51:39+0200
+# Last modified: 2019-09-16T21:55:32+0200
 """
 Get a list of installed packages. For each package, determine if the options
 are identical compared to the default options. If so, print out the package name.
@@ -33,49 +33,6 @@ class Comparison(Enum):
     UNKNOWN = 2
 
 
-def run(args):  # {{{1
-    """
-    Run a subprocess and return the standard output.
-
-    Arguments:
-        args (list): List of argument strings. Typically a command name
-            followed by options.
-
-    Returns:
-        Standard output of the program, converted to UTF-8 string.
-    """
-    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
-    return comp.stdout.decode()
-
-
-def check(line):  # {{{1
-    """
-    Check of a given package uses the default options or
-    if options have been changed.
-
-    Arguments:
-        line (str): A line of text containing the package name and origin,
-        separated by whitespace.
-
-    Returns:
-        A tuple of a string containing the package name and a Comparison enum.
-    """
-    pkg, origin = line.split()
-    optionlines = run(['pkg', 'query', '%Ok %Ov', pkg]).splitlines()
-    options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
-    try:
-        os.chdir('/usr/ports/{}'.format(origin))
-    except FileNotFoundError:
-        return (pkg, Comparison.UNKNOWN)
-    default = run(['make', '-V', 'OPTIONS_DEFAULT'])
-    options_default = set(default.split())
-    if options_default == options_set:
-        v = Comparison.SAME
-    else:
-        v = Comparison.CHANGED
-    return (pkg, v)
-
-
 def main(argv):  # {{{1
     """
     Entry point for default_options.py
@@ -100,6 +57,49 @@ def main(argv):  # {{{1
                 print(pkg)
             elif result == Comparison.UNKNOWN:
                 print(f'# “{pkg}” is unknown in the ports tree.')
+
+
+def run(args):  # {{{1
+    """
+    Run a subprocess and return the standard output.
+
+    Arguments:
+        args (list): List of argument strings. Typically a command name
+            followed by options.
+
+    Returns:
+        Standard output of the program, converted to UTF-8 string.
+    """
+    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    return comp.stdout.decode()
+
+
+def check(line):  # {{{1
+    """
+    Check of a given package uses the default options or
+    if options have been changed.
+
+    Arguments:
+        line (str): A line of text containing the package name and origin,
+        Meparated by whitespace.
+
+    Returns:
+        A tuple of a string containing the package name and a Comparison enum.
+    """
+    pkg, origin = line.split()
+    optionlines = run(['pkg', 'query', '%Ok %Ov', pkg]).splitlines()
+    options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
+    try:
+        os.chdir('/usr/ports/{}'.format(origin))
+    except FileNotFoundError:
+        return (pkg, Comparison.UNKNOWN)
+    default = run(['make', '-V', 'OPTIONS_DEFAULT'])
+    options_default = set(default.split())
+    if options_default == options_set:
+        v = Comparison.SAME
+    else:
+        v = Comparison.CHANGED
+    return (pkg, v)
 
 
 if __name__ == '__main__':

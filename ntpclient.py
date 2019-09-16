@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2019-07-30T19:47:58+0200
+# Last modified: 2019-09-16T22:05:16+0200
 """
 Simple NTP query program. This program does not strive for high accuracy.
 Use this only as a client, never for a time server!
@@ -17,30 +17,6 @@ import os
 import struct
 import sys
 import time
-
-# See e.g. # https://www.cisco.com/c/en/us/about/press/internet-protocol-journal/back-issues/table-contents-58/154-ntp.html
-# From left to right:
-# * No leap second adjustment = 0 (2 bits)
-# * protocol version 3 (3 bits)
-# * client packet = 3 (3 bits)
-# In [1]: hex((0 & 0b11) << 6 | (3 & 0b111) << 3 | (3 & 0b111))
-# Out[1]: '0x1b'
-_query = b'\x1b' + 47 * b'\0'
-
-
-def get_ntp_time(host="pool.ntp.org", port=123):
-    fmt = "!12I"
-    with socket(AF_INET, SOCK_DGRAM) as s:
-        s.sendto(_query, (host, port))
-        msg, address = s.recvfrom(1024)
-    unpacked = struct.unpack(fmt, msg[0:struct.calcsize(fmt)])
-    # Return the average of receive and transmit timestamps.
-    # Note that 2208988800 is the difference in seconds between the
-    # UNIX epoch 1970-1-1 and the NTP epoch 1900-1-1.
-    # See: (datetime.datetime(1970,1,1) - datetime.datetime(1900,1,1)).total_seconds()
-    t2 = unpacked[8] + float(unpacked[9]) / 2**32 - 2208988800
-    t3 = unpacked[10] + float(unpacked[11]) / 2**32 - 2208988800
-    return (t2 + t3) / 2
 
 
 def main(argv):
@@ -89,6 +65,31 @@ def main(argv):
         print('Local time - ntp time: {:.6f} s.'.format(diff))
         if res:
             print(res)
+
+
+# See e.g. # https://www.cisco.com/c/en/us/about/press/internet-protocol-journal/back-issues/table-contents-58/154-ntp.html
+# From left to right:
+# * No leap second adjustment = 0 (2 bits)
+# * protocol version 3 (3 bits)
+# * client packet = 3 (3 bits)
+# In [1]: hex((0 & 0b11) << 6 | (3 & 0b111) << 3 | (3 & 0b111))
+# Out[1]: '0x1b'
+_query = b'\x1b' + 47 * b'\0'
+
+
+def get_ntp_time(host="pool.ntp.org", port=123):
+    fmt = "!12I"
+    with socket(AF_INET, SOCK_DGRAM) as s:
+        s.sendto(_query, (host, port))
+        msg, address = s.recvfrom(1024)
+    unpacked = struct.unpack(fmt, msg[0:struct.calcsize(fmt)])
+    # Return the average of receive and transmit timestamps.
+    # Note that 2208988800 is the difference in seconds between the
+    # UNIX epoch 1970-1-1 and the NTP epoch 1900-1-1.
+    # See: (datetime.datetime(1970,1,1) - datetime.datetime(1900,1,1)).total_seconds()
+    t2 = unpacked[8] + float(unpacked[9]) / 2**32 - 2208988800
+    t3 = unpacked[10] + float(unpacked[11]) / 2**32 - 2208988800
+    return (t2 + t3) / 2
 
 
 if __name__ == '__main__':

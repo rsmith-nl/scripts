@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-08-22T21:48:12+0200
+# Last modified: 2019-09-16T21:58:17+0200
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -34,6 +34,119 @@ class Check(Enum):
     REBUILD_SOURCE = 1
     NOT_IN_REMOTE = 2
     USE_PACKAGE = 3
+
+
+def main(argv):
+    """
+    Entry point for find-pkg-upgrades.py.
+
+
+    Arguments:
+        argv: Command line arguments.
+    """
+    args = configure(argv)
+    # I'm using concurrent.futures here because especially get_remote_pkgs
+    # can take a long time. This way we can reduce the time as much as possible.
+    with cf.ProcessPoolExecutor(max_workers=2) as ex:
+        remote = ex.submit(get_remote_pkgs, args.major, args.arch)
+        local = ex.submit(get_local_pkgs)
+        rd, ld = False, False
+        while not (rd and ld):
+            if (not rd) and remote.done():
+                rd = True
+                remotepkg = remote.result()
+                logging.info(f'finished retrieving {len(remotepkg)} remote packages.')
+            if (not ld) and local.done():
+                ld = True
+                localpkg = local.result()
+                logging.info(f'finished retrieving {len(localpkg)} local packages.')
+            time.sleep(0.25)
+    choose = {Check.UP_TO_DATE: [], Check.REBUILD_SOURCE: [],
+              Check.NOT_IN_REMOTE: [], Check.USE_PACKAGE: []}
+    with cf.ProcessPoolExecutor(max_workers=4) as chk:
+        total = len(localpkg)
+        i = 1
+        logging.info('checking packages')
+        for name, result in chk.map(partial(checkpkg, remotepkg=remotepkg), localpkg):
+            print(f'\r{i:3d}/{total:3d}', end='')
+            i += 1
+            choose[result].append(name)
+    print()
+    if choose[Check.USE_PACKAGE]:
+        logging.info('Upgrade from packages:')
+        print(' '.join(choose[Check.USE_PACKAGE]))
+    else:
+        print('No packages to upgrade!')
+    if choose[Check.REBUILD_SOURCE]:
+        logging.info('the following should be rebuilt from source (non-default options):')
+        logging.info(' '.join(choose[Check.REBUILD_SOURCE]))
+    choose[Check.NOT_IN_REMOTE] = [
+        pn for pn in choose[Check.NOT_IN_REMOTE] if not pn.startswith('py37-')
+    ]
+    if choose[Check.NOT_IN_REMOTE]:
+        logging.info('not found in remote repo:')
+        logging.info(' '.join(choose[Check.NOT_IN_REMOTE]))
+
+
+def configure(argv):
+    """Configure the application at start-up."""
+    # Get FreeBSD major version and architecture.
+    cp = sp.run(['uname', '-p', '-U'], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+    uname = cp.stdout.split()
+    major = int(uname[1][:2])
+    arch = uname[0]
+    # Set standard output to flush after every line
+    sys.stdout.reconfigure(line_buffering=True)
+    # Process the command-line arguments.
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '-m',
+        '--major',
+        type=int,
+        default=major,
+        help=f'FreeBSD major version (default {major})'
+    )
+    parser.add_argument(
+        '-a',
+        '--arch',
+        type=str,
+        default=arch,
+        help=f'FreeBSD architecture (default {arch})'
+    )
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'info')"
+    )
+    args = parser.parse_args(argv)
+    # Configure logging
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    # Look for required programs.
+    try:
+        for prog in ('pkg', 'make'):
+            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+            logging.debug(f'found “{prog}”')
+    except FileNotFoundError:
+        logging.error('required program “{prog}” not found')
+        sys.exit(1)
+    # Print info for the user.
+    if major == args.major:
+        extra = '(detected)'
+    else:
+        extra = '(override)'
+    logging.info(f'FreeBSD major version: {args.major} {extra}')
+    if arch == args.arch:
+        extra = '(detected)'
+    else:
+        extra = '(override)'
+    logging.info(f'FreeBSD processor architecture: {args.arch} {extra}')
+    logging.info('retrieving local and remote package lists')
+    return args
 
 
 def get_remote_pkgs(version, arch):
@@ -173,119 +286,6 @@ def checkpkg(localpkg, remotepkg):
         else:
             return (name, Check.UP_TO_DATE)
     return (name, Check.NOT_IN_REMOTE)
-
-
-def configure(argv):
-    """Configure the application at start-up."""
-    # Get FreeBSD major version and architecture.
-    cp = sp.run(['uname', '-p', '-U'], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
-    uname = cp.stdout.split()
-    major = int(uname[1][:2])
-    arch = uname[0]
-    # Set standard output to flush after every line
-    sys.stdout.reconfigure(line_buffering=True)
-    # Process the command-line arguments.
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        '-m',
-        '--major',
-        type=int,
-        default=major,
-        help=f'FreeBSD major version (default {major})'
-    )
-    parser.add_argument(
-        '-a',
-        '--arch',
-        type=str,
-        default=arch,
-        help=f'FreeBSD architecture (default {arch})'
-    )
-    parser.add_argument(
-        '--log',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'info')"
-    )
-    args = parser.parse_args(argv)
-    # Configure logging
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
-    )
-    # Look for required programs.
-    try:
-        for prog in ('pkg', 'make'):
-            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-            logging.debug(f'found “{prog}”')
-    except FileNotFoundError:
-        logging.error('required program “{prog}” not found')
-        sys.exit(1)
-    # Print info for the user.
-    if major == args.major:
-        extra = '(detected)'
-    else:
-        extra = '(override)'
-    logging.info(f'FreeBSD major version: {args.major} {extra}')
-    if arch == args.arch:
-        extra = '(detected)'
-    else:
-        extra = '(override)'
-    logging.info(f'FreeBSD processor architecture: {args.arch} {extra}')
-    logging.info('retrieving local and remote package lists')
-    return args
-
-
-def main(argv):
-    """
-    Entry point for find-pkg-upgrades.py.
-
-
-    Arguments:
-        argv: Command line arguments.
-    """
-    args = configure(argv)
-    # I'm using concurrent.futures here because especially get_remote_pkgs
-    # can take a long time. This way we can reduce the time as much as possible.
-    with cf.ProcessPoolExecutor(max_workers=2) as ex:
-        remote = ex.submit(get_remote_pkgs, args.major, args.arch)
-        local = ex.submit(get_local_pkgs)
-        rd, ld = False, False
-        while not (rd and ld):
-            if (not rd) and remote.done():
-                rd = True
-                remotepkg = remote.result()
-                logging.info(f'finished retrieving {len(remotepkg)} remote packages.')
-            if (not ld) and local.done():
-                ld = True
-                localpkg = local.result()
-                logging.info(f'finished retrieving {len(localpkg)} local packages.')
-            time.sleep(0.25)
-    choose = {Check.UP_TO_DATE: [], Check.REBUILD_SOURCE: [],
-              Check.NOT_IN_REMOTE: [], Check.USE_PACKAGE: []}
-    with cf.ProcessPoolExecutor(max_workers=4) as chk:
-        total = len(localpkg)
-        i = 1
-        logging.info('checking packages')
-        for name, result in chk.map(partial(checkpkg, remotepkg=remotepkg), localpkg):
-            print(f'\r{i:3d}/{total:3d}', end='')
-            i += 1
-            choose[result].append(name)
-    print()
-    if choose[Check.USE_PACKAGE]:
-        logging.info('Upgrade from packages:')
-        print(' '.join(choose[Check.USE_PACKAGE]))
-    else:
-        print('No packages to upgrade!')
-    if choose[Check.REBUILD_SOURCE]:
-        logging.info('the following should be rebuilt from source (non-default options):')
-        logging.info(' '.join(choose[Check.REBUILD_SOURCE]))
-    choose[Check.NOT_IN_REMOTE] = [
-        pn for pn in choose[Check.NOT_IN_REMOTE] if not pn.startswith('py37-')
-    ]
-    if choose[Check.NOT_IN_REMOTE]:
-        logging.info('not found in remote repo:')
-        logging.info(' '.join(choose[Check.NOT_IN_REMOTE]))
 
 
 if __name__ == '__main__':

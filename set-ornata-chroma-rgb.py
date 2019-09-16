@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2019-06-23T21:39:49+0200
+# Last modified: 2019-09-16T22:07:21+0200
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color
 and / or change the brightness."""
 
@@ -15,6 +15,66 @@ import sys
 import usb.core
 
 __version__ = '0.4'
+
+
+def main(argv):
+    """
+    Entry point for set-ornata-chroma-rgb.py.
+
+    Arguments:
+        argv: command line arguments
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument('-i', '--brightness', help="brightness value 0-255", default=-1)
+    parser.add_argument('-r', '--red', help="red value 0-255, default 0", default=0)
+    parser.add_argument('-g', '--green', help="green value 0-255, default 0", default=0)
+    parser.add_argument('-b', '--blue', help="blue value 0-255, default 0", default=0)
+    args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'parsed arguments = {args}')
+
+    color = True
+    if args.red == 0 and args.green == 0 and args.blue == 0:
+        logging.debug('no color change requested')
+        color = False
+        if args.brightness == -1:
+            logging.debug('also no brightness change requested')
+            logging.debug('exiting')
+            sys.exit(0)
+    dev = usb.core.find(idVendor=0x1532, idProduct=0x021e)
+    if dev is None:
+        logging.error('no Razer Ornata Chroma keyboard found')
+        sys.exit(1)
+    logging.debug(str(dev))
+    if color:
+        logging.info('trying to set the color')
+        msg = static_color_msg(args.red, args.green, args.blue)
+        logging.info(f'red={args.red}')
+        logging.info(f'green={args.green}')
+        logging.info(f'blue={args.blue}')
+        logging.debug(f'message={msg}')
+        read = dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
+        if read != 90:
+            logging.error('control transfer for setting the color failed')
+    if args.brightness != -1:
+        logging.info('trying to set the brightness')
+        msg = brightness_message(args.brightness)
+        logging.info(f'brightness={args.brightness}')
+        logging.debug(f'message={msg}')
+        read = dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
+        if read != 90:
+            logging.error('control transfer for setting the brightness failed')
 
 
 def _chk(name, value):
@@ -86,66 +146,6 @@ def brightness_message(brightness):
     msg += bytes(80 - 3)  # Add filler; the variable message buffer is 80 bytes.
     msg += bytes([chksum, 0])  # Add checksum in penultimate byte
     return msg
-
-
-def main(argv):
-    """
-    Entry point for set-ornata-chroma-rgb.py.
-
-    Arguments:
-        argv: command line arguments
-    """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('-i', '--brightness', help="brightness value 0-255", default=-1)
-    parser.add_argument('-r', '--red', help="red value 0-255, default 0", default=0)
-    parser.add_argument('-g', '--green', help="green value 0-255, default 0", default=0)
-    parser.add_argument('-b', '--blue', help="blue value 0-255, default 0", default=0)
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
-
-    color = True
-    if args.red == 0 and args.green == 0 and args.blue == 0:
-        logging.debug('no color change requested')
-        color = False
-        if args.brightness == -1:
-            logging.debug('also no brightness change requested')
-            logging.debug('exiting')
-            sys.exit(0)
-    dev = usb.core.find(idVendor=0x1532, idProduct=0x021e)
-    if dev is None:
-        logging.error('no Razer Ornata Chroma keyboard found')
-        sys.exit(1)
-    logging.debug(str(dev))
-    if color:
-        logging.info('trying to set the color')
-        msg = static_color_msg(args.red, args.green, args.blue)
-        logging.info(f'red={args.red}')
-        logging.info(f'green={args.green}')
-        logging.info(f'blue={args.blue}')
-        logging.debug(f'message={msg}')
-        read = dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
-        if read != 90:
-            logging.error('control transfer for setting the color failed')
-    if args.brightness != -1:
-        logging.info('trying to set the brightness')
-        msg = brightness_message(args.brightness)
-        logging.info(f'brightness={args.brightness}')
-        logging.debug(f'message={msg}')
-        read = dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
-        if read != 90:
-            logging.error('control transfer for setting the brightness failed')
 
 
 if __name__ == '__main__':

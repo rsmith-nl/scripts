@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2019-07-30T15:28:17+0200
+# Last modified: 2019-09-16T21:56:41+0200
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -24,34 +24,6 @@ import subprocess as sp
 import sys
 
 __version__ = '1.4'
-
-
-def convert(filename, quality, level):
-    """
-    Convert a DICOM file to a JPEG file.
-
-    Removing the blank areas from the Philips detector.
-
-    Arguments:
-        filename: name of the file to convert.
-        quality: JPEG quality to apply
-        level: Boolean to indicate whether level adustment should be done.
-
-    Returns:
-        Tuple of (input filename, output filename, convert return value)
-    """
-    outname = filename.strip() + '.jpg'
-    size = '1574x2048'
-    args = [
-        'convert', filename, '-units', 'PixelsPerInch', '-density', '300', '-crop',
-        size + '+232+0', '-page', size + '+0+0', '-auto-gamma', '-quality',
-        str(quality)
-    ]
-    if level:
-        args += ['-level', '-35%,70%,0.5']
-    args.append(outname)
-    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-    return (filename, outname, cp.returncode)
 
 
 def main(argv):
@@ -108,6 +80,34 @@ def main(argv):
             logging.info(f'finished conversion of {infn} to {outfn} (returned {rv})')
     endtime = str(datetime.now())[:-7]
     logging.info(f'completed at {endtime}.')
+
+
+def convert(filename, quality, level):
+    """
+    Convert a DICOM file to a JPEG file.
+
+    Removing the blank areas from the Philips detector.
+
+    Arguments:
+        filename: name of the file to convert.
+        quality: JPEG quality to apply
+        level: Boolean to indicate whether level adustment should be done.
+
+    Returns:
+        Tuple of (input filename, output filename, convert return value)
+    """
+    outname = filename.strip() + '.jpg'
+    size = '1574x2048'
+    args = [
+        'convert', filename, '-units', 'PixelsPerInch', '-density', '300', '-crop',
+        size + '+232+0', '-page', size + '+0+0', '-auto-gamma', '-quality',
+        str(quality)
+    ]
+    if level:
+        args += ['-level', '-35%,70%,0.5']
+    args.append(outname)
+    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    return (filename, outname, cp.returncode)
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-11T00:22:30+0200
-# Last modified: 2019-07-30T15:51:58+0200
+# Last modified: 2019-09-16T22:06:16+0200
 """
 Script to try and show a diff between two PDF files.
 
@@ -23,6 +23,34 @@ fgcolor = SimpleNamespace(
     brightred='\033[31;1m', brightgreen='\033[32;1m', brightyellow='\033[33;1m',
     brightmagenta='\033[35;1m', reset='\033[0m'
 )
+
+
+def main(argv):
+    """
+    Entry point for pdfdiff.py.
+
+    Arguments:
+        argv: command line arguments
+    """
+    if len(argv) != 2:
+        print('Usage: pdfdiff.py first second')
+        sys.exit(1)
+    tmpnam = []
+    for j in range(2):
+        tmpnam.append(binascii.hexlify(os.urandom(10)).decode('ascii') + '.txt')
+        with open(tmpnam[j], 'w') as f:
+            f.write(pdftotext(argv[j]))
+    diffargs = ['diff', '-d', '-u', '-w'] + tmpnam
+    result = sp.run(diffargs, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
+    lines = result.stdout.decode().splitlines()
+    os.remove(tmpnam[0])
+    os.remove(tmpnam[1])
+    lines[0] = lines[0].replace(tmpnam[0], argv[0])
+    lines[1] = lines[1].replace(tmpnam[1], argv[1])
+    try:
+        colordiff(lines)
+    except BrokenPipeError:
+        pass
 
 
 def pdftotext(path):
@@ -56,34 +84,6 @@ def colordiff(txt):
             print(fgcolor.brightmagenta, line)
             continue
         print(fgcolor.reset, line)
-
-
-def main(argv):
-    """
-    Entry point for pdfdiff.py.
-
-    Arguments:
-        argv: command line arguments
-    """
-    if len(argv) != 2:
-        print('Usage: pdfdiff.py first second')
-        sys.exit(1)
-    tmpnam = []
-    for j in range(2):
-        tmpnam.append(binascii.hexlify(os.urandom(10)).decode('ascii') + '.txt')
-        with open(tmpnam[j], 'w') as f:
-            f.write(pdftotext(argv[j]))
-    diffargs = ['diff', '-d', '-u', '-w'] + tmpnam
-    result = sp.run(diffargs, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
-    lines = result.stdout.decode().splitlines()
-    os.remove(tmpnam[0])
-    os.remove(tmpnam[1])
-    lines[0] = lines[0].replace(tmpnam[0], argv[0])
-    lines[1] = lines[1].replace(tmpnam[1], argv[1])
-    try:
-        colordiff(lines)
-    except BrokenPipeError:
-        pass
 
 
 if __name__ == '__main__':

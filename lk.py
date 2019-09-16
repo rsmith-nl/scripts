@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-10-09T11:59:41+02:00
-# Last modified: 2018-07-07T13:15:16+0200
+# Last modified: 2019-09-16T22:03:06+0200
 """
 Lock down files or directories.
 
@@ -26,59 +26,17 @@ import os
 import sys
 import stat
 
-__version__ = '1.1.0'
+__version__ = '1.1'
 
 
-def lock_path(root, name, mode):
-    """Lock down a path"""
-    addflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
-    p = os.path.join(root, name)
-    pst = os.stat(p)
-    if pst.st_flags & stat.UF_IMMUTABLE:
-        # Temporarily remove user immutable flag, so we can chmod.
-        os.chflags(p, pst.st_flags ^ stat.UF_IMMUTABLE)
-    logging.info(f'locking path “{p}”')
-    os.chmod(p, mode)
-    os.chflags(p, pst.st_flags | addflags)
-
-
-def unlock_path(root, name, mode):
-    rmflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
-    p = os.path.join(root, name)
-    pst = os.stat(p)
-    logging.info(f'unlocking path “{p}”')
-    os.chflags(p, pst.st_flags & ~rmflags)
-    os.chmod(p, mode)
-
-
-def main(argv):  # noqa
+def main(argv):
     """
     Entry point for lck.py.
 
     Arguments:
         argv: command line arguments
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-u', '--unlock', action='store_true', help='unlock the files instead of locking them'
-    )
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('paths', nargs='*', metavar='path', help='files or directories to work on')
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'Command line arguments = {argv}')
-    logging.debug(f'Parsed arguments = {args}')
-    if not args.paths:
-        parser.print_help()
-        sys.exit(0)
+    args = configure(argv)
     fmod = stat.S_IRUSR
     dmod = stat.S_IRUSR | stat.S_IXUSR
     if args.unlock:
@@ -102,6 +60,59 @@ def main(argv):  # noqa
                     action(root, d, dmod)
             if not args.unlock:
                 action('', p, dmod)
+
+
+def configure(argv):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '-u',
+        '--unlock',
+        action='store_true',
+        help='unlock the files instead of locking them'
+    )
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        'paths', nargs='*', metavar='path', help='files or directories to work on'
+    )
+    args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'Command line arguments = {argv}')
+    logging.debug(f'Parsed arguments = {args}')
+    if not args.paths:
+        parser.print_help()
+        sys.exit(0)
+    return args
+
+
+def lock_path(root, name, mode):
+    """Lock down a path"""
+    addflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
+    p = os.path.join(root, name)
+    pst = os.stat(p)
+    if pst.st_flags & stat.UF_IMMUTABLE:
+        # Temporarily remove user immutable flag, so we can chmod.
+        os.chflags(p, pst.st_flags ^ stat.UF_IMMUTABLE)
+    logging.info(f'locking path “{p}”')
+    os.chmod(p, mode)
+    os.chflags(p, pst.st_flags | addflags)
+
+
+def unlock_path(root, name, mode):
+    rmflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
+    p = os.path.join(root, name)
+    pst = os.stat(p)
+    logging.info(f'unlocking path “{p}”')
+    os.chflags(p, pst.st_flags & ~rmflags)
+    os.chmod(p, mode)
 
 
 if __name__ == '__main__':

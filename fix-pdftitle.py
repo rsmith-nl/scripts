@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2019-07-30T15:32:22+0200
+# Last modified: 2019-09-16T21:58:41+0200
 """
 Fix PDF file titles.
 
@@ -24,6 +24,55 @@ import sys
 import tempfile
 
 __version__ = '1.1'
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to “info”)"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
+    args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    if args.log == 'debug':
+        logging.debug('using verbose logging')
+    # Look for required programs.
+    try:
+        for prog in ('pdfinfo', 'gs', 'qpdf'):
+            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+            logging.debug(f'found “{prog}”')
+    except FileNotFoundError:
+        logging.error('required program “{prog}” not found')
+        sys.exit(1)
+    tdir = tempfile.mkdtemp()
+    for path in args.files:
+        logging.debug(f'processing “{path}”')
+        info = pdfinfo(path)
+        if len(info) == 0:
+            logging.error(f'skipping “{path}”; could not retrieve info dict')
+            continue
+        fn = os.path.basename(path)
+        if info['Encrypted'].startswith('yes'):
+            logging.info(f'“{path}” is encrypted')
+            rv = decrypt(path, fn, tdir)
+            if rv != 0:
+                logging.error(f'could not decrypt “{path}”; qpdf returned {rv}')
+                continue
+            logging.debug(f'“{path}” decrypted')
+        else:
+            logging.debug(f'“{path}” is not encrypted')
+        newtitle = fn.replace('_', ' ')[:-4]
+        if info['Title'] != newtitle:
+            set_title(path, fn, tdir, newtitle)
+        else:
+            logging.debug(f'the title of “{path}” does not need to be changed')
+    shutil.rmtree(tdir)
 
 
 def pdfinfo(path):
@@ -103,55 +152,6 @@ def set_title(path, fn, tempdir, newtitle):
             logging.info(f'title of “{path}” changed')
         except OSError as e:
             logging.error(f'could not rename withmarks.pdf to “{path}”: {e}')
-
-
-def main(argv):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to “info”)"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    if args.log == 'debug':
-        logging.debug('using verbose logging')
-    # Look for required programs.
-    try:
-        for prog in ('pdfinfo', 'gs', 'qpdf'):
-            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-            logging.debug(f'found “{prog}”')
-    except FileNotFoundError:
-        logging.error('required program “{prog}” not found')
-        sys.exit(1)
-    tdir = tempfile.mkdtemp()
-    for path in args.files:
-        logging.debug(f'processing “{path}”')
-        info = pdfinfo(path)
-        if len(info) == 0:
-            logging.error(f'skipping “{path}”; could not retrieve info dict')
-            continue
-        fn = os.path.basename(path)
-        if info['Encrypted'].startswith('yes'):
-            logging.info(f'“{path}” is encrypted')
-            rv = decrypt(path, fn, tdir)
-            if rv != 0:
-                logging.error(f'could not decrypt “{path}”; qpdf returned {rv}')
-                continue
-            logging.debug(f'“{path}” decrypted')
-        else:
-            logging.debug(f'“{path}” is not encrypted')
-        newtitle = fn.replace('_', ' ')[:-4]
-        if info['Title'] != newtitle:
-            set_title(path, fn, tdir, newtitle)
-        else:
-            logging.debug(f'the title of “{path}” does not need to be changed')
-    shutil.rmtree(tdir)
 
 
 if __name__ == '__main__':
