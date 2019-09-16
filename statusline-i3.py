@@ -5,27 +5,71 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-09-14T14:05:03+0200
+# Last modified: 2019-09-16T21:48:37+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
 
-from functools import partial
 import argparse
 import ctypes
 import ctypes.util
+import functools as ft
+import logging
 import mmap
 import os
 import statistics as stat
 import struct
 import sys
-import logging
-import traceback
 import time
+import traceback
 
 # Global data
 __version__ = '2.3'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+
+
+def main():
+    """
+    Entry point for statusline-i3.py
+    """
+    logging.basicConfig(
+        level='INFO',
+        filename=f"{os.environ['HOME']}/statusline-i3-{os.getpid()}.log",
+        format='%(levelname)s: %(message)s'
+    )
+    setproctitle(b'statusline-i3')
+    args = parse_args(sys.argv[1:])
+    mailboxes = {name: {} for name in args.mailbox.split(':')}
+    cpudata = {}
+    netdata = {}
+    items = [
+        ft.partial(network, storage=netdata),
+        ft.partial(mail, mailboxes=mailboxes), memory,
+        ft.partial(cpu, storage=cpudata), date
+    ]
+    if hasbattery():
+        items.insert(-1, battery)
+    logging.info('starting')
+    sys.stdout.reconfigure(line_buffering=True)  # Flush every line.
+    rv = 0
+    try:
+        while True:
+            start = time.monotonic()
+            print(' | '.join(item() for item in items))
+            end = time.monotonic()
+            delta = end - start
+            if delta < 1:
+                time.sleep(1 - delta)
+    except Exception:
+        # Occasionally, statusline-i3 dies, and I don't know why.
+        # This should catch what happens next time. :-)
+        logging.error('caught exception: ' + traceback.format_exc())
+        rv = 2
+    except KeyboardInterrupt:
+        # This is mainly for when testing from the command-line.
+        logging.info('caught KeyboardInterrupt; exiting')
+    return rv
+
 
 # Low level functions.
 
@@ -95,18 +139,6 @@ def sysctl(name, buflen=4, convert=None):
     return oldp.raw[:buflen]
 
 
-def fmt(nbytes):
-    """Format network byte amounts."""
-    nbytes = int(nbytes)
-    if nbytes >= 1000000:
-        nbytes /= 1000000
-        return f'{nbytes:.1f}MB'
-    if nbytes > 1000:
-        nbytes /= 1000
-        return f'{nbytes:.1f}kB'
-    return f'{nbytes}B'
-
-
 def setproctitle(name):
     """
     Change the name of the process
@@ -117,6 +149,21 @@ def setproctitle(name):
     fmt = ctypes.c_char_p(b'-%s')
     value = ctypes.c_char_p(name)
     libc.setproctitle(fmt, value)
+
+
+# Helper functions.
+
+
+def fmt(nbytes):
+    """Format network byte amounts."""
+    nbytes = int(nbytes)
+    if nbytes >= 1000000:
+        nbytes /= 1000000
+        return f'{nbytes:.1f}MB'
+    if nbytes > 1000:
+        nbytes /= 1000
+        return f'{nbytes:.1f}kB'
+    return f'{nbytes}B'
 
 
 def readmbox(mboxname, storage):
@@ -170,7 +217,34 @@ def readmbox(mboxname, storage):
     return unread
 
 
-# High level functions
+def hasbattery():
+    """Checks if a battery is present according to ACPI."""
+    bat = False
+    try:
+        if sysctlbyname('hw.acpi.battery.units', convert=to_int) > 0:
+            bat = True
+    except ValueError:
+        pass
+    return bat
+
+
+def parse_args(argv):
+    """Handle the command line arguments"""
+    opts = argparse.ArgumentParser(prog='open', description=__doc__)
+    opts.add_argument('-v', '--version', action='version', version=__version__)
+    opts.add_argument(
+        '-m',
+        '--mailbox',
+        type=str,
+        default=os.environ['MAIL'],
+        help="Location of the mailboxes. One or more mailbox names separated by ‘:’"
+    )
+    args = opts.parse_args(argv)
+    return args
+
+
+# Functions for generating the items.
+
 
 def network(storage):
     """
@@ -282,73 +356,6 @@ def battery():
 def date():
     """Return the date as a string."""
     return time.strftime('%a %Y-%m-%d %H:%M:%S')
-
-
-def parse_args(argv):
-    """Handle the command line arguments"""
-    opts = argparse.ArgumentParser(prog='open', description=__doc__)
-    opts.add_argument('-v', '--version', action='version', version=__version__)
-    opts.add_argument(
-        '-m',
-        '--mailbox',
-        type=str,
-        default=os.environ['MAIL'],
-        help="Location of the mailboxes. A string of mailbox names separated by ‘:’"
-    )
-    args = opts.parse_args(argv)
-    return args
-
-
-def hasbattery():
-    bat = False
-    try:
-        if sysctlbyname('hw.acpi.battery.units', convert=to_int) > 0:
-            bat = True
-    except ValueError:
-        pass
-    return bat
-
-
-def main():
-    """
-    Entry point for statusline-i3.py
-    """
-    logging.basicConfig(
-        level='INFO',
-        filename='{}/statusline-i3-{}.log'.format(os.environ['HOME'], os.getpid()),
-        format='%(levelname)s: %(message)s'
-    )
-    setproctitle(b'statusline-i3')
-    args = parse_args(sys.argv[1:])
-    mailboxes = {name: {} for name in args.mailbox.split(':')}
-    cpudata = {}
-    netdata = {}
-    items = [
-        partial(network, storage=netdata),
-        partial(mail, mailboxes=mailboxes), memory,
-        partial(cpu, storage=cpudata), date
-    ]
-    if hasbattery():
-        items.insert(-1, battery)
-    logging.info('starting')
-    sys.stdout.reconfigure(line_buffering=True)  # Flush every line.
-    try:
-        while True:
-            start = time.monotonic()
-            print(' | '.join(item() for item in items))
-            end = time.monotonic()
-            delta = end - start
-            if delta < 1:
-                time.sleep(1 - delta)
-    except Exception:
-        # Occasionally, statusline-i3 dies, and I don't know why.
-        # This should catch what happens next time. :-)
-        logging.error('caught exception: ' + traceback.format_exc())
-        sys.exit(2)
-    except KeyboardInterrupt:
-        # This is mainly for when testing from the command-line.
-        logging.info('caught KeyboardInterrupt; exiting')
-        sys.exit(0)
 
 
 if __name__ == '__main__':
