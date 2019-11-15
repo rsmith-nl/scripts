@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-07-29T15:42:08+0200
+.. Last modified: 2019-11-15T19:59:57+0100
 
 Introduction
 ============
@@ -176,17 +176,6 @@ Front-end for find_ to locate all files under the current directory that have
 been modified up to a given number of days ago.
 
 .. _find: https://www.freebsd.org/cgi/man.cgi?query=find
-
-
-find-pkg-upgrades.py
---------------------
-
-Script for FreeBSD to compare the versions of locally installed packages to
-the versions available from the FreeBSD `package repo mirror`_. It will tell
-you which packages can be upgraded via ``pkg upgrade``, and which have to be
-built from source.
-
-.. _package repo mirror: http://pkg.freebsd.org/
 
 
 fixbb.sh
