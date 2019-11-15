@@ -5,7 +5,7 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-07-29T14:46:16+0200
+# Last modified: 2019-11-15T16:25:09+0100
 """
 Open file(s) given on the command line in the appropriate program.
 The appropriate program is read from a configuration file called “.openrc” in
@@ -155,8 +155,8 @@ def locate(args):
             if exists(nm):
                 files.append(nm)
             else:
-                cp = sp.run(['locate', nm], stdout=sp.PIPE, stderr=sp.DEVNULL)
-                paths = cp.stdout.decode().splitlines()
+                cp = sp.run(['locate', nm], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+                paths = cp.stdout.splitlines()
                 if len(paths) == 1:
                     files.append(paths[0])
                 elif len(paths) == 0:

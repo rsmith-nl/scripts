@@ -4,7 +4,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-11T00:22:30+0200
-# Last modified: 2019-09-16T22:06:16+0200
+# Last modified: 2019-11-15T16:53:28+0100
 """
 Script to try and show a diff between two PDF files.
 
@@ -41,8 +41,8 @@ def main(argv):
         with open(tmpnam[j], 'w') as f:
             f.write(pdftotext(argv[j]))
     diffargs = ['diff', '-d', '-u', '-w'] + tmpnam
-    result = sp.run(diffargs, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
-    lines = result.stdout.decode().splitlines()
+    result = sp.run(diffargs, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
+    lines = result.stdout.splitlines()
     os.remove(tmpnam[0])
     os.remove(tmpnam[1])
     lines[0] = lines[0].replace(tmpnam[0], argv[0])
@@ -58,8 +58,8 @@ def pdftotext(path):
     Generate a text rendering of a PDF file in the form of a list of lines.
     """
     args = ['pdftotext', '-layout', path, '-']
-    result = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
-    return result.stdout.decode()
+    result = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
+    return result.decode()
 
 
 def colordiff(txt):

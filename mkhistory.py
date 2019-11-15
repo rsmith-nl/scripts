@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T01:41:21+02:00
-# Last modified: 2019-09-16T22:03:48+0200
+# Last modified: 2019-11-15T16:29:11+0100
 """Script to format a Git log for LaTeX."""
 
 import os
@@ -35,8 +35,7 @@ def main(argv):
     fn = argv[1]
     try:
         args = ['git', 'log', '--oneline']
-        p = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True)
-        txt = p.stdout.decode()
+        p = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     except sp.CalledProcessError:
         print("Git not found! Stop.")
         sys.exit(1)
@@ -45,7 +44,7 @@ def main(argv):
     else:
         of = open(fn, 'w+')
     of.write(header)
-    of.write(fmtlog(txt))
+    of.write(fmtlog(p.stdout))
     of.close()
 
 

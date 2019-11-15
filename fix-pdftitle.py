@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2019-09-16T21:58:41+0200
+# Last modified: 2019-11-15T16:27:19+0100
 """
 Fix PDF file titles.
 
@@ -88,12 +88,12 @@ def pdfinfo(path):
         non-existing key will return an empty string.
     """
     args = ['pdfinfo', path]
-    cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
     if cp.returncode != 0:
         return defaultdict(lambda: '')
     pairs = [
         (k, v.strip())
-        for k, v in [ln.split(':', 1) for ln in cp.stdout.decode().splitlines()]
+        for k, v in [ln.split(':', 1) for ln in cp.stdout.splitlines()]
     ]
     return defaultdict(lambda: '', pairs)
 

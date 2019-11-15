@@ -5,7 +5,7 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-05T01:26:59+01:00
-# Last modified: 2019-07-27T13:56:36+0200
+# Last modified: 2019-11-15T16:16:31+0100
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse
@@ -147,8 +147,8 @@ def getpdfbb(fn):
     gsopts = [
         'gs', '-q', '-dFirstPage=1', '-dLastPage=1', '-dNOPAUSE', '-dBATCH', '-sDEVICE=bbox', fn
     ]
-    gsres = sp.run(gsopts, stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
-    bbs = gsres.stdout.decode().splitlines()[0]
+    gsres = sp.run(gsopts, stdout=sp.PIPE, stderr=sp.STDOUT, text=True, check=True)
+    bbs = gsres.stdout.splitlines()[0]
     return bbs.split(' ')[1:]
 
 
@@ -163,10 +163,9 @@ def getpicsize(fn):
         Width, hight of the image in points.
     """
     args = ['identify', '-verbose', fn]
-    rv = sp.run(args, stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
-    lines = rv.stdout.decode().splitlines()
+    rv = sp.run(args, stdout=sp.PIPE, stderr=sp.STDOUT, text=True, check=True)
     data = {}
-    for ln in lines:
+    for ln in rv.splitlines():
         k, v = ln.strip().split(':', 1)
         data[k] = v.strip()
     if data['Units'] != 'Undefined':

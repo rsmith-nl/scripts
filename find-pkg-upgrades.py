@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-09-16T21:58:17+0200
+# Last modified: 2019-11-15T16:30:05+0100
 """Find newer packages for FreeBSD."""
 
 from enum import Enum
@@ -177,8 +177,8 @@ def run(args):
     Returns:
         Standard output of the program, converted to UTF-8 and split into lines.
     """
-    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
-    return comp.stdout.decode().splitlines()
+    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+    return comp.stdout.splitlines()
 
 
 def uses_default_options(name, origin):

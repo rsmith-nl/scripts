@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-03-26T23:04:50+02:00
-# Last modified: 2019-09-16T21:55:32+0200
+# Last modified: 2019-11-15T17:03:48+0100
 """
 Get a list of installed packages. For each package, determine if the options
 are identical compared to the default options. If so, print out the package name.
@@ -68,10 +68,10 @@ def run(args):  # {{{1
             followed by options.
 
     Returns:
-        Standard output of the program, converted to UTF-8 string.
+        Standard output of the program, converted to a string.
     """
-    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
-    return comp.stdout.decode()
+    comp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+    return comp.stdout
 
 
 def check(line):  # {{{1
