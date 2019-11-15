@@ -6,7 +6,7 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-08-13T22:13:23+0200
-# Last modified: 2018-04-16T22:02:07+0200
+# Last modified: 2019-10-13T13:55:32+0200
 
 set -e
 
@@ -37,9 +37,9 @@ if [ -d .git ]; then
     NUM=${NUM}-$(git log -n 1 --oneline |cut -c 1-7)
 fi
 # Remove old backups first
-rm -f backup-${OUTNAME}*.tar
-# Use tar for backup. Don't use compression.
-DF=backup-${OUTNAME}${NUM}.tar
+rm -f backup-${OUTNAME}*.tar*
+# Use tar for backup. Compress with gzip.
+DF=backup-${OUTNAME}${NUM}.tar.gz
 echo "A copy of ${CURDIR} is stored in ${DF}."
-cd .. ; tar cf /tmp/${DF} ${EXCLUDE} ${CURDIR}/
+cd .. ; tar -a -cf /tmp/${DF} ${EXCLUDE} ${CURDIR}/
 mv /tmp/${DF} ${CURDIR}/
