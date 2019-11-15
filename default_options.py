@@ -5,11 +5,12 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-03-26T23:04:50+02:00
-# Last modified: 2019-11-15T17:03:48+0100
+# Last modified: 2019-11-15T23:16:50+0100
 """
-Get a list of installed packages. For each package, determine if the options
+For each package name given on the command line, determine if the options
 are identical compared to the default options. If so, print out the package name.
 
+* The ‘pkg info’ command is used to retrieve the origin
 * The ‘pkg query’ command is used to retrieve the options that are set.
 * For determining the default options, ‘make -V OPTIONS_DEFAULT’ is called
   from the port directory.
@@ -19,7 +20,6 @@ This program requires pkg(8), BSD make(1) and the ports tree.
 So this program will run on FreeBSD and maybe DragonflyBSD.
 """
 # Imports {{{1
-from datetime import datetime
 from enum import Enum
 import concurrent.futures as cf
 import os
@@ -33,30 +33,29 @@ class Comparison(Enum):
     UNKNOWN = 2
 
 
-def main(argv):  # {{{1
+def main(names):  # {{{1
     """
     Entry point for default_options.py
 
     Arguments:
-        argv: command line arguments
+        names: package names to check
     """
     # Look for required programs.
+    err = sys.stderr
     try:
         for prog in ('pkg', 'make'):
             sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     except FileNotFoundError:
-        print('ERROR: required program “{prog}” not found')
+        print('ERROR: required program “{prog}” not found', file=err)
         sys.exit(1)
-    data = run(['pkg', 'info', '-a', '-o'])
-    packagelines = data.splitlines()
-    print('# List of packages with default options.')
-    print('# Generated on', str(datetime.now())[:-10])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for pkg, result in tp.map(check, packagelines):
+        for pkg, result in tp.map(check, names):
             if result == Comparison.SAME:
                 print(pkg)
             elif result == Comparison.UNKNOWN:
-                print(f'# “{pkg}” is unknown in the ports tree.')
+                print(f'# “{pkg}” is unknown in the ports tree.', file=err)
+            else:
+                print(f'# “{pkg}” uses non-default options.', file=err)
 
 
 def run(args):  # {{{1
@@ -74,32 +73,31 @@ def run(args):  # {{{1
     return comp.stdout
 
 
-def check(line):  # {{{1
+def check(pkgname):  # {{{1
     """
     Check of a given package uses the default options or
     if options have been changed.
 
     Arguments:
-        line (str): A line of text containing the package name and origin,
-        Meparated by whitespace.
+        pkgname (str): The name of a package.
 
     Returns:
-        A tuple of a string containing the package name and a Comparison enum.
+        A tuple of a string containing the package origin and a Comparison enum.
     """
-    pkg, origin = line.split()
-    optionlines = run(['pkg', 'query', '%Ok %Ov', pkg]).splitlines()
+    optionlines = run(['pkg', 'query', '%Ok %Ov', pkgname]).splitlines()
     options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
     try:
+        origin = run(['pkg', 'info', '-o', pkgname]).split()[-1]
         os.chdir('/usr/ports/{}'.format(origin))
     except FileNotFoundError:
-        return (pkg, Comparison.UNKNOWN)
+        return (pkgname, Comparison.UNKNOWN)
     default = run(['make', '-V', 'OPTIONS_DEFAULT'])
     options_default = set(default.split())
     if options_default == options_set:
         v = Comparison.SAME
     else:
         v = Comparison.CHANGED
-    return (pkg, v)
+    return (origin, v)
 
 
 if __name__ == '__main__':
