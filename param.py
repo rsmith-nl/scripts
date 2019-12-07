@@ -4,12 +4,13 @@
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2019-12-07T13:30:37+0100
-# Last modified: 2019-12-07T17:11:01+0100
+# Last modified: 2019-12-07T17:29:37+0100
 """Executes or evaluates Python code between <> in a file.
 Usage: param.py input output [var=value ...]
 """
 
 import logging
+import math
 import re
 import os
 import sys
@@ -25,7 +26,7 @@ def main(args):
     # Process arguments
     overrides = getvars(args[2:])
     lines = readfile(infname)
-    globvar = {"__builtins__": None}
+    globvar = mkglobals()
     writefile(outfname, lines, globvar, overrides)
 
 
@@ -43,6 +44,35 @@ def readfile(path):
     with open(path) as f:
         lines = f.readlines()
     return list(enumerate(lines, start=1))
+
+
+def mkglobals():
+    rv = {"__builtins__": None}
+
+    def sin(deg):
+        return math.sin(math.radians(deg))
+
+    def asin(num):
+        return math.degrees(math.asin(num))
+
+    def cos(deg):
+        return math.cos(math.radians(deg))
+
+    def acos(num):
+        return math.degrees(math.acos(num))
+
+    def tan(deg):
+        return math.tan(math.radians(deg))
+
+    def atan(num):
+        return math.degrees(math.atan(num))
+
+    for k in ['e', 'pi', 'log', 'log2', 'log10', 'floor', 'ceil', 'pow', 'sqrt']:
+        rv[k] = eval('math.' + k)
+    for k in ['sin', 'asin', 'cos', 'acos', 'tan', 'atan']:
+        rv[k] = eval(k)
+
+    return rv
 
 
 def writefile(path, lines, globvar, overrides):
