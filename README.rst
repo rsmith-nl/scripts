@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-11-24T15:00:18+0100
+.. Last modified: 2019-12-07T17:14:25+0100
 
 Introduction
 ============
@@ -567,6 +567,12 @@ osversion.py
 ------------
 
 Prints the value __FreeBSD_version, aka OSVERSION.
+
+
+param.py
+--------
+
+Script to do simple parameter substitution in files.
 
 
 pdfdiff.py
