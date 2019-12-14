@@ -4,7 +4,7 @@
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2019-12-07T13:30:37+0100
-# Last modified: 2019-12-07T17:29:37+0100
+# Last modified: 2019-12-14T12:54:36+0100
 """Executes or evaluates Python code between <> in a file.
 Usage: param.py input output [var=value ...]
 """
@@ -84,7 +84,7 @@ def writefile(path, lines, globvar, overrides):
         outf.reconfigure(newline=os.linesep)
     for num, line in lines:
         outline = line
-        expr = re.findall('<.[^>]*>', line)
+        expr = re.findall('<[^@>]*>', line)
         for e in expr:
             if '=' in e:
                 rep = e[1:-1]
@@ -99,8 +99,8 @@ def writefile(path, lines, globvar, overrides):
                 try:
                     res = str(eval(e[1:-1], globvar, locvar))
                     outline = outline.replace(e, res)
-                except NameError as err:
-                    logging.error(f'line {num} ' + err)
+                except (NameError, TypeError) as err:
+                    logging.error(f'line {num}, evaluating {e} ' + str(err))
         outf.write(outline)
     outf.close()
 
