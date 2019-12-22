@@ -4,9 +4,25 @@
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2019-12-07T13:30:37+0100
-# Last modified: 2019-12-15T19:32:33+0100
-"""Executes or evaluates Python code between <> in a file.
+# Last modified: 2019-12-22T14:32:48+0100
+"""Executes or evaluates Python code between <> on a single line in a file.
 Usage: param.py input output [var=value ...]
+
+Values defined on the command line override those given in the input file.
+
+For example, <x=3/4> will be replaced by x=3/4, while <x> will be replaced by
+0.75 and <2*x> will be replaced by 1.5.
+
+The math constants e and pi are recognized without having to be imported, as
+are some math functions;
+* sin, cos, tan (taking degrees as arguments, not radians).
+* asin, acos, atan (returning degrees as results).
+* log, log2 and log10
+* ceil, floor
+* pow, sqrt
+
+This script is meant for *relatively simple* parameter substitutions and
+calculations.
 """
 
 import logging
