@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2020-02-09T10:47:10+0100
+# Last modified: 2020-02-09T10:51:25+0100
 """Get the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -23,6 +23,7 @@ now = datetime.datetime.now(tz=datetime.timezone.utc)
 # The file format is JSON, as shown below:
 # {
 #     "limit": 7,
+#     "viewer": "mpv",
 #     "channels": {
 #         "first channel name": "UC7QoixBiFO2zstyEXkbVpVg",
 #         "second channel name": "UCvY8pgX_3ksKvZBNFHVoUAQ",
@@ -30,6 +31,7 @@ now = datetime.datetime.now(tz=datetime.timezone.utc)
 #     }
 # }
 # The “limit” is optional. If not present, it will be set to 7 days.
+# The "viewer" is also optional. If not present, it will be set to 'mpv'.
 # Note that the channelId's above are not real, they're randomly generated!
 # You can find the “channelId” in the source of the channel's homepage.
 rcpath = os.environ['HOME'] + os.sep + '.youtube-feedrc'
@@ -40,6 +42,11 @@ with open(rcpath) as rc:
         limit = settings['limit']
     else:
         limit = 7
+    if 'viewer' in settings:
+        viewer = settings['viewer']
+    else:
+        viewer = 'mpv'
+
 
 # Flush after every line.
 sys.stdout.reconfigure(line_buffering=True)
@@ -67,5 +74,5 @@ for channel_title, channel_id in channels.items():
     for title, link, date in items:
         print(f"∙ title: “{title}”")
         print(f"   date: {date}")
-        print(f"   view: mpv '{link}' &")
+        print(f"   view: {viewer} '{link}' &")
     print()
