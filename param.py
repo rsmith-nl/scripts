@@ -4,7 +4,7 @@
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2019-12-07T13:30:37+0100
-# Last modified: 2019-12-22T14:32:48+0100
+# Last modified: 2020-02-22T13:15:07+0100
 """Executes or evaluates Python code between <> on a single line in a file.
 Usage: param.py input output [var=value ...]
 
@@ -92,7 +92,7 @@ def mkglobals():
 
 
 def writefile(path, lines, globvar, overrides):
-    locvar = {}
+    locvar = {k: v for k, v in overrides.items()}
     if path == '-':
         outf = sys.stdout
     else:
