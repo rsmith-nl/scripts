@@ -5,8 +5,13 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2020-02-09T10:51:25+0100
-"""Get the latest video's from your favorite youtube channels."""
+# Last modified: 2020-03-07T08:54:01+0100
+"""Get the latest video's from your favorite youtube channels.
+
+    This script now generates commands for the mpv viewer that force it
+    to use youtube-dl.  This was done so I could limit the quality of the
+    downloaded clips to my screen resolution.
+"""
 
 import datetime
 import html
@@ -74,5 +79,8 @@ for channel_title, channel_id in channels.items():
     for title, link, date in items:
         print(f"∙ title: “{title}”")
         print(f"   date: {date}")
+        # Instruct mpv to use youtube-dl.
+        if viewer == 'mpv':
+            link = re.sub('^https', 'ytdl', link)
         print(f"   view: {viewer} '{link}' &")
     print()
