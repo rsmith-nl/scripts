@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2020-03-01T21:58:36+0100
+# Last modified: 2020-03-07T13:52:34+0100
 
 set -eu
 
@@ -71,7 +71,7 @@ if [ ! -d ${DIR} ]; then
     exit 3
 fi
 DIR=${DIR##/home/${USER}/}
-OPTS='-avcCn'
+OPTS='-avCn'
 if [ $FORCE ]; then
     OPTS='-av'
 fi
