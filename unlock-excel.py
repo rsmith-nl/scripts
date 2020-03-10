@@ -4,8 +4,8 @@
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2020-03-10T09:35:46+0100
-# Last modified: 2020-03-10T13:47:43+0100
-"""Remove passwords from modern excel files (xlsx, xlsm)."""
+# Last modified: 2020-03-10T20:58:38+0100
+"""Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 import zipfile
 import re
@@ -13,12 +13,15 @@ import sys
 import logging
 import shutil
 
+__version__ = '0.2'
+
 
 def main(argv):
     logging.basicConfig(level='INFO', format='%(levelname)s: %(message)s')
-    #logging.basicConfig(level='DEBUG', format='%(levelname)s: %(message)s')
     if not argv:
-        logging.info('no files to unlock')
+        logging.info(f'unlock-excel.py v{__version__}; no files to unlock')
+        print('Usage: unlock-excel.py <file> <file> ...')
+        sys.exit(0)
     for path in argv:
         try:
             backup_path = backup_file(path)
@@ -28,9 +31,9 @@ def main(argv):
 
 
 def backup_file(path):
-    logging.debug(f'making a copy of "{path}"')
     first, last = path.rsplit('.', maxsplit=1)
     backup = first + '-orig' + '.' + last
+    logging.info(f'moving "{path}" to "{backup}"')
     shutil.move(path, backup)
     return backup
 
@@ -38,19 +41,27 @@ def backup_file(path):
 def remove_excel_password(origpath, path):
     if not zipfile.is_zipfile(origpath):
         raise ValueError(f'"{origpath}" is not a valid zip-file.')
-    with zipfile.ZipFile(origpath, mode="r") as inzf, zipfile.ZipFile(path, mode="w", compression=zipfile.ZIP_DEFLATED) as outzf:
-        sheets = [name for name in inzf.namelist()]
-        for sheet in sheets:
-            logging.debug(f'working on "{sheet}"')
-            data = inzf.read(sheet)
-            if 'xl/worksheets/sheet' not in sheet or b'sheetProtect' not in data:
-                outzf.writestr(sheet, data)
+    with zipfile.ZipFile(origpath, mode="r") as inzf, zipfile.ZipFile(
+        path, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=1
+    ) as outzf:
+        infos = [name for name in inzf.infolist()]
+        for info in infos:
+            logging.debug(f'working on "{info.filename}"')
+            data = inzf.read(info)
+            if b'sheetProtect' in data:
+                regex = r'<sheetProtect.*?/>'
+                logging.info(f'worksheet "{info.filename}" is protected')
+            elif b'workbookProtect' in data:
+                regex = r'<workbookProtect.*?/>'
+                logging.into('the workbook is protected')
+            else:
+                outzf.writestr(info, data)
                 continue
             text = data.decode('utf-8')
-            newtext = re.sub(r'<sheetProtect.*?/>', '', text)
+            newtext = re.sub(regex, '', text)
             if len(newtext) != len(text):
-                outzf.writestr(sheet, newtext)
-                logging.debug(f'removed password from "{sheet}"')
+                outzf.writestr(info, newtext)
+                logging.info(f'removed password from "{info.filename}"')
 
 
 if __name__ == '__main__':
