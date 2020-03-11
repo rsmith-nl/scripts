@@ -4,14 +4,21 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-11T00:47:28+0100
+# Last modified: 2020-03-11T21:50:25+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
+import os
+import stat
+import re
+import shutil
+import zipfile
 
 import tkinter as tk
 from tkinter import ttk
 from tkinter.font import nametofont
+from tkinter import filedialog
+
 
 __version__ = '0.1'
 
@@ -67,8 +74,7 @@ def create_widgets(root):
     w.suffixentry = se
     # Third row
     ttk.Label(root, text='(3)').grid(row=2, column=0, sticky='ew')
-    start = ttk.Button(root, text="Go!", command=do_start)
-    start.grid(row=2, column=1, sticky='ew')
+    ttk.Button(root, text="Go!", command=do_start).grid(row=2, column=1, sticky='ew')
     ttk.Label(root, text='status:').grid(row=2, column=2, sticky='ew')
     status = ttk.Label(root, text='not running')
     status.grid(row=2, column=3, columnspan=4, sticky='ew')
@@ -86,51 +92,128 @@ def create_widgets(root):
     w.res2 = res2
     # Seventh row
     ttk.Button(root, text="Quit", command=do_exit).grid(row=6, column=1, sticky='ew')
-    # Return the widgets that need to be accessed.
+    # Return the widgets and state that need to be accessed.
     return w, state
 
 
-def init_state(s):
+def init_state(state):
     """Initialize the global state."""
-    s.interval = 100
-    s.inzf = None
-    s.outzf = None
-    s.files = None
-    s.currfile = None
-    s.worksheets_total = -1
-    s.worksheets_unlocked = 0
-    s.workbook_unlocked = False
+    state.interval = 100
+    state.path = ''
+    state.inzf, state.outzf = None, None
+    state.infos = None
+    state.currinfo = None
+    state.worksheets_unlocked = 0
+    state.workbook_unlocked = False
+    state.directory = None
+    state.remove = None
 
 
 # Step functions to call in the after() method.
 def step_open_zipfiles():
-    widgets.status['text'] = 'opening files...'
-    root.after(state.interval, step_read_internal_file)
+    path = widgets.fn['text']
+    state.path = path
+    widgets.status['text'] = f'opening “{path}”...'
+    first, last = path.rsplit('.', maxsplit=1)
+    if state.backup.get():
+        backupname = first + state.suffix.get() + '.' + last
+    else:
+        backupname = first + '-orig' + '.' + last
+        state.remove = backupname
+    shutil.move(path, backupname)
+    state.inzf = zipfile.ZipFile(backupname, mode="r")
+    state.outzf = zipfile.ZipFile(
+        path, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=1
+    )
+    root.after(state.interval, step_discover_internal_files)
 
 
-def step_read_internal_file():
-    widgets.status['text'] = 'reading...'
+def step_discover_internal_files():
+    widgets.status['text'] = f'reading “{state.path}”...'
+    state.infos = [name for name in state.inzf.infolist()]
+    state.currinfo = 0
+    widgets.status['text'] = f'“{state.path}” contains {len(state.infos)} files.'
     root.after(state.interval, step_filter_internal_file)
 
 
 def step_filter_internal_file():
-    widgets.status['text'] = 'filtering...'
-    root.after(state.interval, step_write_internal_file)
+    current = state.infos[state.currinfo]
+    stat = f'processing “{current.filename}” ({state.currinfo+1}/{len(state.infos)})...'
+    widgets.status['text'] = stat
+    # Doing the actual work
+    regex = None
+    data = state.inzf.read(current)
+    if b'sheetProtect' in data:
+        regex = r'<sheetProtect.*?/>'
+        widgets.status['text'] = f'worksheet "{current.filename}" is protected.'
+    elif b'workbookProtect' in data:
+        regex = r'<workbookProtect.*?/>'
+        widgets.res2['text'] = '- workbook unlocked.'
+        widgets.status['text'] = 'the workbook is protected'
+    else:
+        state.outzf.writestr(current, data)
+    if regex:
+        text = data.decode('utf-8')
+        newtext = re.sub(regex, '', text)
+        if len(newtext) != len(text):
+            state.outzf.writestr(current, newtext)
+            state.worksheets_unlocked += 1
+            widgets.status['text'] = f'removed password from "{current.filename}".'
+    # Next iteration or next step.
+    state.currinfo += 1
+    if state.currinfo >= len(state.infos):
+        widgets.status['text'] = 'all sheets processed.'
+        state.currinfo = None
+        root.after(state.interval, step_close_zipfiles)
+    else:
+        root.after(state.interval, step_filter_internal_file)
 
 
-def step_write_internal_file():
-    widgets.status['text'] = 'writing...'
+def step_close_zipfiles():
+    widgets.status['text'] = f'writing “{state.path}”...'
+    state.inzf.close()
+    state.outzf.close()
+    state.inzf, state.outzf = None, None
+    widgets.res1['text'] = f'- unlocked {state.worksheets_unlocked} worksheets.'
     root.after(state.interval, step_finished)
 
 
 def step_finished():
+    if state.remove:
+        widgets.status['text'] = 'removing temporary file'
+        os.chmod(state.remove, stat.S_IWRITE)
+        os.remove(state.remove)
+        state.remove = None
     widgets.status['text'] = 'finished!'
 
 
 # Widget callbacks
 def do_file():
     """Callback to open a file"""
-    pass
+    if not state.directory:
+        state.directory = ''
+        available = [os.environ[k] for k in ('HOME', 'HOMEDRIVE') if k in os.environ]
+        if available:
+            state.directory = available[0]
+    fn = filedialog.askopenfilename(
+        title='Excel file to open',
+        parent=root,
+        defaultextension='.xlsx',
+        filetypes=(
+            ('excel files', '*.xlsx'), ('excel files with macros', '*.xlsm'),
+            ('all files', '*.*')
+        ),
+        initialdir=state.directory
+    )
+    if not fn:
+        return
+    state.directory = os.path.dirname(fn)
+    state.worksheets_unlocked = 0
+    state.workbook_unlocked = False
+    widgets.fn['text'] = fn
+    widgets.status['text'] = 'not running.'
+    widgets.res1['text'] = '-'
+    widgets.res2['text'] = '-'
 
 
 def on_backup():
