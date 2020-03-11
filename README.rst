@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2019-12-07T17:14:25+0100
+.. Last modified: 2020-03-11T23:11:18+0100
 
 Introduction
 ============
@@ -766,6 +766,18 @@ tolower.sh
 
 Changes the names of all the files that it is given on the command-line to
 lower case.
+
+
+unlock-excel.py
+---------------
+
+Command-line utility to unlock excel 2007+ file.
+
+
+unlock-excel.pyw
+----------------
+
+GUI version of ``unlock-excel.py``, mainly for use on ms-windows.
 
 
 vid2mkv.py

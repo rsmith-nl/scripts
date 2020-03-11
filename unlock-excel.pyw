@@ -4,7 +4,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-11T22:08:22+0100
+# Last modified: 2020-03-11T22:39:16+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -20,7 +20,7 @@ from tkinter.font import nametofont
 from tkinter import filedialog
 
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 def create_widgets(root):
@@ -31,6 +31,7 @@ def create_widgets(root):
 
     Returns:
         A SimpleNamespace of widgets
+        A SimpleNamespace of state
 
     """
     # Set the font.
@@ -38,7 +39,6 @@ def create_widgets(root):
     default_font.configure(size=12)
     root.option_add("*Font", default_font)
     # General commands and bindings
-    root.bind_all('q', do_q)
     root.wm_title('Unlock excel files v' + __version__)
     root.columnconfigure(4, weight=1)
     root.rowconfigure(7, weight=1)
@@ -74,9 +74,12 @@ def create_widgets(root):
     w.suffixentry = se
     # Third row
     ttk.Label(root, text='(3)').grid(row=2, column=0, sticky='ew')
-    ttk.Button(root, text="Go!", command=do_start).grid(row=2, column=1, sticky='ew')
+    gobtn = ttk.Button(root, text="Go!", command=do_start)
+    gobtn['state'] = 'disabled'
+    gobtn.grid(row=2, column=1, sticky='ew')
+    w.gobtn = gobtn
     ttk.Label(root, text='status:').grid(row=2, column=2, sticky='ew')
-    status = ttk.Label(root, text='not running')
+    status = ttk.Label(root, text='not running', width=30)
     status.grid(row=2, column=3, columnspan=4, sticky='ew')
     w.status = status
     # Fourth row
@@ -185,6 +188,9 @@ def step_finished():
         os.remove(state.remove)
         state.remove = None
     widgets.status['text'] = 'finished!'
+    widgets.gobtn['state'] = 'disabled'
+    widgets.fn['text'] = ''
+    state.path = ''
 
 
 # Widget callbacks
@@ -210,10 +216,12 @@ def do_file():
     state.directory = os.path.dirname(fn)
     state.worksheets_unlocked = 0
     state.workbook_unlocked = False
+    state.path = fn
     widgets.fn['text'] = fn
     widgets.status['text'] = 'not running.'
     widgets.res1['text'] = '-'
     widgets.res2['text'] = '-'
+    widgets.gobtn['state'] = 'enabled'
 
 
 def on_backup():
@@ -229,14 +237,10 @@ def do_start():
     root.after(state.interval, step_open_zipfiles)
 
 
-def do_exit():
+def do_exit(**args):
     """
     Callback to handle quitting.
     """
-    root.destroy()
-
-
-def do_q(arg):
     root.destroy()
 
 
