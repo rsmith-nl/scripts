@@ -4,7 +4,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-11T21:50:25+0100
+# Last modified: 2020-03-11T22:08:22+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -247,8 +247,23 @@ def step():
 if __name__ == '__main__':
     # Create the GUI window.
     root = tk.Tk(None)
-    # widgets is a namespace of widgets that needs to be accessed by the callbacks.
-    # state is a namespace of the global state.
+    # Don't show hidden files in the file dialog
+    # https://stackoverflow.com/questions/53220711/how-to-avoid-hidden-files-in-file-picker-using-tkinter-filedialog-askopenfilenam
+    try:
+        # call a dummy dialog with an impossible option to initialize the file
+        # dialog without really getting a dialog window; this will throw a
+        # TclError, so we need a try...except :
+        try:
+            root.tk.call('tk_getOpenFile', '-foobarbaz')
+        except tk.TclError:
+            pass
+        # now set the magic variables accordingly
+        root.tk.call('set', '::tk::dialog::file::showHiddenBtn', '1')
+        root.tk.call('set', '::tk::dialog::file::showHiddenVar', '0')
+    except Exception:
+        pass
+    # Widgets is a namespace of widgets that needs to be accessed by the callbacks.
+    # State is a namespace of the global state.
     widgets, state = create_widgets(root)
     init_state(state)
     root.mainloop()
