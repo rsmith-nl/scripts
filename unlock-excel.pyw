@@ -4,23 +4,23 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-12T21:24:52+0100
+# Last modified: 2020-03-12T22:46:27+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
 import os
-import stat
 import re
 import shutil
+import stat
 import zipfile
 
-import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
 from tkinter.font import nametofont
-from tkinter import filedialog
+import tkinter as tk
 
 
-__version__ = '0.3'
+__version__ = '0.4'
 
 
 def create_widgets(root):
@@ -31,7 +31,6 @@ def create_widgets(root):
 
     Returns:
         A SimpleNamespace of widgets
-        A SimpleNamespace of state
 
     """
     # Set the font.
@@ -40,12 +39,10 @@ def create_widgets(root):
     root.option_add("*Font", default_font)
     # General commands and bindings
     root.wm_title('Unlock excel files v' + __version__)
-    root.columnconfigure(5, weight=1)
-    root.rowconfigure(9, weight=1)
+    root.columnconfigure(3, weight=1)
+    root.rowconfigure(5, weight=1)
     # A SimpleNamespace is used to save widgets that need to be accessed later.
     w = SimpleNamespace()
-    # Another is used to hold the state associated with the widgets.
-    state = SimpleNamespace()
     # First row
     ttk.Label(root, text='(1)').grid(row=0, column=0, sticky='ew')
     fb = ttk.Button(root, text="Select file", command=do_file)
@@ -58,7 +55,7 @@ def create_widgets(root):
     ttk.Label(root, text='(2)').grid(row=1, column=0, sticky='ew')
     backup = tk.IntVar()
     backup.set(0)
-    state.backup = backup
+    w.backup = backup
     ttk.Checkbutton(root, text='backup', variable=backup,
                     command=on_backup).grid(row=1, column=1, sticky='ew')
     suffixlabel = ttk.Label(root, text='suffix:')
@@ -67,9 +64,9 @@ def create_widgets(root):
     w.suffixlabel = suffixlabel
     suffix = tk.StringVar()
     suffix.set('-orig')
-    state.suffix = suffix
+    w.suffix = suffix
     se = ttk.Entry(root, justify='left', textvariable=suffix)
-    se.grid(row=1, column=3, columnspan=1, sticky='ew')
+    se.grid(row=1, column=3, columnspan=1, sticky='w')
     se['state'] = 'disabled'
     w.suffixentry = se
     # Third row
@@ -84,19 +81,20 @@ def create_widgets(root):
     # Fifth row
     sb = tk.Scrollbar(root, orient="vertical")
     status = tk.Listbox(root, width=40, yscrollcommand=sb.set)
-    status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="ew")
+    status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="nsew")
     w.status = status
     sb.grid(row=4, rowspan=5, column=5, sticky="ns")
     sb.config(command=status.yview)
     # Ninth row
     ttk.Button(root, text="Quit", command=do_exit).grid(row=9, column=1, sticky='ew')
-    # Return the widgets and state that need to be accessed.
-    return w, state
+    # Return the widgets that need to be accessed.
+    return w
 
 
-def init_state(state):
-    """Initialize the global state."""
-    state.interval = 50
+def create_state():
+    """Create and initialize the global state."""
+    state = SimpleNamespace()
+    state.interval = 10
     state.path = ''
     state.inzf, state.outzf = None, None
     state.infos = None
@@ -105,6 +103,7 @@ def init_state(state):
     state.workbook_unlocked = False
     state.directory = None
     state.remove = None
+    return state
 
 
 def statusmsg(text):
@@ -119,8 +118,8 @@ def step_open_zipfiles():
     state.path = path
     statusmsg(f'Opening “{path}”...')
     first, last = path.rsplit('.', maxsplit=1)
-    if state.backup.get():
-        backupname = first + state.suffix.get() + '.' + last
+    if widgets.backup.get():
+        backupname = first + widgets.suffix.get() + '.' + last
     else:
         backupname = first + '-orig' + '.' + last
         state.remove = backupname
@@ -136,7 +135,7 @@ def step_discover_internal_files():
     statusmsg(f'Reading “{state.path}”...')
     state.infos = [name for name in state.inzf.infolist()]
     state.currinfo = 0
-    statusmsg(f'“{state.path}” contains {len(state.infos)} files.')
+    statusmsg(f'“{state.path}” contains {len(state.infos)} internal files.')
     root.after(state.interval, step_filter_internal_file)
 
 
@@ -165,7 +164,7 @@ def step_filter_internal_file():
     # Next iteration or next step.
     state.currinfo += 1
     if state.currinfo >= len(state.infos):
-        statusmsg('All files processed.')
+        statusmsg('All internal files processed.')
         state.currinfo = None
         root.after(state.interval, step_close_zipfiles)
     else:
@@ -187,6 +186,7 @@ def step_finished():
         state.remove = None
     else:
         statusmsg('Removing temporary file')
+    statusmsg(f'Unlocked {state.worksheets_unlocked} worksheets.')
     statusmsg('Finished!')
     widgets.gobtn['state'] = 'disabled'
     widgets.fn['text'] = ''
@@ -206,8 +206,7 @@ def do_file():
         parent=root,
         defaultextension='.xlsx',
         filetypes=(
-            ('excel files', '*.xlsx'), ('excel files with macros', '*.xlsm'),
-            ('all files', '*.*')
+            ('excel files', '*.xls*'), ('all files', '*.*')
         ),
         initialdir=state.directory
     )
@@ -223,7 +222,7 @@ def do_file():
 
 
 def on_backup():
-    if state.backup.get() == 1:
+    if widgets.backup.get() == 1:
         widgets.suffixlabel['state'] = 'enabled'
         widgets.suffixentry['state'] = 'enabled'
     else:
@@ -262,6 +261,6 @@ if __name__ == '__main__':
         pass
     # Widgets is a namespace of widgets that needs to be accessed by the callbacks.
     # State is a namespace of the global state.
-    widgets, state = create_widgets(root)
-    init_state(state)
+    widgets = create_widgets(root)
+    state = create_state()
     root.mainloop()
