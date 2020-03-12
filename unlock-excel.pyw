@@ -4,7 +4,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-12T21:17:59+0100
+# Last modified: 2020-03-12T21:24:52+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -40,7 +40,7 @@ def create_widgets(root):
     root.option_add("*Font", default_font)
     # General commands and bindings
     root.wm_title('Unlock excel files v' + __version__)
-    root.columnconfigure(4, weight=1)
+    root.columnconfigure(5, weight=1)
     root.rowconfigure(9, weight=1)
     # A SimpleNamespace is used to save widgets that need to be accessed later.
     w = SimpleNamespace()
@@ -82,9 +82,12 @@ def create_widgets(root):
     ttk.Label(root, text='(4)').grid(row=3, column=0, sticky='ew')
     ttk.Label(root, text='Progress:').grid(row=3, column=1, sticky='w')
     # Fifth row
-    status = tk.Listbox(root, width=40)
+    sb = tk.Scrollbar(root, orient="vertical")
+    status = tk.Listbox(root, width=40, yscrollcommand=sb.set)
     status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="ew")
     w.status = status
+    sb.grid(row=4, rowspan=5, column=5, sticky="ns")
+    sb.config(command=status.yview)
     # Ninth row
     ttk.Button(root, text="Quit", command=do_exit).grid(row=9, column=1, sticky='ew')
     # Return the widgets and state that need to be accessed.
