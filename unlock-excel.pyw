@@ -4,7 +4,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-11T22:39:16+0100
+# Last modified: 2020-03-12T21:17:59+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -20,7 +20,7 @@ from tkinter.font import nametofont
 from tkinter import filedialog
 
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 def create_widgets(root):
@@ -41,7 +41,7 @@ def create_widgets(root):
     # General commands and bindings
     root.wm_title('Unlock excel files v' + __version__)
     root.columnconfigure(4, weight=1)
-    root.rowconfigure(7, weight=1)
+    root.rowconfigure(9, weight=1)
     # A SimpleNamespace is used to save widgets that need to be accessed later.
     w = SimpleNamespace()
     # Another is used to hold the state associated with the widgets.
@@ -69,7 +69,7 @@ def create_widgets(root):
     suffix.set('-orig')
     state.suffix = suffix
     se = ttk.Entry(root, justify='left', textvariable=suffix)
-    se.grid(row=1, column=3, columnspan=2, sticky='ew')
+    se.grid(row=1, column=3, columnspan=1, sticky='ew')
     se['state'] = 'disabled'
     w.suffixentry = se
     # Third row
@@ -78,30 +78,22 @@ def create_widgets(root):
     gobtn['state'] = 'disabled'
     gobtn.grid(row=2, column=1, sticky='ew')
     w.gobtn = gobtn
-    ttk.Label(root, text='status:').grid(row=2, column=2, sticky='ew')
-    status = ttk.Label(root, text='not running', width=30)
-    status.grid(row=2, column=3, columnspan=4, sticky='ew')
-    w.status = status
     # Fourth row
     ttk.Label(root, text='(4)').grid(row=3, column=0, sticky='ew')
-    ttk.Label(root, text='Results:').grid(row=3, column=1, sticky='w')
+    ttk.Label(root, text='Progress:').grid(row=3, column=1, sticky='w')
     # Fifth row
-    res1 = ttk.Label(root, text='-')
-    res1.grid(row=4, column=1, columnspan=4, sticky='ew')
-    w.res1 = res1
-    # Sixth row
-    res2 = ttk.Label(root, text='-')
-    res2.grid(row=5, column=1, columnspan=4, sticky='ew')
-    w.res2 = res2
-    # Seventh row
-    ttk.Button(root, text="Quit", command=do_exit).grid(row=6, column=1, sticky='ew')
+    status = tk.Listbox(root, width=40)
+    status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="ew")
+    w.status = status
+    # Ninth row
+    ttk.Button(root, text="Quit", command=do_exit).grid(row=9, column=1, sticky='ew')
     # Return the widgets and state that need to be accessed.
     return w, state
 
 
 def init_state(state):
     """Initialize the global state."""
-    state.interval = 100
+    state.interval = 50
     state.path = ''
     state.inzf, state.outzf = None, None
     state.infos = None
@@ -112,11 +104,17 @@ def init_state(state):
     state.remove = None
 
 
+def statusmsg(text):
+    """Append a message to the status listbox, and make sure it is visible."""
+    widgets.status.insert(tk.END, text)
+    widgets.status.see(tk.END)
+
+
 # Step functions to call in the after() method.
 def step_open_zipfiles():
     path = widgets.fn['text']
     state.path = path
-    widgets.status['text'] = f'opening “{path}”...'
+    statusmsg(f'Opening “{path}”...')
     first, last = path.rsplit('.', maxsplit=1)
     if state.backup.get():
         backupname = first + state.suffix.get() + '.' + last
@@ -132,27 +130,26 @@ def step_open_zipfiles():
 
 
 def step_discover_internal_files():
-    widgets.status['text'] = f'reading “{state.path}”...'
+    statusmsg(f'Reading “{state.path}”...')
     state.infos = [name for name in state.inzf.infolist()]
     state.currinfo = 0
-    widgets.status['text'] = f'“{state.path}” contains {len(state.infos)} files.'
+    statusmsg(f'“{state.path}” contains {len(state.infos)} files.')
     root.after(state.interval, step_filter_internal_file)
 
 
 def step_filter_internal_file():
     current = state.infos[state.currinfo]
-    stat = f'processing “{current.filename}” ({state.currinfo+1}/{len(state.infos)})...'
-    widgets.status['text'] = stat
+    stat = f'Processing “{current.filename}” ({state.currinfo+1}/{len(state.infos)})...'
+    statusmsg(stat)
     # Doing the actual work
     regex = None
     data = state.inzf.read(current)
     if b'sheetProtect' in data:
         regex = r'<sheetProtect.*?/>'
-        widgets.status['text'] = f'worksheet "{current.filename}" is protected.'
+        statusmsg(f'Worksheet "{current.filename}" is protected.')
     elif b'workbookProtect' in data:
         regex = r'<workbookProtect.*?/>'
-        widgets.res2['text'] = '- workbook unlocked.'
-        widgets.status['text'] = 'the workbook is protected'
+        statusmsg('The workbook is protected')
     else:
         state.outzf.writestr(current, data)
     if regex:
@@ -161,11 +158,11 @@ def step_filter_internal_file():
         if len(newtext) != len(text):
             state.outzf.writestr(current, newtext)
             state.worksheets_unlocked += 1
-            widgets.status['text'] = f'removed password from "{current.filename}".'
+            statusmsg(f'Removed password from "{current.filename}".')
     # Next iteration or next step.
     state.currinfo += 1
     if state.currinfo >= len(state.infos):
-        widgets.status['text'] = 'all sheets processed.'
+        statusmsg('All files processed.')
         state.currinfo = None
         root.after(state.interval, step_close_zipfiles)
     else:
@@ -173,21 +170,21 @@ def step_filter_internal_file():
 
 
 def step_close_zipfiles():
-    widgets.status['text'] = f'writing “{state.path}”...'
+    statusmsg(f'Writing “{state.path}”...')
     state.inzf.close()
     state.outzf.close()
     state.inzf, state.outzf = None, None
-    widgets.res1['text'] = f'- unlocked {state.worksheets_unlocked} worksheets.'
     root.after(state.interval, step_finished)
 
 
 def step_finished():
     if state.remove:
-        widgets.status['text'] = 'removing temporary file'
         os.chmod(state.remove, stat.S_IWRITE)
         os.remove(state.remove)
         state.remove = None
-    widgets.status['text'] = 'finished!'
+    else:
+        statusmsg('Removing temporary file')
+    statusmsg('Finished!')
     widgets.gobtn['state'] = 'disabled'
     widgets.fn['text'] = ''
     state.path = ''
@@ -218,10 +215,8 @@ def do_file():
     state.workbook_unlocked = False
     state.path = fn
     widgets.fn['text'] = fn
-    widgets.status['text'] = 'not running.'
-    widgets.res1['text'] = '-'
-    widgets.res2['text'] = '-'
     widgets.gobtn['state'] = 'enabled'
+    widgets.status.delete(0, tk.END)
 
 
 def on_backup():
@@ -242,10 +237,6 @@ def do_exit(**args):
     Callback to handle quitting.
     """
     root.destroy()
-
-
-def step():
-    pass
 
 
 if __name__ == '__main__':
