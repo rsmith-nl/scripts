@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-16T19:23:43+0100
+# Last modified: 2020-03-17T22:11:23+0100
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
 
 from tkinter import messagebox
@@ -44,7 +44,7 @@ def create_widgets(root):
     # SimpleNamespace to save widgets that need to be accessed later.
     w = SimpleNamespace()
     # First row
-    ttk.Label(root, text='Red').grid(row=0, column=0, sticky='w')
+    ttk.Button(root, text='Red', command=set_red).grid(row=0, column=0, sticky="ew")
     red = tk.Scale(root, from_=0, to=255, orient=tk.HORIZONTAL, length=255,
                    command=do_red)
     red.grid(row=0, column=1, sticky="nsew")
@@ -53,22 +53,23 @@ def create_widgets(root):
     show.grid(row=0, column=2, rowspan=3)
     w.show = show
     # Second row
-    ttk.Label(root, text='Green').grid(row=1, column=0, sticky='w')
+    ttk.Button(root, text='Green', command=set_green).grid(row=1, column=0, sticky="ew")
     green = tk.Scale(root, from_=0, to=255, orient=tk.HORIZONTAL, length=255,
                      command=do_green)
     green.grid(row=1, column=1, sticky="ew")
     w.green = green
     # Third row
-    ttk.Label(root, text='Blue').grid(row=2, column=0, sticky='w')
+    ttk.Button(root, text='Blue', command=set_blue).grid(row=2, column=0, sticky="ew")
     blue = tk.Scale(root, from_=0, to=255, orient=tk.HORIZONTAL, length=255,
                     command=do_blue)
     blue.grid(row=2, column=1, sticky="ew")
     w.blue = blue
     # Last row
     b = ttk.Button(root, text="Quit", command=do_exit)
-    b.grid(row=3, column=0, sticky='w')
-    setkb = ttk.Button(root, text="Set", command=do_set)
-    setkb.grid(row=3, column=2, sticky='e')
+    b.grid(row=3, column=0, sticky='ew')
+    setb = ttk.Button(root, text="Set", command=do_set)
+    setb.grid(row=3, column=2, sticky='e')
+    w.setb = setb
     # Return the widgets that need to be accessed.
     return w
 
@@ -88,6 +89,24 @@ def update_color():
     """Helper function to update the color example."""
     value = f'#{state.red:02x}{state.green:02x}{state.blue:02x}'
     w.show['bg'] = value
+
+
+def set_red():
+    w.red.set(255)
+    w.green.set(0)
+    w.blue.set(0)
+
+
+def set_green():
+    w.red.set(0)
+    w.green.set(255)
+    w.blue.set(0)
+
+
+def set_blue():
+    w.red.set(0)
+    w.green.set(0)
+    w.blue.set(255)
 
 
 def do_red(r):
@@ -110,10 +129,12 @@ def do_blue(b):
 
 def do_set():
     """Callback to set the color on the keyboard."""
+    w.setb['state'] = tk.DISABLED
     msg = static_color_msg(state.red, state.green, state.blue)
     read = state.dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
     if read != 90:
         messagebox.showerror('Set color', 'Operation failed.')
+    w.setb['state'] = tk.NORMAL
 
 
 def static_color_msg(red, green, blue):
