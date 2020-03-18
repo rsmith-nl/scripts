@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-17T22:11:23+0100
+# Last modified: 2020-03-17T23:03:27+0100
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
 
 from tkinter import messagebox
@@ -92,18 +92,21 @@ def update_color():
 
 
 def set_red():
+    """Set the color to pure red."""
     w.red.set(255)
     w.green.set(0)
     w.blue.set(0)
 
 
 def set_green():
+    """Set the color to pure green."""
     w.red.set(0)
     w.green.set(255)
     w.blue.set(0)
 
 
 def set_blue():
+    """Set the color to pure blue."""
     w.red.set(0)
     w.green.set(0)
     w.blue.set(255)
@@ -131,6 +134,10 @@ def do_set():
     """Callback to set the color on the keyboard."""
     w.setb['state'] = tk.DISABLED
     msg = static_color_msg(state.red, state.green, state.blue)
+    # 0x21: request_type USB_TYPE_CLASS | USB_RECIP_INTERFACE | USB_DIR_OUT
+    # 0x09: request HID_REQ_SET_REPORT
+    # 0x300: value
+    # 0x01: report index HID_REQ_GET_REPORT
     read = state.dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
     if read != 90:
         messagebox.showerror('Set color', 'Operation failed.')
