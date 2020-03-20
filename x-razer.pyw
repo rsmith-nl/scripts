@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-20T18:54:11+0100
+# Last modified: 2020-03-20T19:18:35+0100
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
 
 from tkinter import messagebox
@@ -20,11 +20,15 @@ import usb.core
 __version__ = '1.1'
 
 
-def create_widgets(root):
+keyboards = {0x021e: 'Razer Ornata Chroma', 0x0228: 'Razer Blackwidow Elite'}
+
+
+def create_widgets(root, model):
     """Create the window and its widgets.
 
     Arguments:
         root: the root window.
+        model (str): keyboard model
 
     Returns:
         A SimpleNamespace of widgets
@@ -41,37 +45,40 @@ def create_widgets(root):
     root.rowconfigure(0, weight=1)
     root.rowconfigure(1, weight=1)
     root.rowconfigure(2, weight=1)
+    root.rowconfigure(3, weight=1)
     # SimpleNamespace to save widgets that need to be accessed later.
     w = SimpleNamespace()
     # First row
-    ttk.Button(root, text='Red', command=set_red).grid(row=0, column=0, sticky="ew")
+    ttk.Label(root, text=model, anchor=tk.CENTER).grid(row=0, column=0, columnspan=3, sticky='ew')
+    # Second row
+    ttk.Button(root, text='Red', command=set_red).grid(row=1, column=0, sticky="ew")
     red = tk.Scale(
         root, from_=0, to=255, orient=tk.HORIZONTAL, length=255, command=do_red
     )
-    red.grid(row=0, column=1, sticky="nsew")
+    red.grid(row=1, column=1, sticky="nsew")
     w.red = red
     show = tk.Frame(root, width=100, height=100, bg='#000000')
-    show.grid(row=0, column=2, rowspan=3)
+    show.grid(row=1, column=2, rowspan=3)
     w.show = show
-    # Second row
-    ttk.Button(root, text='Green', command=set_green).grid(row=1, column=0, sticky="ew")
+    # Third row
+    ttk.Button(root, text='Green', command=set_green).grid(row=2, column=0, sticky="ew")
     green = tk.Scale(
         root, from_=0, to=255, orient=tk.HORIZONTAL, length=255, command=do_green
     )
-    green.grid(row=1, column=1, sticky="ew")
+    green.grid(row=2, column=1, sticky="ew")
     w.green = green
-    # Third row
-    ttk.Button(root, text='Blue', command=set_blue).grid(row=2, column=0, sticky="ew")
+    # Fourth row
+    ttk.Button(root, text='Blue', command=set_blue).grid(row=3, column=0, sticky="ew")
     blue = tk.Scale(
         root, from_=0, to=255, orient=tk.HORIZONTAL, length=255, command=do_blue
     )
-    blue.grid(row=2, column=1, sticky="ew")
+    blue.grid(row=3, column=1, sticky="ew")
     w.blue = blue
     # Last row
     b = ttk.Button(root, text="Quit", command=do_exit)
-    b.grid(row=3, column=0, sticky='ew')
+    b.grid(row=4, column=0, sticky='ew')
     setb = ttk.Button(root, text="Set", command=do_set)
-    setb.grid(row=3, column=2, sticky='e')
+    setb.grid(row=4, column=2, sticky='e')
     w.setb = setb
     # Return the widgets that need to be accessed.
     return w
@@ -174,20 +181,24 @@ if __name__ == '__main__':
     if os.name == 'posix':
         if os.fork():
             sys.exit()
-    # Find devices
     devs = [usb.core.find(idVendor=0x1532, idProduct=p) for p in (0x021e, 0x0228)]
     devs = [dev for dev in devs if dev]
     # Global state
     state = SimpleNamespace()
     state.red, state.green, state.blue = 0, 0, 0
     state.dev = None
-    if len(devs) == 1:
-        state.dev = devs[0]
+    # Find devices
+    for product in keyboards.keys():
+        dev = usb.core.find(idVendor=0x1532, idProduct=product)
+        if dev:
+            state.dev = dev
+            state.model = keyboards[product]
+            break
     # Create the GUI window.
     root = tk.Tk(None)
     if state.dev is not None:
         # w is a namespace of widgets that needs to be accessed by the callbacks.
-        w = create_widgets(root)
+        w = create_widgets(root, model=state.model)
     else:
         messagebox.showerror('Device detection', 'No Ornata Chroma found')
         root.destroy()
