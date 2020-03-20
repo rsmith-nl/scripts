@@ -5,8 +5,11 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-20T19:18:35+0100
-"""Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
+# Last modified: 2020-03-20T22:46:02+0100
+"""Set the LEDs on a Razer keyboard to a static RGB color.
+
+Tested on an Ornata Chroma and a BlackWidow Elite.
+"""
 
 from tkinter import messagebox
 from tkinter import ttk
@@ -17,10 +20,7 @@ import sys
 import tkinter as tk
 import usb.core
 
-__version__ = '1.1'
-
-
-keyboards = {0x021e: 'Razer Ornata Chroma', 0x0228: 'Razer Blackwidow Elite'}
+__version__ = '1.2'
 
 
 def create_widgets(root, model):
@@ -181,19 +181,15 @@ if __name__ == '__main__':
     if os.name == 'posix':
         if os.fork():
             sys.exit()
-    devs = [usb.core.find(idVendor=0x1532, idProduct=p) for p in (0x021e, 0x0228)]
-    devs = [dev for dev in devs if dev]
     # Global state
     state = SimpleNamespace()
     state.red, state.green, state.blue = 0, 0, 0
     state.dev = None
     # Find devices
-    for product in keyboards.keys():
-        dev = usb.core.find(idVendor=0x1532, idProduct=product)
-        if dev:
-            state.dev = dev
-            state.model = keyboards[product]
-            break
+    devs = list(usb.core.find(find_all=True, idVendor=0x1532))
+    if devs:
+        state.dev = devs[0]
+        state.model = devs[0].product
     # Create the GUI window.
     root = tk.Tk(None)
     if state.dev is not None:
