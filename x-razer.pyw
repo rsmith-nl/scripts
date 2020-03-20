@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-17T23:03:27+0100
+# Last modified: 2020-03-20T18:54:11+0100
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color."""
 
 from tkinter import messagebox
@@ -17,7 +17,7 @@ import sys
 import tkinter as tk
 import usb.core
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 
 def create_widgets(root):
@@ -36,7 +36,7 @@ def create_widgets(root):
     root.option_add("*Font", default_font)
     # General commands and bindings
     root.bind_all('q', do_q)
-    root.wm_title('Razer Ornata Chroma color v' + __version__)
+    root.wm_title('Razer keyboard color v' + __version__)
     root.columnconfigure(1, weight=1)
     root.rowconfigure(0, weight=1)
     root.rowconfigure(1, weight=1)
@@ -45,8 +45,9 @@ def create_widgets(root):
     w = SimpleNamespace()
     # First row
     ttk.Button(root, text='Red', command=set_red).grid(row=0, column=0, sticky="ew")
-    red = tk.Scale(root, from_=0, to=255, orient=tk.HORIZONTAL, length=255,
-                   command=do_red)
+    red = tk.Scale(
+        root, from_=0, to=255, orient=tk.HORIZONTAL, length=255, command=do_red
+    )
     red.grid(row=0, column=1, sticky="nsew")
     w.red = red
     show = tk.Frame(root, width=100, height=100, bg='#000000')
@@ -54,14 +55,16 @@ def create_widgets(root):
     w.show = show
     # Second row
     ttk.Button(root, text='Green', command=set_green).grid(row=1, column=0, sticky="ew")
-    green = tk.Scale(root, from_=0, to=255, orient=tk.HORIZONTAL, length=255,
-                     command=do_green)
+    green = tk.Scale(
+        root, from_=0, to=255, orient=tk.HORIZONTAL, length=255, command=do_green
+    )
     green.grid(row=1, column=1, sticky="ew")
     w.green = green
     # Third row
     ttk.Button(root, text='Blue', command=set_blue).grid(row=2, column=0, sticky="ew")
-    blue = tk.Scale(root, from_=0, to=255, orient=tk.HORIZONTAL, length=255,
-                    command=do_blue)
+    blue = tk.Scale(
+        root, from_=0, to=255, orient=tk.HORIZONTAL, length=255, command=do_blue
+    )
     blue.grid(row=2, column=1, sticky="ew")
     w.blue = blue
     # Last row
@@ -171,10 +174,15 @@ if __name__ == '__main__':
     if os.name == 'posix':
         if os.fork():
             sys.exit()
+    # Find devices
+    devs = [usb.core.find(idVendor=0x1532, idProduct=p) for p in (0x021e, 0x0228)]
+    devs = [dev for dev in devs if dev]
     # Global state
     state = SimpleNamespace()
     state.red, state.green, state.blue = 0, 0, 0
-    state.dev = usb.core.find(idVendor=0x1532, idProduct=0x021e)
+    state.dev = None
+    if len(devs) == 1:
+        state.dev = devs[0]
     # Create the GUI window.
     root = tk.Tk(None)
     if state.dev is not None:
