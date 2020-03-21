@@ -5,10 +5,12 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-20T22:46:02+0100
+# Last modified: 2020-03-21T13:31:04+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Tested on an Ornata Chroma and a BlackWidow Elite.
+The USB control transfer messages were laboriously extracted from the
+Openrazer (https://github.com/openrazer/openrazer) driver code.
 """
 
 from tkinter import messagebox
@@ -161,18 +163,19 @@ def static_color_msg(red, green, blue):
 
     Returns an bytes object containing the message ready to feed into a ctrl_transfer.
     """
-    # Meaning of the nonzero bytes, in sequence: 0x3f = transaction id, 0x09
-    # = length of used arguments, 0x0f = command class, 0x02 = command id
+    # Meaning of the bytes, in sequence: 0x00 = status, 0x3f = transaction id,
+    # 0x00,0x00 = number of remaining packets, 0x00 = protocol type,
+    # 0x09 = length of used arguments, 0x0f = command class, 0x02 = command id.
     hdr = b'\x00\x3f\x00\x00\x00\x09\x0f\x02'
-    # Meaning of the nonzero bytes, in sequence: 0x01 = VARSTORE, 0x05
-    # = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
+    # Meaning of the nonzero bytes, in sequence: 0x01 = VARSTORE,
+    # 0x05 = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
     arguments = b'\x01\x05\x01\x00\x00\x01'
     msg = hdr + arguments + bytes([red, green, blue])  # Add color.
     chksum = 0
     for j in msg[2:]:  # Calculate the checksum
         chksum ^= j
-    msg += bytes(80 - 9)  # Add filler; the variable message buffer is 80 bytes.
-    msg += bytes([chksum, 0])  # Add checksum in penultimate byte
+    msg += bytes(88 - len(msg))  # Add filler; the total message buffer is 90 bytes.
+    msg += bytes([chksum, 0])  # Add checksum and zero byte, completing the msg.
     return msg
 
 
