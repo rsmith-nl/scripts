@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-03-11T23:11:18+0100
+.. Last modified: 2020-03-21T13:34:36+0100
 
 Introduction
 ============
@@ -824,3 +824,10 @@ Requires the `requests module`_ (version 2.x).
 
 It also requires you to have a JSON-file called ``.youtube-feedrc`` in your
 ``$HOME`` directory. What this file should contain is documented in the script.
+
+
+x-razer.pyw
+-----------
+
+Tkinter GUI to change the color on a Razer keyboard. Succesfulle tested on an
+Ornata Chroma and a BlackWidow Elite.
