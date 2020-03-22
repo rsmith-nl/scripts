@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 # file: unlock-excel.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T13:47:43+0100
-# Last modified: 2020-03-10T23:07:58+0100
+# Last modified: 2020-03-22T09:53:56+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 import zipfile
