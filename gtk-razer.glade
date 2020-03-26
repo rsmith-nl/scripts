@@ -36,6 +36,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="tooltip_text" translatable="yes">Change the preview color to red.</property>
+            <signal name="clicked" handler="on_red" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -49,6 +50,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="tooltip_text" translatable="yes">Change the previe color to green.</property>
+            <signal name="clicked" handler="on_green" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -62,6 +64,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="tooltip_text" translatable="yes">Change the preview color to blue.</property>
+            <signal name="clicked" handler="on_blue" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -75,6 +78,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="tooltip_text" translatable="yes">Exit without changing the color.</property>
+            <signal name="clicked" handler="on_quit" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -88,7 +92,9 @@
             <property name="can_focus">True</property>
             <property name="adjustment">aRed</property>
             <property name="fill_level">255</property>
-            <property name="round_digits">1</property>
+            <property name="round_digits">0</property>
+            <property name="digits">0</property>
+            <signal name="change-value" handler="on_slider_change" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -102,7 +108,9 @@
             <property name="can_focus">True</property>
             <property name="adjustment">aGreen</property>
             <property name="fill_level">255</property>
-            <property name="round_digits">1</property>
+            <property name="round_digits">0</property>
+            <property name="digits">0</property>
+            <signal name="change-value" handler="on_slider_change" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -116,7 +124,9 @@
             <property name="can_focus">True</property>
             <property name="adjustment">aBlue</property>
             <property name="fill_level">255</property>
-            <property name="round_digits">1</property>
+            <property name="round_digits">0</property>
+            <property name="digits">0</property>
+            <signal name="change-value" handler="on_slider_change" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -168,7 +178,8 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Set the keyboard backlight color.</property>
+            <property name="tooltip_text" translatable="yes">Set the keyboard backlight color as shown in the preview.</property>
+            <signal name="clicked" handler="set_color" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">2</property>

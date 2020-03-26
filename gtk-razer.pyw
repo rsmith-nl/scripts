@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2020-03-26T23:32:13+0100
+# Last modified: 2020-03-26T23:55:33+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
@@ -36,38 +36,35 @@ def create_widgets():
     # Load the UI definition.
     builder = Gtk.Builder()
     builder.add_from_string(ui)
+    handlers = {
+        "on_key": on_key,
+        "on_red": partial(set_preview, red=255),
+        "on_green": partial(set_preview, green=255),
+        "on_blue": partial(set_preview, blue=255),
+        "on_slider_change": on_slider_change,
+        "on_draw": on_draw,
+        "set_color": set_color,
+        "on_quit": Gtk.main_quit
+    }
+    builder.connect_signals(handlers)
     # Root window
     root = builder.get_object("root")
     # Type label
     tp = builder.get_object("type")
     tp.props.label = state.model
     # Red
-    bRed = builder.get_object("bRed")
-    bRed.connect("clicked", partial(set_preview, red=255))
     sRed = builder.get_object("sRed")
-    sRed.connect("change-value", on_slider_change)
     w.red = sRed
     # Green
-    bGreen = builder.get_object("bGreen")
-    bGreen.connect("clicked", partial(set_preview, green=255))
     sGreen = builder.get_object("sGreen")
-    sGreen.connect("change-value", on_slider_change)
     w.green = sGreen
     # Blue
-    bBlue = builder.get_object("bBlue")
-    bBlue.connect("clicked", partial(set_preview, blue=255))
     sBlue = builder.get_object("sBlue")
-    sBlue.connect("change-value", on_slider_change)
     w.blue = sBlue
     # Preview
     da = builder.get_object("show")
-    da.connect('draw', on_draw)
+    # da.connect('draw', on_draw)
     w.show = da
-    quit = builder.get_object("quit")
-    quit.connect("clicked", Gtk.main_quit)
-    # Set button
-    s = builder.get_object("set")
-    s.connect("clicked", set_color)
     return root, w
 
 
@@ -157,23 +154,24 @@ def create_state():
 # The definition of the user interface was made with Glade.
 # It was encapsulated by the to_include script.
 ui = zlib.decompress(base64.b85decode(
-    'c-rk+O>f&c5WV+Tu)Hq(nFeS9TSdBUa_M1r)5RVIN*qh9X;LLAJO1}OlA79%Da&#aLuq?U!g(a'
-    '$%p?6c&gA{wLXssIE3}%@QGZAYs91BMk}3W7%XRN9eILA<yzceL4Ja_o0VgZrQj$o<fn4;*<Nk'
-    '>BdKe^>12bbW1g{9082FY81C~e;O=;rhf6&cB2piHt8K<MK5IYh}X6=;TxcL?Tnp?L3<tPz+O4'
-    '$dQ11(}PIx{*0<JLs61x#t4;cqk;UtUfI_e1_j>mUn-iVc)A2csrH#uC^840jQeLACQEN!%C!_'
-    '2OCl1N^0N_)jRVSJnQF)~;s%F;n48$GN4!HIo+hHf2SknEW0+hjq_@1ZJTJ%Q8PHQ(S_XQmsN9'
-    'ro^ro<^)$&x{^9h5~o7)>gQq$5)VtNB?ogKFxZNC5WUCj#)$iB_!upP6_Lb~^Tp(QbWTZu4`cK'
-    'yv>A)>zM#RyQLAW~FVqHf=>_dj_tXE7JEv7u*k~inx^*RsKvLoiQ&uv^Ff~)U1|*AE-yTlNX+v'
-    'JyzzoD7mS95;GnPx&4(+s-PGq5jJLhHnCki$J;!+@)fu(>I!P00$oF)c%-@nlIS=%hl;yKo`A^'
-    '$LQA#;w!DGi3l)5v~+Ms-`-TYu*mousGj>$<(7O7w3{3D`&~DN@owQH{?isx2eaUQ-45x1@His'
-    'R&cjK}lVlPf}>H-N}mj8^OPzqCVXTS3Y5Mj%h9Ag*7P!Rtl?wf_n43g1U_vR<_iWZT3+s!Ce{_'
-    'uRE~LYxujMA+~wB1gwR@n+YjHiI!frqGoiic*sQ}oIPMvo<u^U4tl3;2_0jdUZ99tdAgrfM&t9'
-    'z=m@j)0#($;#r>=zdS-ugZE!{Uy!Ef`kJLJ_@Qz85s6!55kDH(0RWVN`rw6eo@_Y=}T7_hc^Rm'
-    'A)8Xv@ZN&AU^G;D=aUKwED?}${ds1MtCRg5l&hj!(gAqA17?om@5T@7#B6qFSXeen?$d2B^}_y'
-    'sd)ltWWw0ojjE#N$O!`!Ui8jx;`f7BqO*h~Mefaum*PgSPsMr$hT-8qY0Rb2A+Rc!MkD6SvNOJ'
-    'kpxa{%3DoSI&LyOY^Vl<z7G8(Rq8K&#mzjdg!{V;;fAT3#a!1ZsAvK10d`2(LaZEq?zF)!lKBc'
-    'aOda)j62u|s4kaMPQ|U%B@5M9&5z)a4Dd}k3kv;K7R@_xInq53J$zCr?0*s25#(-)w+1%@lfl;'
-    'i9sCav!N=+'
+    'c-rlnUvt|w48Y&}DLB6F{5Q+pc4w=Xu1j9_u&v$oQAdfe#hNBHlCtA(KS)YyE2b>Vj#K5Dw?qO'
+    '+0{9UEkWAj+FC|%lu|lgU9rcHlfQmI2YCfg^e!lJfO5X?XCO`Fh<PH=V=75v6a0!`9#(`Y*$K('
+    'Ep^m-^HlmjzkF$C`jnHcyl69z1iBAU{<Tl`G78==~e4hlIPeTCSOSTbv;^v*4A_}9$3B`8OU;8'
+    'V&z$P8#Mi_)plDHyjQiY;MEvlM@$!T9=mGI)IDm$VMjP^j2Iv2rkKQb^exDhk7@#$-^Q{75724'
+    '1jv|R{R6}wb}4RD6ZG#`Hj}D=KL{J;Y`PwrNJ$e7WNKh#auD@AiaQ1&wvDGp$DtNKM7M@f|*jS'
+    'LVQh$T{H9v?y7W&IxZ3?Lh|zG{0I^+OQIzQ^C&Rbk$57#XW5+*kJ0d1v=UZC5^v6DlkJ&viVJ)'
+    '?Mz2GgvKaFP4X%#bMayidwo2DtrHbi(^FL(HX;lU`+JafPuVfKON}OTJO6C~4W=c1J#-gt83@7'
+    '=t!LM!948$N-U_%ZwmPyx6+i5MGNJ9tr&TIAW2<#k)OMs*XRsz-pL!%9Gni$~y+Knm~A(kRupz'
+    'kaAoBV+X|Az&3uIu*nEM6cE4IzY?3z>5)PG~SZ-V^CJrIB9=pFZ8cauZKNayR3*hqBOq!&1PO%'
+    '6aaRbGR%P=qQ=v7bJ71plT0huKdPjC0$17l5@Ds^*f5?)yrXt?Sea*%D++h2c+_kd*O<9OlRoU'
+    '98ru(0cio}IZzhi=q8lETo%etF+(~ECT(+Fxfa|dVczY6b>0T33mmd-Cl|051@BBq8A@z%WGmB'
+    '*&J+*1m<wlH1i4wE%59O8dn;Dt&s}(}6xdXSrNHGW9(Ax5-KF@LQuGya+^R-?Bl%(^k6(`DBTC'
+    'm-2y&a6`i<j@aeU!o_txN!^s)%n4(@8p>F}OO4B?>=@7d<J?<QZTB>IW$iFTf2Yb_xu<GdI=j>'
+    'ZRdy+->D|7h46m%K5+9@12z*VL!mn5{<F!$YU?t&o72C+@5zj*f<Ro)5|jhfU5A5ji)aKK&&#*'
+    '!6@a_X1i!I#C}JLG72UQ907s$1Z8`Tcds@U2+7cnkLI9wb}7dmaNH4hZMZRCHcf{(r+Di^WFc`'
+    'E7z5KUpqGVs~qLjFLt!wp6R<ae#TCsE>*nfRL8>UL!D3XBhGZt>SBVkfK8;C;UvPK$UJZl6Gvu'
+    'A{((_MsNH$w$-^EDQCO^e`Lb->!EsNSx(ZnHoY$oSt&x?F;LsT0TUc@v`mG8;@505KI=_Fv3Vr'
+    'yjDD40Jy(5}c7w^2>zL*Sl{@vz(!y>Zs'
 )).decode("utf-8")
 
 
@@ -186,7 +184,6 @@ if __name__ == '__main__':
     state = create_state()
     root, widgets = create_widgets()
     root.connect("destroy", Gtk.main_quit)
-    root.connect("key-press-event", on_key)
     root.set_modal(True)  # Makes a floating window.
     if state.dev is None:
         msg = Gtk.MessageDialog(
