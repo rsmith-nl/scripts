@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2020-03-26T22:17:48+0100
+# Last modified: 2020-03-26T23:32:13+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
@@ -188,5 +188,13 @@ if __name__ == '__main__':
     root.connect("destroy", Gtk.main_quit)
     root.connect("key-press-event", on_key)
     root.set_modal(True)  # Makes a floating window.
-    root.show_all()
-    Gtk.main()
+    if state.dev is None:
+        msg = Gtk.MessageDialog(
+            parent=root, message_type=Gtk.MessageType.ERROR,
+            title="Warning", text="No Razer keyboard detected!",
+            buttons=Gtk.ButtonsType.CLOSE
+        )
+        msg.run()
+    else:
+        root.show_all()
+        Gtk.main()
