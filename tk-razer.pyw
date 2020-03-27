@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-# file: x-ornata-chroma-rgb.pyw
+# file: tk-razer.pyw
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-21T13:31:04+0100
+# Last modified: 2020-03-27T22:13:44+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
+
+Uses the tkinter toolkit that comes with Python.
 
 Tested on an Ornata Chroma and a BlackWidow Elite.
 The USB control transfer messages were laboriously extracted from the
