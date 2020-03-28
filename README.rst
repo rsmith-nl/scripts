@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-03-28T09:12:12+0100
+.. Last modified: 2020-03-28T09:50:42+0100
 
 Introduction
 ============
@@ -627,6 +627,32 @@ Front-end for POV-ray_ with a limited amount of choices for picture size and
 quality.
 
 .. _POV-ray: http://www.povray.org/
+
+
+py-include.py
+-------------
+
+Program to prepare files for inclusion in Python code.
+
+After reading a file, it optionally compresses the data using ``zlib`` and
+then encodes it as text using ``base85`` encoding.
+It then formats the text and adds the relevant decoding and decompression
+routines.
+
+For example, the following is the ``pylama.ini`` file processed with ``python3
+py-include.py -c -t pylama.ini``:
+
+.. code-block:: python
+
+    # pylama.ini
+    data = zlib.decompress(base64.b85decode(
+        'c-nQ)O;5ux3<ltPe}(U?C9PVzW)y*@a^eKs&@_eB=}hxcB^g@(JsCr2mz^T{ePTOVfh2_-rdbI'
+        'sGBT8`;F~l*mC@{MPiANjL8ePCd);c`Ms!?;wzvLQNB?vPd+Rv7X3rVCX$pI|cm8xf9(^g4%8Y'
+        'u5ZtYM6>^T%HuTxg1c?EgRS;NaE+^~YNh+c#bpyOOgf3!*2GA+vYqTp2-^;sq#=bbl+A8CRXGG'
+        '`~8oc+RGxZPPJX~?EIp}|;(G4G1IYSC3JUvzbuFV+pq|C{h>mP(B1H_7LLR3PKyjqPO~zXE-j6'
+        '>btOj$1_rw+hV=AKOC1E@{ld74-uUe{^F'
+    )).decode("utf-8")
+
 
 
 py-ver.py
