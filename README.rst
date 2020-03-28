@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-03-21T13:34:36+0100
+.. Last modified: 2020-03-28T09:12:12+0100
 
 Introduction
 ============
@@ -362,6 +362,31 @@ dependencies between packages.
 .. _graphviz: http://www.graphviz.org/
 
 
+gtk-razer.pyw
+-------------
+
+GUI program to set a Razer BlackWidow Elite or Razer Ornata Chroma to a static
+color. Requires the GTK_ toolkit, PyGObject_ and pyusb_.
+
+.. _GTK: https://www.gtk.org/
+.. _PyGObject: https://pygobject.readthedocs.io/en/latest/
+.. _pyusb: https://github.com/pyusb/pyusb
+
+The user interface was built with glade_. The resulting XML file
+``gtk-razer.glade`` was then compressed and ``base85`` encoded for inclusion
+in the script.
+
+.. _glade: https://glade.gnome.org/
+
+It should work on operating systems that support pyusb_,
+without requiring a kernel driver like the `openrazer driver`_ for Linux.
+
+.. _openrazer driver: https://github.com/openrazer/openrazer
+
+To see how this works, best look at ``set-ornata-chroma.py``, which is
+a simple command-line utility to do the same thing.
+
+
 histdata.py
 -----------
 
@@ -669,8 +694,6 @@ This changes the color or the LEDs on a Razer Ornata Chroma keyboard to
 a static RGB color. It should work on operating systems that support pyusb_,
 without requiring a kernel driver like the `openrazer driver`_ for Linux.
 
-.. _pyusb: https://github.com/pyusb/pyusb
-.. _openrazer driver: https://github.com/openrazer/openrazer
 
 The `openrazer driver`_ served as an inspiration and source of information
 about Razer's USB protocol. At first I contemplated porting this driver to
