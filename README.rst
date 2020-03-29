@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-03-28T09:50:42+0100
+.. Last modified: 2020-03-29T08:21:30+0200
 
 Introduction
 ============
@@ -393,12 +393,6 @@ histdata.py
 Makes a histogram of the bytes in each input file, and calculates the entropy
 in each file.
 
-
-include.py
-----------
-
-Converts a (binary) data file into a format that can be included in a Python
-script.
 
 img4latex.py
 ------------
