@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2019-09-16T21:48:37+0200
+# Last modified: 2020-03-29T12:59:26+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -15,6 +15,7 @@ import ctypes
 import ctypes.util
 import functools as ft
 import logging
+import logging.handlers
 import mmap
 import os
 import statistics as stat
@@ -32,11 +33,16 @@ def main():
     """
     Entry point for statusline-i3.py
     """
+    # Configure logging. Facility 19 is “local3.”
+    syslog = logging.handlers.SysLogHandler(address='/var/run/log', facility=19)
+    pid = os.getpid()
+    syslog.ident = f'statusline-i3[{pid}]: '
     logging.basicConfig(
         level='INFO',
-        filename=f"{os.environ['HOME']}/statusline-i3-{os.getpid()}.log",
-        format='%(levelname)s: %(message)s'
+        format='%(levelname)s: %(message)s',
+        handlers=(syslog,)
     )
+    # Set up
     setproctitle(b'statusline-i3')
     args = parse_args(sys.argv[1:])
     mailboxes = {name: {} for name in args.mailbox.split(':')}
@@ -52,6 +58,7 @@ def main():
     logging.info('starting')
     sys.stdout.reconfigure(line_buffering=True)  # Flush every line.
     rv = 0
+    # Run
     try:
         while True:
             start = time.monotonic()
