@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2020-03-29T12:59:26+0200
+# Last modified: 2020-03-29T15:50:45+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -15,7 +15,7 @@ import ctypes
 import ctypes.util
 import functools as ft
 import logging
-import logging.handlers
+from logging.handlers import SysLogHandler
 import mmap
 import os
 import statistics as stat
@@ -25,7 +25,7 @@ import time
 import traceback
 
 # Global data
-__version__ = '2.3'
+__version__ = '2.4'
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 
@@ -33,8 +33,8 @@ def main():
     """
     Entry point for statusline-i3.py
     """
-    # Configure logging. Facility 19 is “local3.”
-    syslog = logging.handlers.SysLogHandler(address='/var/run/log', facility=19)
+    # Configure logging.
+    syslog = SysLogHandler(address='/var/run/log', facility=SysLogHandler.LOG_LOCAL3)
     pid = os.getpid()
     syslog.ident = f'statusline-i3[{pid}]: '
     logging.basicConfig(
