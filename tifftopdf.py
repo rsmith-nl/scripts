@@ -5,7 +5,7 @@
 # Copyright © 2012-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-06-29T21:02:55+02:00
-# Last modified: 2019-07-30T15:36:53+0200
+# Last modified: 2020-04-01T20:56:47+0200
 """
 Convert TIFF files to PDF format.
 
@@ -24,13 +24,24 @@ import sys
 __version__ = '1.4'
 
 
-def main(argv):
+def main():
     """
     Entry point for tifftopdf.
-
-    Arguments:
-        argv: command line arguments
     """
+    args = setup()
+    func = tiffconv
+    if args.jpeg:
+        logging.info('using JPEG compression.')
+        func = partial(tiffconv, jpeg=True, quality=args.quality)
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        for fn, rv in tp.map(func, args.files):
+            if rv == 0:
+                logging.info(f'finished "{fn}"')
+            else:
+                logging.error(f'conversion of {fn} failed, return code {rv}')
+
+
+def setup():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--log',
@@ -44,11 +55,11 @@ def main(argv):
     )
     parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
-    args = parser.parse_args(argv)
+    args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'command line arguments = {sys.argv}')
     logging.debug(f'parsed arguments = {args}')
     # Check for requisites
     try:
@@ -58,17 +69,7 @@ def main(argv):
     except FileNotFoundError:
         logging.error(f'required program “{prog}” not found')
         sys.exit(1)
-    # Work starts here.
-    func = tiffconv
-    if args.jpeg:
-        logging.info('using JPEG compression.')
-        func = partial(tiffconv, jpeg=True, quality=args.quality)
-    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for fn, rv in tp.map(func, args.files):
-            if rv == 0:
-                logging.info(f'finished "{fn}"')
-            else:
-                logging.error(f'conversion of {fn} failed, return code {rv}')
+    return args
 
 
 def tiffconv(fname, jpeg=False, quality=85):
@@ -125,4 +126,4 @@ def tiffconv(fname, jpeg=False, quality=85):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

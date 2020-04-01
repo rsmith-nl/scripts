@@ -5,7 +5,7 @@
 # Copyright © 2014-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-02-10T22:02:02+01:00
-# Last modified: 2018-07-07T15:00:35+0200
+# Last modified: 2020-04-01T20:33:23+0200
 """
 Renames a directory by prefixing the name with 'old-'.
 
@@ -21,20 +21,12 @@ import sys
 __version__ = '1.1.0'
 
 
-def main(argv):
+def main():
     """
     Entry point for old.
-
-    Arguments:
-        argv: command line arguments.
     """
-    if len(argv) < 2:
-        binary = os.path.basename(argv[0])
-        print(f"{binary} ver. {__version__}", file=sys.stderr)
-        print(f"Usage: {binary} directory ...", file=sys.stderr)
-        sys.exit(1)
-    logging.basicConfig(format='%(levelname)s: %(message)s')
-    for dirname in argv[1:]:
+    dirs = setup()
+    for dirname in dirs:
         if not os.path.isdir(dirname):
             logging.warning(f"'{dirname}' is not a directory. Skipping.")
             continue
@@ -51,5 +43,15 @@ def main(argv):
         os.rename(dirname, newname)
 
 
+def setup():
+    if len(sys.argv) < 2:
+        binary = os.path.basename(sys.argv[0])
+        print(f"{binary} ver. {__version__}", file=sys.stderr)
+        print(f"Usage: {binary} directory ...", file=sys.stderr)
+        sys.exit(1)
+    logging.basicConfig(format='%(levelname)s: %(message)s')
+    return sys.argv[1:]
+
+
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

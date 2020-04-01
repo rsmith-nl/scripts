@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-10-09T11:59:41+02:00
-# Last modified: 2019-09-16T22:03:06+0200
+# Last modified: 2020-04-01T18:27:54+0200
 """
 Lock down files or directories.
 
@@ -29,14 +29,11 @@ import stat
 __version__ = '1.1'
 
 
-def main(argv):
+def main():
     """
-    Entry point for lck.py.
-
-    Arguments:
-        argv: command line arguments
+    Entry point for lk.py.
     """
-    args = configure(argv)
+    args = setup()
     fmod = stat.S_IRUSR
     dmod = stat.S_IRUSR | stat.S_IXUSR
     if args.unlock:
@@ -62,7 +59,7 @@ def main(argv):
                 action('', p, dmod)
 
 
-def configure(argv):
+def setup():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '-u',
@@ -80,12 +77,12 @@ def configure(argv):
     parser.add_argument(
         'paths', nargs='*', metavar='path', help='files or directories to work on'
     )
-    args = parser.parse_args(argv)
+    args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
         format='%(levelname)s: %(message)s'
     )
-    logging.debug(f'Command line arguments = {argv}')
+    logging.debug(f'Command line arguments = {sys.argv}')
     logging.debug(f'Parsed arguments = {args}')
     if not args.paths:
         parser.print_help()
@@ -116,4 +113,4 @@ def unlock_path(root, name, mode):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

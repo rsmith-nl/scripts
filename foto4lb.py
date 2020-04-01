@@ -5,7 +5,7 @@
 # Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2019-07-30T15:30:46+0200
+# Last modified: 2020-04-01T00:04:01+0200
 """Shrink fotos to a size suitable for use in my logbook."""
 
 from datetime import datetime
@@ -26,46 +26,11 @@ outdir = 'foto4lb'
 extensions = ('.jpg', '.jpeg', '.raw')
 
 
-def main(argv):
+def main():
     """
     Entry point for foto4lb.
-
-    Arguments:
-        argv: Command line arguments without the script name.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-w',
-        '--width',
-        default=886,
-        type=int,
-        help='width of the images in pixels (default 886)'
-    )
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('path', nargs='*', help='directory in which to work')
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'Command line arguments = {argv}')
-    logging.debug(f'Parsed arguments = {args}')
-    if not args.path:
-        parser.print_help()
-        sys.exit(0)
-    # Check for required programs.
-    try:
-        sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.debug('found “convert”')
-    except FileNotFoundError:
-        logging.error('the program “convert” cannot be found')
-        sys.exit(1)
+    args = setup()
     pairs = []
     count = 0
     for path in args.path:
@@ -101,6 +66,44 @@ def main(argv):
     # For performance measurements.
     # dt = time.monotonic() - start
     # logging.info(f'startup preparations took {dt:.2f} s')
+
+
+def setup():
+    """Process the command-line arguments."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '-w',
+        '--width',
+        default=886,
+        type=int,
+        help='width of the images in pixels (default 886)'
+    )
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument('path', nargs='*', help='directory in which to work')
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'Command line arguments = {sys.argv}')
+    logging.debug(f'Parsed arguments = {args}')
+    if not args.path:
+        parser.print_help()
+        sys.exit(0)
+    # Check for required programs.
+    try:
+        sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.debug('found “convert”')
+    except FileNotFoundError:
+        logging.error('the program “convert” cannot be found')
+        sys.exit(1)
+    return args
 
 
 def processfile(packed):
@@ -151,4 +154,4 @@ def processfile(packed):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

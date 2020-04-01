@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2019-11-15T14:48:34+0100
+# Last modified: 2020-03-31T23:50:43+0200
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -27,43 +27,9 @@ import sys
 __version__ = '0.13'
 
 
-def main(argv):
+def main():
     """Entry point for dvd2webm.py."""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'info')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        '-s', '--start', type=str, default=None, help="time (hh:mm:ss) at which to start encoding"
-    )
-    parser.add_argument('-c', '--crop', type=str, help="crop (w:h:x:y) to use")
-    parser.add_argument(
-        '-d', '--dummy', action="store_true", help="print commands but do not run them"
-    )
-    parser.add_argument(
-        '-e', '--detect', action="store_true", help="detect cropping automatically"
-    )
-    parser.add_argument(
-        '-t',
-        '--subtitle',
-        type=str,
-        help="srt file or dvdsub track number (default: no subtitle)"
-    )
-    ahelp = "number of the audio track to use (default: 0; first audio track)"
-    parser.add_argument('-a', '--audio', type=int, default=0, help=ahelp)
-    parser.add_argument('fn', metavar='filename', help='MPEG file to process')
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
-    if not check_ffmpeg():
-        return 1
+    args = setup()
     logging.info(f"processing '{args.fn}'.")
     starttime = datetime.now()
     startstr = str(starttime)[:-7]
@@ -126,6 +92,46 @@ def main(argv):
     logging.info(f'total running time {runstr}.')
     encspeed = origbytes / (runtime.seconds * 1000)
     logging.info(f'average input encoding speed {encspeed:.2f} kB/s.')
+
+
+def setup():
+    """Process command-line arguments and configure the program."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'info')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '-s', '--start', type=str, default=None, help="time (hh:mm:ss) at which to start encoding"
+    )
+    parser.add_argument('-c', '--crop', type=str, help="crop (w:h:x:y) to use")
+    parser.add_argument(
+        '-d', '--dummy', action="store_true", help="print commands but do not run them"
+    )
+    parser.add_argument(
+        '-e', '--detect', action="store_true", help="detect cropping automatically"
+    )
+    parser.add_argument(
+        '-t',
+        '--subtitle',
+        type=str,
+        help="srt file or dvdsub track number (default: no subtitle)"
+    )
+    ahelp = "number of the audio track to use (default: 0; first audio track)"
+    parser.add_argument('-a', '--audio', type=int, default=0, help=ahelp)
+    parser.add_argument('fn', metavar='filename', help='MPEG file to process')
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'command line arguments = {sys.argv}')
+    logging.debug(f'parsed arguments = {args}')
+    if not check_ffmpeg():
+        sys.exit(1)
+    return args
 
 
 def tile_cols(width):
@@ -310,4 +316,4 @@ def encode(args1, args2):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

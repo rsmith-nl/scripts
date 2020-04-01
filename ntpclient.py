@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-16 19:33:50 +0100
-# Last modified: 2019-09-16T22:05:16+0200
+# Last modified: 2020-04-01T20:30:30+0200
 """
 Simple NTP query program. This program does not strive for high accuracy.
 Use this only as a client, never for a time server!
@@ -13,58 +13,66 @@ Use this only as a client, never for a time server!
 
 from datetime import datetime
 from socket import socket, AF_INET, SOCK_DGRAM
+import argparse
 import os
 import struct
 import sys
 import time
 
+__version__ = '1.0'
 
-def main(argv):
+
+def main():
     """
     Entry point for ntpclient.py.
-
-    Arguments:
-        argv: command line arguments
     """
-    res = None
-    quiet = False
-    args = set(argv)
-    if {'-q', '--quiet'}.intersection(args):
-        quiet = True
-    if '-s' in argv:
-        server = argv[argv.index('-s')+1]
-    elif '--server' in argv:
-        server = argv[argv.index('--server')+1]
-    elif 'NTPSERVER' in os.environ:
-        server = os.environ['NTPSERVER']
-    else:
-        server = 'pool.ntp.org'
-    if {'-h', '--help'}.intersection(args):
-        print('Usage: ntpclient [-h|--help] [-q|--quiet] [-s|--server timeserver]')
-        print(f'Using time server {server}.')
-        sys.exit(0)
+    args = setup()
     t1 = time.clock_gettime(time.CLOCK_REALTIME)
-    ntptime = get_ntp_time(server)
+    ntptime = get_ntp_time(args.server)
     t4 = time.clock_gettime(time.CLOCK_REALTIME)
     # It is not guaranteed that the NTP time is *exactly* in the middle of both
     # local times. But it is a reasonable simplification.
     roundtrip = round(t4 - t1, 4)
     localtime = (t1 + t4) / 2
     diff = localtime - ntptime
+    res = None
     if os.geteuid() == 0:
         time.clock_settime(time.CLOCK_REALTIME, ntptime)
         res = 'Time set to NTP time.'
     localtime = datetime.fromtimestamp(localtime)
     ntptime = datetime.fromtimestamp(ntptime)
-    if not quiet:
-        print('Using server {}.'.format(server))
-        print('NTP call took approximately', roundtrip, 's.')
+    if not args.quiet:
+        print(f'Using server {args.server}.')
+        print(f'NTP call took approximately {roundtrip} s.')
         print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y.'))
         print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y.'),
               '±', roundtrip/2, 's.')
-        print('Local time - ntp time: {:.6f} s.'.format(diff))
+        print(f'Local time - ntp time: {diff:.6f} s.')
         if res:
             print(res)
+
+
+def setup():
+    """Process command-line arguments."""
+    if 'NTPSERVER' in os.environ:
+        defaultserver = os.environ['NTPSERVER']
+    else:
+        defaultserver = 'pool.ntp.org'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Suppress output (default: no)'
+    )
+    parser.add_argument(
+        '-s', '--server', type=str, default=defaultserver,
+        help=f'NTP server to use (default: “{defaultserver}”)'
+    )
+    args = parser.parse_args(sys.argv[1:])
+    return args
 
 
 # See e.g. # https://www.cisco.com/c/en/us/about/press/internet-protocol-journal/back-issues/table-contents-58/154-ntp.html
@@ -93,4 +101,4 @@ def get_ntp_time(host="pool.ntp.org", port=123):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

@@ -5,7 +5,7 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-05T01:26:59+01:00
-# Last modified: 2019-11-15T17:05:34+0100
+# Last modified: 2020-04-01T00:15:43+0200
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse
@@ -18,64 +18,11 @@ import sys
 __version__ = '1.6.0'
 
 
-def main(argv):
+def main():
     """
     Entry point for img4latex.
-
-    Arguments:
-        argv: All command line arguments.
     """
-    after = """
-The width and height arguments can also be set in a configuration file
-called ~/.img4latexrc. It should look like this:
-
-    [size]
-    width = 125
-    height = 280
-
-Command-line arguments override settings in the configuration file.
-Otherwise, the defaults apply.
-"""
-    raw = argparse.RawDescriptionHelpFormatter
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=raw, epilog=after)
-    parser.add_argument(
-        '-w',
-        '--width',
-        type=float,
-        default=160,
-        help='width of the text block in mm. (default=160)'
-    )
-    parser.add_argument(
-        '-t',
-        '--height',
-        type=float,
-        default=270,
-        help='height of the text block in mm. (default=270)'
-    )
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('file', nargs='*')
-    cfg = from_config()
-    args = parser.parse_args(argv, namespace=cfg)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%% %(levelname)s: %(message)s'
-    )
-    if cfg is None:
-        logging.info('configuration file not found')
-    else:
-        logging.info(f'from config: {cfg}')
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
-    args.width *= 72 / 25.4  # convert to points
-    args.height *= 72 / 25.4  # convert to points
-    if not args.file:
-        parser.print_help()
-        sys.exit(0)
+    args = setup()
     for filename in args.file:
         if not os.path.exists(filename):
             logging.error(f'file "{filename}" does not exist.')
@@ -112,6 +59,62 @@ Otherwise, the defaults apply.
             continue
         output_figure(filename, opts)
     print()
+
+
+def setup():
+    """Process command-line arguments. Read config file."""
+    after = """
+The width and height arguments can also be set in a configuration file
+called ~/.img4latexrc. It should look like this:
+
+    [size]
+    width = 125
+    height = 280
+
+Command-line arguments override settings in the configuration file.
+Otherwise, the defaults apply.
+"""
+    raw = argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=raw, epilog=after)
+    parser.add_argument(
+        '-w',
+        '--width',
+        type=float,
+        default=160,
+        help='width of the text block in mm. (default=160)'
+    )
+    parser.add_argument(
+        '-t',
+        '--height',
+        type=float,
+        default=270,
+        help='height of the text block in mm. (default=270)'
+    )
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument('file', nargs='*')
+    cfg = from_config()
+    args = parser.parse_args(sys.argv[1:], namespace=cfg)
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%% %(levelname)s: %(message)s'
+    )
+    if cfg is None:
+        logging.info('configuration file not found')
+    else:
+        logging.info(f'from config: {cfg}')
+    logging.debug(f'command line arguments = {sys.argv}')
+    logging.debug(f'parsed arguments = {args}')
+    args.width *= 72 / 25.4  # convert to points
+    args.height *= 72 / 25.4  # convert to points
+    if not args.file:
+        parser.print_help()
+        sys.exit(0)
+    return args
 
 
 def from_config():
@@ -206,4 +209,4 @@ def output_figure(fn, options=None):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

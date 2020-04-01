@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-03T08:47:30+02:00
-# Last modified: 2019-09-16T21:56:07+0200
+# Last modified: 2020-03-31T23:43:48+0200
 """
 Summarize the deny log messages from ipfw.
 
@@ -22,26 +22,11 @@ import sys
 __version__ = '0.5'
 
 
-def main(argv):
+def main():
     """
     Entry point for denylog.py.
-
-    Arguments:
-        argv: command line arguments
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
+    args = setup()
     if not args.files:
         args.files = ['/var/log/security']
     reps = '  IP: {:16s} port: {:10s} rule: {}'
@@ -58,6 +43,24 @@ def main(argv):
             continue
         for rule, IP, port in matches:
             print(reps.format(IP + ',', serv[int(port)] + ',', rule))
+
+
+def setup():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
+    args =  parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    return args
 
 
 def services(filename='/etc/services'):
@@ -98,4 +101,4 @@ def parselogfile(filename):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

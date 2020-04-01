@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T13:47:43+0100
-# Last modified: 2020-03-22T09:53:56+0100
+# Last modified: 2020-04-01T20:59:12+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 import zipfile
@@ -17,18 +17,23 @@ import shutil
 __version__ = '0.2'
 
 
-def main(argv):
-    logging.basicConfig(level='INFO', format='%(levelname)s: %(message)s')
-    if not argv:
-        logging.info(f'unlock-excel.py v{__version__}; no files to unlock')
-        print('Usage: unlock-excel.py <file> <file> ...')
-        sys.exit(0)
-    for path in argv:
+def main():
+    files = setup()
+    for path in files:
         try:
             backup_path = backup_file(path)
             remove_excel_password(backup_path, path)
         except (ValueError, shutil.SameFileError) as e:
             logging.info(e)
+
+
+def setup():
+    logging.basicConfig(level='INFO', format='%(levelname)s: %(message)s')
+    if len(sys.argv) < 2:
+        logging.info(f'unlock-excel.py v{__version__}; no files to unlock')
+        print('Usage: unlock-excel.py <file> <file> ...')
+        sys.exit(0)
+    return sys.argv[1:]
 
 
 def backup_file(path):
@@ -66,4 +71,4 @@ def remove_excel_password(origpath, path):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

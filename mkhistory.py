@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T01:41:21+02:00
-# Last modified: 2019-11-15T16:29:11+0100
+# Last modified: 2020-04-01T20:12:09+0200
 """Script to format a Git log for LaTeX."""
 
 import os
@@ -21,31 +21,34 @@ header = r"""% vim:fileencoding=utf-8:ft=tex
 """
 
 
-def main(argv):
+def main():
     """
     Entry point for mkhistory.
-
-    Arguments:
-        argv: command line arguments
     """
-    if len(argv) == 1:
-        binary = os.path.basename(argv[0])
-        print(f"Usage: {binary} outputfilename")
-        sys.exit(0)
-    fn = argv[1]
+    fn = setup()
+    if fn == '-':
+        of = sys.stdout
+    else:
+        of = open(fn, 'w+')
     try:
         args = ['git', 'log', '--oneline']
         p = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     except sp.CalledProcessError:
         print("Git not found! Stop.")
         sys.exit(1)
-    if fn == '-':
-        of = sys.stdout
-    else:
-        of = open(fn, 'w+')
     of.write(header)
     of.write(fmtlog(p.stdout))
     of.close()
+
+
+def setup():
+    """Process arguments."""
+    if len(sys.argv) == 1:
+        binary = os.path.basename(sys.argv[0])
+        print(f"Usage: {binary} outputfilename")
+        sys.exit(0)
+    fn = sys.argv[1]
+    return fn
 
 
 def fmtlog(txt):
@@ -73,4 +76,4 @@ def fmtlog(txt):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

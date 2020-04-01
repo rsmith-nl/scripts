@@ -5,7 +5,7 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2019-11-15T16:25:09+0100
+# Last modified: 2020-03-31T23:57:45+0200
 """
 Open file(s) given on the command line in the appropriate program.
 The appropriate program is read from a configuration file called “.openrc” in
@@ -14,49 +14,22 @@ the user's $HOME directory.
 
 from os.path import isdir, isfile, exists, basename
 from re import search, IGNORECASE
-from sys import argv
 import argparse
 import json
 import logging
 import os
+import sys
 import subprocess as sp
 from magic import from_file
 
 __version__ = '2.0'
 
 
-def main(argv):  # noqa
+def main():  # noqa
     """Entry point for open.
-
-    Arguments:
-        argv: command line arguments; list of strings.
     """
     filetypes, othertypes = readconfig()
-    if argv[0].endswith(('open', 'open.py')):
-        del argv[0]
-    opts = argparse.ArgumentParser(prog='open', description=__doc__)
-    opts.add_argument('-v', '--version', action='version', version=__version__)
-    opts.add_argument('-a', '--application', help='application to use')
-    opts.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    opts.add_argument(
-        '-n', '--noisy', action='store_true',
-        help='do not hide messages on stderr'
-    )
-    opts.add_argument(
-        "files", metavar='file', nargs='*', help="one or more files to process"
-    )
-    args = opts.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
-    )
-    logging.info(f'command line arguments = {argv}')
-    logging.info(f'parsed arguments = {args}')
+    args = setup()
     fail = "opening '{}' failed: {}"
     files = locate(args.files)
     stream = None
@@ -87,6 +60,34 @@ def main(argv):  # noqa
                 sp.Popen([args.application])
             except OSError as e:
                 logging.error(fail.format(args.application, e))
+
+
+def setup():
+    """Process command-line arguments."""
+    opts = argparse.ArgumentParser(prog='open', description=__doc__)
+    opts.add_argument('-v', '--version', action='version', version=__version__)
+    opts.add_argument('-a', '--application', help='application to use')
+    opts.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    opts.add_argument(
+        '-n', '--noisy', action='store_true',
+        help='do not hide messages on stderr'
+    )
+    opts.add_argument(
+        "files", metavar='file', nargs='*', help="one or more files to process"
+    )
+    args = opts.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    logging.info(f'command line arguments = {sys.argv}')
+    logging.info(f'parsed arguments = {args}')
+    return args
 
 
 def readconfig():
@@ -180,4 +181,4 @@ def locate(args):
 
 
 if __name__ == '__main__':
-    main(argv)
+    main()

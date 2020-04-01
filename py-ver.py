@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-04-28T23:25:35+0200
-# Last modified: 2019-07-29T15:36:51+0200
+# Last modified: 2020-04-01T20:41:12+0200
 """Recursively list or set the __version__ string in Python files."""
 
 import argparse
@@ -13,24 +13,16 @@ import os
 import re
 import sys
 
+__version__ = '1.0'
 _vre = re.compile(r'^__version__\s+=\s+' + '[\'\"].+', flags=re.M)
 _vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
 
 
-def main(argv):
+def main():
     """
     Entry point for py-ver.
-
-    Arguments:
-        argv: List command line argument strings.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-s', '--set', dest='verstr', default='', type=str, help='version to set')
-    parser.add_argument('file', nargs='*', help='files to process')
-    args = parser.parse_args(argv[1:])
-    if not args.file:
-        parser.print_help()
-        sys.exit(0)
+    args = setup()
     if args.verstr:
         func = replacever
     else:
@@ -47,6 +39,20 @@ def main(argv):
             filelist += [os.path.join(root, f) for f in files if f.endswith('.py')]
     for p in filelist:
         func(p, args.verstr)
+
+
+def setup():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '-s', '--set', dest='verstr', default='', type=str, help='version to set'
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument('file', nargs='*', help='files to process')
+    args = parser.parse_args(sys.argv[1:])
+    if not args.file:
+        parser.print_help()
+        sys.exit(0)
+    return args
 
 
 def replacever(fn, newver):
@@ -94,4 +100,4 @@ def printver(fn, newver):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

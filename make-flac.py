@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-12-22T00:12:03+01:00
-# Last modified: 2019-07-30T15:32:05+0200
+# Last modified: 2020-04-01T00:19:43+0200
 """
 Encodes WAV files from cdparanoia (“trackNN.cdda.wav”) to FLAC format.
 
@@ -41,29 +41,9 @@ import sys
 __version__ = '2.2.0'
 
 
-def main(argv):
+def main():
     """Entry point for make-flac."""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
-    # Check for required programs.
-    try:
-        sp.run(['flac'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.debug('found “flac”')
-    except FileNotFoundError:
-        logging.error('the program “flac” cannot be found')
-        sys.exit(1)
+    setup()
     tfn = 'album.json'
     with open(tfn) as jf:
         data = json.load(jf)
@@ -85,6 +65,31 @@ def main(argv):
                 logging.info(f'finished track {tnum}, "{tt}"')
             else:
                 logging.error(f'conversion of track {tnum} failed, return code {rv}')
+
+
+def setup():
+    """Process command-line arguments. Check for required programs."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'command line arguments = {sys.argv}')
+    logging.debug(f'parsed arguments = {args}')
+    # Check for required programs.
+    try:
+        sp.run(['flac'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.debug('found “flac”')
+    except FileNotFoundError:
+        logging.error('the program “flac” cannot be found')
+        sys.exit(1)
 
 
 def runflac(idx, data):
@@ -111,4 +116,4 @@ def runflac(idx, data):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

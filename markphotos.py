@@ -5,7 +5,7 @@
 # Copyright © 2011-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-06T20:28:07+01:00
-# Last modified: 2019-07-30T15:39:33+0200
+# Last modified: 2020-04-01T20:06:20+0200
 """Script to add my copyright notice to photos."""
 
 from os import utime
@@ -20,13 +20,20 @@ import sys
 __version__ = '1.2.1'
 
 
-def main(argv):
+def main():
     """
     Entry point for markphotos.
-
-    Arguments:
-        argv: Command line arguments.
     """
+    args = setup()
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        for fn, rv in tp.map(processfile, args.files):
+            logging.info(f'file "{fn}" processed.')
+            if rv != 0:
+                logging.error(f'error processing "{fn}": {rv}')
+
+
+def setup():
+    """Process command-line arguments. Check for required program."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--log',
@@ -36,11 +43,11 @@ def main(argv):
     )
     parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
-    args = parser.parse_args(argv)
+    args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug(f'command line arguments = {argv}')
+    logging.debug(f'command line arguments = {sys.argv}')
     logging.debug(f'parsed arguments = {args}')
     # Check for required programs.
     try:
@@ -49,12 +56,7 @@ def main(argv):
     except FileNotFoundError:
         logging.error('the “exiftool” program cannot be found')
         sys.exit(1)
-    # Work starts here.
-    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for fn, rv in tp.map(processfile, args.files):
-            logging.info(f'file "{fn}" processed.')
-            if rv != 0:
-                logging.error(f'error processing "{fn}": {rv}')
+    return args
 
 
 def processfile(name):
@@ -91,4 +93,4 @@ def processfile(name):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

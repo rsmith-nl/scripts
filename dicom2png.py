@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2019-09-16T21:57:00+0200
+# Last modified: 2020-03-31T23:46:34+0200
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
@@ -26,45 +26,14 @@ import sys
 __version__ = '1.4'
 
 
-def main(argv):
+def main():
     """
     Entry point for dicom2png.
 
     Arguments:
         argv: command line arguments
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        '-l',
-        '--level',
-        action='store_true',
-        default=False,
-        help='Correct color levels (default: no)'
-    )
-    parser.add_argument(
-        '-q', '--quality', type=int, default=80, help='JPEG quailty level (default: 80)'
-    )
-    parser.add_argument('fn', nargs='*', metavar='filename', help='DICOM files to process')
-    args = parser.parse_args(argv[1:])
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
-    # Check for requisites
-    try:
-        sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “convert”')
-    except FileNotFoundError:
-        logging.error('the program “convert” cannot be found')
-        sys.exit(1)
+    args = setup()
     if not args.fn:
         logging.error('no files to process')
         sys.exit(1)
@@ -82,6 +51,43 @@ def main(argv):
     logging.info(f'completed at {endtime}.')
 
 
+def setup():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '-l',
+        '--level',
+        action='store_true',
+        default=False,
+        help='Correct color levels (default: no)'
+    )
+    parser.add_argument(
+        '-q', '--quality', type=int, default=80, help='PNG quailty level (default: 80)'
+    )
+    parser.add_argument('fn', nargs='*', metavar='filename', help='DICOM files to process')
+    args = parser.parse_args(sys.argv[1:])
+    logging.debug(f'command line arguments = {sys.argv}')
+    logging.debug(f'parsed arguments = {args}')
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    # Check for requisites
+    try:
+        sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info('found “convert”')
+    except FileNotFoundError:
+        logging.error('the program “convert” cannot be found')
+        sys.exit(1)
+    return args
+
+
 def convert(filename, quality, level):
     """
     Convert a DICOM file to a PNG file.
@@ -90,7 +96,7 @@ def convert(filename, quality, level):
 
     Arguments:
         filename: name of the file to convert.
-        quality: JPEG quality to apply
+        quality: PNG quality to apply
         level: Boolean to indicate whether level adustment should be done.
     Returns:
         Tuple of (input filename, output filename, convert return value)
@@ -110,4 +116,4 @@ def convert(filename, quality, level):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

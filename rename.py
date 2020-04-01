@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-06T11:45:52+0200
-# Last modified: 2018-07-07T15:09:31+0200
+# Last modified: 2020-04-01T20:44:25+0200
 """
 Utility to rename files.
 
@@ -18,16 +18,23 @@ import logging
 import sys
 import os
 
-__version__ = '1.0.0'
+__version__ = '1.0'
 
 
-def main(argv):
+def main():
     """
     Entry point for rename.py.
-
-    Arguments:
-        argv: command line arguments
     """
+    args = setup()
+    pairs = newnames(args.files, args.prefix, args.start, args.width)
+    for old, new in pairs:
+        try:
+            os.rename(old, new)
+        except OSError as e:
+            print(f'Could not rename "{old}" to "{new}": {e}')
+
+
+def setup():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '-p',
@@ -48,18 +55,15 @@ def main(argv):
         choices=['debug', 'info', 'warning', 'error'],
         help="logging level (defaults to 'warning')"
     )
-    parser.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    parser.add_argument(
+        "files", metavar='file', nargs='*', help="one or more files to process"
     )
-    # The real work starts here...
-    pairs = newnames(args.files, args.prefix, args.start, args.width)
-    for old, new in pairs:
-        try:
-            os.rename(old, new)
-        except OSError as e:
-            print(f'Could not rename "{old}" to "{new}": {e}')
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    return args
 
 
 def newnames(paths, prefix, start, precision):
@@ -109,4 +113,4 @@ def newnames(paths, prefix, start, precision):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

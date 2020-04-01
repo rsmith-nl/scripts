@@ -4,7 +4,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-25T23:20:47+0100
-# Last modified: 2020-03-27T18:45:39+0100
+# Last modified: 2020-04-01T20:37:16+0200
 """Program to prepare files for inclusion in Python code."""
 
 import argparse
@@ -16,7 +16,16 @@ import zlib
 __version__ = '0.1'
 
 
-def main(argv):
+def main():
+    args = setup()
+    codec = None
+    if args.text:
+        codec = 'utf-8'
+    for path in args.files:
+        print(to_include(path, args.compress, codec))
+
+
+def setup():
     opts = argparse.ArgumentParser(prog='open', description=__doc__)
     opts.add_argument('-v', '--version', action='version', version=__version__)
     opts.add_argument(
@@ -30,12 +39,7 @@ def main(argv):
     opts.add_argument(
         "files", metavar='file', nargs='*', help="one or more files to process"
     )
-    args = opts.parse_args(argv)
-    codec = None
-    if args.text:
-        codec = 'utf-8'
-    for path in args.files:
-        print(to_include(path, args.compress, codec))
+    return opts.parse_args(sys.argv[1:])
 
 
 def to_include(path, compress=False, decode=None):
@@ -74,4 +78,4 @@ def to_include(path, compress=False, decode=None):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

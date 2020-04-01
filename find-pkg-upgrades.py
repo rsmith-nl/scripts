@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2019-11-16T10:48:58+0100
+# Last modified: 2020-04-01T18:15:23+0200
 """Find newer packages and ports for FreeBSD.
 
 Using this program requires that the doas 'doas' and ‘pkg’ ports are
@@ -25,15 +25,11 @@ import requests
 __version__ = '3.0'
 
 
-def main(argv):
+def main():
     """
     Entry point for find-pkg-upgrades.py.
-
-
-    Arguments:
-        argv: Command line arguments.
     """
-    configure(argv)
+    setup()
     # I'm using concurrent.futures here because the functions can take a long time.
     # This way we can reduce the time as much as possible.
     with cf.ProcessPoolExecutor(max_workers=3) as ex:
@@ -62,7 +58,7 @@ def main(argv):
         print(' '.join(lports))
 
 
-def configure(argv):
+def setup():
     """Configure the application at start-up."""
     # Get FreeBSD major version and architecture.
     cp = sp.run(['uname', '-p', '-U'], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
@@ -80,7 +76,7 @@ def configure(argv):
         choices=['debug', 'info', 'warning', 'error'],
         help="logging level (defaults to 'info')"
     )
-    args = parser.parse_args(argv)
+    args = parser.parse_args(sys.argv[1:])
     # Configure logging
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
@@ -187,4 +183,4 @@ def uses_default_options(name):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

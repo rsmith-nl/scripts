@@ -5,7 +5,7 @@
 # Copyright © 2016-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-14T14:54:32+01:00
-# Last modified: 2018-07-07T14:58:50+0200
+# Last modified: 2020-04-01T20:29:02+0200
 """
 Manipulate the times in an SRT file.
 
@@ -17,31 +17,14 @@ import argparse
 import logging
 import sys
 
-__version__ = '1.0.0'
+__version__ = '1.0'
 
 
-def main(argv):
+def main():
     """
     Entry point for offsetsrt.py.
-
-    Arguments:
-        argv: command line arguments
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('filename', type=str, help="file to process")
-    parser.add_argument('offset', type=float, help='offset in seconds')
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    # The real program starts here...
+    args = setup()
     offs = int(1000 * args.offset)
     srtdata = parsesrt(args.filename)
     infs = 'loaded {} records from {}'
@@ -52,6 +35,24 @@ def main(argv):
         for ln in lines:
             print(ln)
         print()
+
+
+def setup():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('filename', type=str, help="file to process")
+    parser.add_argument('offset', type=float, help='offset in seconds')
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    return args
 
 
 def str2ms(s):
@@ -128,4 +129,4 @@ def parsesrt(path):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

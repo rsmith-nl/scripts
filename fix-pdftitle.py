@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2019-11-15T16:27:19+0100
+# Last modified: 2020-04-01T18:17:07+0200
 """
 Fix PDF file titles.
 
@@ -26,30 +26,8 @@ import tempfile
 __version__ = '1.1'
 
 
-def main(argv):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to “info”)"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
-    )
-    if args.log == 'debug':
-        logging.debug('using verbose logging')
-    # Look for required programs.
-    try:
-        for prog in ('pdfinfo', 'gs', 'qpdf'):
-            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-            logging.debug(f'found “{prog}”')
-    except FileNotFoundError:
-        logging.error('required program “{prog}” not found')
-        sys.exit(1)
+def main():
+    args = setup()
     tdir = tempfile.mkdtemp()
     for path in args.files:
         logging.debug(f'processing “{path}”')
@@ -73,6 +51,33 @@ def main(argv):
         else:
             logging.debug(f'the title of “{path}” does not need to be changed')
     shutil.rmtree(tdir)
+
+
+def setup():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='info',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to “info”)"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    )
+    if args.log == 'debug':
+        logging.debug('using verbose logging')
+    # Look for required programs.
+    try:
+        for prog in ('pdfinfo', 'gs', 'qpdf'):
+            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+            logging.debug(f'found “{prog}”')
+    except FileNotFoundError:
+        logging.error('required program “{prog}” not found')
+        sys.exit(1)
+    return args
 
 
 def pdfinfo(path):
@@ -155,4 +160,4 @@ def set_title(path, fn, tempdir, newtitle):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

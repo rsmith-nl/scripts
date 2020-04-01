@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2019-09-16T22:07:21+0200
+# Last modified: 2020-04-01T20:46:24+0200
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color
 and / or change the brightness."""
 
@@ -17,33 +17,11 @@ import usb.core
 __version__ = '0.4'
 
 
-def main(argv):
+def main():
     """
     Entry point for set-ornata-chroma-rgb.py.
-
-    Arguments:
-        argv: command line arguments
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
-    )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('-i', '--brightness', help="brightness value 0-255", default=-1)
-    parser.add_argument('-r', '--red', help="red value 0-255, default 0", default=0)
-    parser.add_argument('-g', '--green', help="green value 0-255, default 0", default=0)
-    parser.add_argument('-b', '--blue', help="blue value 0-255, default 0", default=0)
-    args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
-    )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
-
+    args = setup()
     color = True
     if args.red == 0 and args.green == 0 and args.blue == 0:
         logging.debug('no color change requested')
@@ -75,6 +53,30 @@ def main(argv):
         read = dev.ctrl_transfer(0x21, 0x09, 0x300, 0x01, msg)
         if read != 90:
             logging.error('control transfer for setting the brightness failed')
+
+
+def setup():
+    """Process command-line arguments."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--log',
+        default='warning',
+        choices=['debug', 'info', 'warning', 'error'],
+        help="logging level (defaults to 'warning')"
+    )
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument('-i', '--brightness', help="brightness value 0-255", default=-1)
+    parser.add_argument('-r', '--red', help="red value 0-255, default 0", default=0)
+    parser.add_argument('-g', '--green', help="green value 0-255, default 0", default=0)
+    parser.add_argument('-b', '--blue', help="blue value 0-255, default 0", default=0)
+    args = parser.parse_args(sys.argv[1:])
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format='%(levelname)s: %(message)s'
+    )
+    logging.debug(f'command line arguments = {sys.argv}')
+    logging.debug(f'parsed arguments = {args}')
+    return args
 
 
 def _chk(name, value):
@@ -149,4 +151,4 @@ def brightness_message(brightness):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

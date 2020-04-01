@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2019-09-16T21:56:41+0200
+# Last modified: 2020-03-31T23:46:06+0200
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -26,13 +26,30 @@ import sys
 __version__ = '1.4'
 
 
-def main(argv):
+def main():
     """
-    Entry point for dicom2png.
+    Entry point for dicom2jpg.
+    """
+    args = setup()
+    if not args.fn:
+        logging.error('no files to process')
+        sys.exit(1)
+    if args.quality != 80:
+        logging.info(f'quality set to {args.quality}')
+    if args.level:
+        logging.info('applying level correction.')
+    convert_partial = partial(convert, quality=args.quality, level=args.level)
+    starttime = str(datetime.now())[:-7]
+    logging.info(f'started at {starttime}.')
+    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
+        for infn, outfn, rv in tp.map(convert_partial, args.fn):
+            logging.info(f'finished conversion of {infn} to {outfn} (returned {rv})')
+    endtime = str(datetime.now())[:-7]
+    logging.info(f'completed at {endtime}.')
 
-    Arguments:
-        argv: command line arguments
-    """
+
+def setup():
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--log',
@@ -52,12 +69,12 @@ def main(argv):
         '-q', '--quality', type=int, default=80, help='JPEG quailty level (default: 80)'
     )
     parser.add_argument('fn', nargs='*', metavar='filename', help='DICOM files to process')
-    args = parser.parse_args(argv[1:])
+    args = parser.parse_args(sys.argv[1:])
+    logging.debug(f'command line arguments = {sys.argv}')
+    logging.debug(f'parsed arguments = {args}')
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
     )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
     # Check for required programs
     try:
         sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
@@ -65,21 +82,7 @@ def main(argv):
     except FileNotFoundError:
         logging.error('the program “convert” cannot be found')
         sys.exit(1)
-    if not args.fn:
-        logging.error('no files to process')
-        sys.exit(1)
-    if args.quality != 80:
-        logging.info(f'quality set to {args.quality}')
-    if args.level:
-        logging.info('applying level correction.')
-    convert_partial = partial(convert, quality=args.quality, level=args.level)
-    starttime = str(datetime.now())[:-7]
-    logging.info(f'started at {starttime}.')
-    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for infn, outfn, rv in tp.map(convert_partial, args.fn):
-            logging.info(f'finished conversion of {infn} to {outfn} (returned {rv})')
-    endtime = str(datetime.now())[:-7]
-    logging.info(f'completed at {endtime}.')
+    return args
 
 
 def convert(filename, quality, level):
@@ -111,4 +114,4 @@ def convert(filename, quality, level):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

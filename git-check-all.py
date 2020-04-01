@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2019-07-30T15:31:31+0200
+# Last modified: 2020-04-01T00:12:13+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -20,13 +20,18 @@ import sys
 import logging
 
 
-def main(argv):
+def main():
     """
     Entry point of git-check-all.
-
-    Arguments:
-        argv: Command line arguments minus the program name.
     """
+    args = setup()
+    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
+        if '.git' in dirnames:
+            runchecks(dirpath, args.verbose)
+
+
+def setup():
+    """Parse command-line arguments. Check for required programs."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--log',
@@ -35,12 +40,12 @@ def main(argv):
         help="logging level (defaults to 'info')"
     )
     parser.add_argument('-v', '--verbose', action='store_true')
-    args = parser.parse_args(argv)
+    args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
         format='%(levelname)s: %(message)s'
     )
-    logging.debug(f'Command line arguments = {argv}')
+    logging.debug(f'Command line arguments = {sys.argv}')
     logging.debug(f'Parsed arguments = {args}')
     # Check for required programs.
     try:
@@ -49,10 +54,7 @@ def main(argv):
     except FileNotFoundError:
         logging.error('the program “git” cannot be found')
         sys.exit(1)
-    # Actual work starts here.
-    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
-        if '.git' in dirnames:
-            runchecks(dirpath, args.verbose)
+    return args
 
 
 def runchecks(d, verbose=False):
@@ -108,4 +110,4 @@ def gitcmd(cmds, output=False):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
