@@ -49,7 +49,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Change the previe color to green.</property>
+            <property name="tooltip_text" translatable="yes">Change the preview color to green.</property>
             <signal name="clicked" handler="on_green" swapped="no"/>
           </object>
           <packing>
@@ -73,11 +73,11 @@
         </child>
         <child>
           <object class="GtkButton" id="quit">
-            <property name="label" translatable="yes">Quit</property>
+            <property name="label" translatable="yes">Close</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Exit without changing the color.</property>
+            <property name="tooltip_text" translatable="yes">Close the program.</property>
             <signal name="clicked" handler="on_quit" swapped="no"/>
           </object>
           <packing>

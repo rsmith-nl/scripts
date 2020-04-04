@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2020-03-26T23:55:33+0100
+# Last modified: 2020-04-04T14:43:45+0200
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
@@ -152,26 +152,27 @@ def create_state():
 
 
 # The definition of the user interface was made with Glade.
-# It was encapsulated by the to_include script.
+# It was encapsulated by the py-include script as follows:
+#    python3 py-include.py -c -t gtk-razer.glade
 ui = zlib.decompress(base64.b85decode(
-    'c-rlnUvt|w48Y&}DLB6F{5Q+pc4w=Xu1j9_u&v$oQAdfe#hNBHlCtA(KS)YyE2b>Vj#K5Dw?qO'
-    '+0{9UEkWAj+FC|%lu|lgU9rcHlfQmI2YCfg^e!lJfO5X?XCO`Fh<PH=V=75v6a0!`9#(`Y*$K('
-    'Ep^m-^HlmjzkF$C`jnHcyl69z1iBAU{<Tl`G78==~e4hlIPeTCSOSTbv;^v*4A_}9$3B`8OU;8'
-    'V&z$P8#Mi_)plDHyjQiY;MEvlM@$!T9=mGI)IDm$VMjP^j2Iv2rkKQb^exDhk7@#$-^Q{75724'
-    '1jv|R{R6}wb}4RD6ZG#`Hj}D=KL{J;Y`PwrNJ$e7WNKh#auD@AiaQ1&wvDGp$DtNKM7M@f|*jS'
-    'LVQh$T{H9v?y7W&IxZ3?Lh|zG{0I^+OQIzQ^C&Rbk$57#XW5+*kJ0d1v=UZC5^v6DlkJ&viVJ)'
-    '?Mz2GgvKaFP4X%#bMayidwo2DtrHbi(^FL(HX;lU`+JafPuVfKON}OTJO6C~4W=c1J#-gt83@7'
-    '=t!LM!948$N-U_%ZwmPyx6+i5MGNJ9tr&TIAW2<#k)OMs*XRsz-pL!%9Gni$~y+Knm~A(kRupz'
-    'kaAoBV+X|Az&3uIu*nEM6cE4IzY?3z>5)PG~SZ-V^CJrIB9=pFZ8cauZKNayR3*hqBOq!&1PO%'
-    '6aaRbGR%P=qQ=v7bJ71plT0huKdPjC0$17l5@Ds^*f5?)yrXt?Sea*%D++h2c+_kd*O<9OlRoU'
-    '98ru(0cio}IZzhi=q8lETo%etF+(~ECT(+Fxfa|dVczY6b>0T33mmd-Cl|051@BBq8A@z%WGmB'
-    '*&J+*1m<wlH1i4wE%59O8dn;Dt&s}(}6xdXSrNHGW9(Ax5-KF@LQuGya+^R-?Bl%(^k6(`DBTC'
-    'm-2y&a6`i<j@aeU!o_txN!^s)%n4(@8p>F}OO4B?>=@7d<J?<QZTB>IW$iFTf2Yb_xu<GdI=j>'
-    'ZRdy+->D|7h46m%K5+9@12z*VL!mn5{<F!$YU?t&o72C+@5zj*f<Ro)5|jhfU5A5ji)aKK&&#*'
-    '!6@a_X1i!I#C}JLG72UQ907s$1Z8`Tcds@U2+7cnkLI9wb}7dmaNH4hZMZRCHcf{(r+Di^WFc`'
-    'E7z5KUpqGVs~qLjFLt!wp6R<ae#TCsE>*nfRL8>UL!D3XBhGZt>SBVkfK8;C;UvPK$UJZl6Gvu'
-    'A{((_MsNH$w$-^EDQCO^e`Lb->!EsNSx(ZnHoY$oSt&x?F;LsT0TUc@v`mG8;@505KI=_Fv3Vr'
-    'yjDD40Jy(5}c7w^2>zL*Sl{@vz(!y>Zs'
+    'c-rlnO>f&c5Qgvl6<l5mf2IL;0oz5|BDw6L=m+*FP~uo(O_N%Zvg3c>k>u1?Oj(v4rw*E1V$Dl'
+    '&W*&}*lZ@Wq&m~!au|lgc9d!GYfQmF1Djw7C-)=j9)Ay4%qrW;Gat8_wbHK?`xP-)#aUfUS;jl'
+    'X(oemla<-kl?1d}&}j12sr2?Lf$5sqo>W^d`{MJVgjUSX%h9}qbbNoMVs-nrQg|B+cY2jwUcd`'
+    '#H~nE}mh(K<Cc1>;sku{n%smf~-8GQ7SX^&TGiEv<tz5GpcItUMVs2~rkAMbNJ*M!j<92Rd<Q0'
+    'Mv{3;tTMX=EHwNalI_}Z?twb`;V9kraH<jo!l~MVP{iT#EQwa^$b=W0}_~p4lIiJBusG$W=ypT'
+    '@G&KJ$uK7PR;5eSagityl9xZ{Tab8I5-mBH2ZP?0#Utw-&+d$P$cE3Og|H%&cyhj(Y{#8rLg3R'
+    'Fy$o#1BCHp5a&^#Kw9MveBf9pADz5w8|ByMSRhigu17_WOB@01P;tW$(GRH79W4Z!#7PY=T92L'
+    '`sxVDiQh(IjB1{|g=ldhfGX)T>d0|)oc>-9$jHU{DnAgO_cfF;4yXhWPP26(sjMU{gPNfFI3_7'
+    '(h1{(%So^#WVRb+daG%@Bu%6vEU6%sCb%bkaXO66r6|z%Rm2AHTnH5|2W1yW+QpvQWQbS-~>SV'
+    '{!_Z#R3<K=I|NO-0G;>lbMTO!K{E8Vn|NmGS^=ymRHY*CEgd@(Nunv+WwJP=6<iK)UjdnQ#dR#'
+    'aG4ywJ1>V{BZfQ_7~1Auaw)h=g8YUH)_E^Imp~rd+}<XvMUy)fQU(&QHL{g!MrVo#T*SiJ7D;X'
+    'vRJkq6aA(1alDQ49l>#qPL1}P)iU$|ie{NHJNc;H$Id0V#zmj}5l84Vn@&VoI3k11M8~w`h**H'
+    'FPe|w7^SrfdcB3L`DtL>nJdnPf3`%=8)o8P~ie4Uc$N47`$d5W*Kgrtn~V%Rts?$vso_B;N`uq'
+    '7^eV}Py8RHB#Er){iOgX{jjUHMi>K*WhVX^Dfg;ho`wvcloD=75Zxno*yA&P*&+VDc!S_k$z#S'
+    'O{vr$r{C>#;fa`PX1}sSIQ+vaH?gp{G_%z?yHhDm1&>AYh02~+$#Nb$!<RT|9b5%<=od!3O<+9'
+    'oBG8Lj@uJ`Zw;UDCQ(-^o^_C8;rKbuS8#ve6bHR7W;iogg_;>oLQIOx6Sp2RGE4F=7)6BI9zh;'
+    'G?7<WT#meVz%Z3*??kP)G0c&3KE~!ClWaSe$bO!hamfVGIs|L`!aPg!r?!T`??>{LDyMJ@P5M?'
+    '#QTMsu6M!l_nvH1yWMXp`'
 )).decode("utf-8")
 
 
