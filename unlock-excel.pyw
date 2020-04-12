@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-03-22T15:45:03+0100
+# Last modified: 2020-04-12T22:22:22+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -244,6 +244,7 @@ def do_exit(**args):
 if __name__ == '__main__':
     # Create the GUI window.
     root = tk.Tk(None)
+    root.attributes('-type', 'dialog')
     # Don't show hidden files in the file dialog
     # https://stackoverflow.com/questions/53220711/how-to-avoid-hidden-files-in-file-picker-using-tkinter-filedialog-askopenfilenam
     try:
