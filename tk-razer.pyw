@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-03-27T22:13:44+0100
+# Last modified: 2020-04-12T22:20:54+0200
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the tkinter toolkit that comes with Python.
@@ -79,7 +79,7 @@ def create_widgets(root, model):
     blue.grid(row=3, column=1, sticky="ew")
     w.blue = blue
     # Last row
-    b = ttk.Button(root, text="Quit", command=do_exit)
+    b = ttk.Button(root, text="Close", command=do_exit)
     b.grid(row=4, column=0, sticky='ew')
     setb = ttk.Button(root, text="Set", command=do_set)
     setb.grid(row=4, column=2, sticky='e')
@@ -197,6 +197,7 @@ if __name__ == '__main__':
         state.model = devs[0].product
     # Create the GUI window.
     root = tk.Tk(None)
+    root.attributes('-type', 'dialog')
     if state.dev is not None:
         # w is a namespace of widgets that needs to be accessed by the callbacks.
         w = create_widgets(root, model=state.model)
