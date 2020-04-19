@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-04-12T22:20:54+0200
+# Last modified: 2020-04-19T23:05:19+0200
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the tkinter toolkit that comes with Python.
@@ -43,7 +43,7 @@ def create_widgets(root, model):
     default_font.configure(size=12)
     root.option_add("*Font", default_font)
     # General commands and bindings
-    root.bind_all('q', do_q)
+    root.bind_all('q', do_exit)
     root.wm_title('Razer keyboard color v' + __version__)
     root.columnconfigure(1, weight=1)
     root.rowconfigure(0, weight=1)
@@ -89,13 +89,8 @@ def create_widgets(root, model):
 
 
 # Callbacks
-def do_q(arg):
-    """Handle the q key."""
-    root.destroy()
-
-
-def do_exit():
-    """Callback to handle the quit button."""
+def do_exit(arg=None):
+    """Callback to quit the application."""
     root.destroy()
 
 

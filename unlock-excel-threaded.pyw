@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-04-19T13:37:25+0200
+# Last modified: 2020-04-19T23:12:56+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm).
 
 This is a multithreaded version of unlock-excel.pyw.  All the work that was
@@ -53,6 +53,7 @@ def create_widgets(root):
     default_font.configure(size=12)
     root.option_add("*Font", default_font)
     # General commands and bindings
+    root.bind_all('q', do_exit)
     root.wm_title('Unlock excel files v' + __version__)
     root.columnconfigure(3, weight=1)
     root.rowconfigure(5, weight=1)
@@ -211,7 +212,7 @@ def do_start():
     worker.start()
 
 
-def do_exit(**args):
+def do_exit(arg=None):
     """
     Callback to handle quitting.
     """
