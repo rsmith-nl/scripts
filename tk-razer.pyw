@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-04-19T23:05:19+0200
+# Last modified: 2020-04-20T00:51:17+0200
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the tkinter toolkit that comes with Python.
@@ -192,6 +192,8 @@ if __name__ == '__main__':
         state.model = devs[0].product
     # Create the GUI window.
     root = tk.Tk(None)
+    # Use a dialog window so that it floats even when using a tiling window
+    # manager.
     root.attributes('-type', 'dialog')
     if state.dev is not None:
         # w is a namespace of widgets that needs to be accessed by the callbacks.
