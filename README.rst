@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-03-29T08:21:30+0200
+.. Last modified: 2020-04-19T15:08:28+0200
 
 Introduction
 ============
@@ -821,6 +821,12 @@ unlock-excel.pyw
 ----------------
 
 GUI version of ``unlock-excel.py``, mainly for use on ms-windows.
+
+
+unlock-excel-threaded.pyw
+-------------------------
+
+GUI version of ``unlock-excel.py``, using multithreading.
 
 
 vid2mkv.py
