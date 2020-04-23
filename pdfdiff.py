@@ -4,7 +4,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-11T00:22:30+0200
-# Last modified: 2019-11-15T16:53:28+0100
+# Last modified: 2020-04-23T19:03:32+0200
 """
 Script to try and show a diff between two PDF files.
 
@@ -20,8 +20,11 @@ import sys
 
 # Standard ANSI colors.
 fgcolor = SimpleNamespace(
-    brightred='\033[31;1m', brightgreen='\033[32;1m', brightyellow='\033[33;1m',
-    brightmagenta='\033[35;1m', reset='\033[0m'
+    brightred='\033[31;1m',
+    brightgreen='\033[32;1m',
+    brightyellow='\033[33;1m',
+    brightmagenta='\033[35;1m',
+    reset='\033[0m'
 )
 
 
@@ -58,8 +61,8 @@ def pdftotext(path):
     Generate a text rendering of a PDF file in the form of a list of lines.
     """
     args = ['pdftotext', '-layout', path, '-']
-    result = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
-    return result.decode()
+    cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
+    return cp.stdout
 
 
 def colordiff(txt):
