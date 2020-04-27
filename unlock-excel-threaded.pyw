@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2020-04-20T00:50:58+0200
+# Last modified: 2020-04-27T14:48:28+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm).
 
 This is a multithreaded version of unlock-excel.pyw.  All the work that was
@@ -109,9 +109,9 @@ def create_widgets(root):
 
 def create_state():
     """Create and initialize the global state."""
-    state = SimpleNamespace()
-    state.directory = None
-    return state
+    st = SimpleNamespace()
+    st.directory = None
+    return st
 
 
 def statusmsg(text):
@@ -120,8 +120,8 @@ def statusmsg(text):
     widgets.status.see(tk.END)
 
 
-# Function to process a zip-file. This is to be run in a thread.
 def process_zipfile_thread():
+    """Function to process a zip-file. This is to be run in a thread."""
     path = widgets.fn['text']
     statusmsg(f'Opening “{path}”...')
     first, last = path.rsplit('.', maxsplit=1)
@@ -226,9 +226,9 @@ if __name__ == '__main__':
             sys.exit()
     # Create the GUI window.
     root = tk.Tk(None)
-    # Use a dialog window so that it floats even when using a tiling window
-    # manager.
-    root.attributes('-type', 'dialog')
+    # Use a dialog window so that it floats even when using a tiling window manager.
+    if os.name == 'posix':
+        root.attributes('-type', 'dialog')
     # Don't show hidden files in the file dialog
     # https://stackoverflow.com/questions/53220711/how-to-avoid-hidden-files-in-file-picker-using-tkinter-filedialog-askopenfilenam
     try:
