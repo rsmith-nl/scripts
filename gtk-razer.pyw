@@ -5,14 +5,14 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2020-04-04T14:43:45+0200
+# Last modified: 2020-05-15T06:48:00+0200
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
 
 Tested on an Ornata Chroma and a BlackWidow Elite.
-The USB control transfer messages were laboriously extracted from the
-Openrazer (https://github.com/openrazer/openrazer) driver code.
+The USB control transfer messages were compiled by tracing what the
+Openrazer (https://github.com/openrazer/openrazer) driver code does.
 """
 
 from types import SimpleNamespace
@@ -27,7 +27,7 @@ import gi
 gi.require_version('Gtk', '3.0')  # noqa
 from gi.repository import Gtk, Gdk
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 def create_widgets():
@@ -44,7 +44,7 @@ def create_widgets():
         "on_slider_change": on_slider_change,
         "on_draw": on_draw,
         "set_color": set_color,
-        "on_quit": Gtk.main_quit
+        "on_quit": on_quit
     }
     builder.connect_signals(handlers)
     # Root window
@@ -101,6 +101,14 @@ def on_slider_change(rng, scroll, value):
     widgets.show.queue_draw()
 
 
+def on_quit(arg=None):
+    R = int(widgets.red.get_value())
+    G = int(widgets.green.get_value())
+    B = int(widgets.blue.get_value())
+    write_rc(state.rcpath, R, G, B)
+    Gtk.main_quit()
+
+
 def static_color_msg(red, green, blue):
     """
     Create a message to set the Razer Ornata Chroma lights to a static color.
@@ -142,6 +150,7 @@ def create_state():
     """Create the global state."""
     state = SimpleNamespace()
     state.dev = None
+    state.rcpath = '.' + os.path.splitext(os.path.basename(sys.argv[0]))[0] + 'rc'
     state.model = "No Razer keyboard found!"
     # Find devices
     devs = list(usb.core.find(find_all=True, idVendor=0x1532))
@@ -149,6 +158,31 @@ def create_state():
         state.dev = devs[0]
         state.model = devs[0].product
     return state
+
+
+def read_rc(rcpath):
+    """Retrieve color values from the rc file.
+
+    Arguments:
+        rcpath (str): path to the rc file.
+
+    Returns:
+        3-tuple of integers representing R,G,B.
+    """
+    if not os.path.exists(rcpath):
+        return None
+    with open(rcpath) as rc:
+        colors = [int(ln) for ln in rc.readlines() if ln.strip()[0] in '1234567890']
+    if len(colors) != 3:
+        return None
+    return colors
+
+
+def write_rc(rcpath, R, G, B):
+    with open(rcpath, 'w') as rc:
+        rc.write(f'{R}\n')
+        rc.write(f'{G}\n')
+        rc.write(f'{B}\n')
 
 
 # The definition of the user interface was made with Glade.
@@ -183,7 +217,12 @@ if __name__ == '__main__':
             sys.exit()
     # Create the GUI and run it.
     state = create_state()
+    colors = read_rc(state.rcpath)
     root, widgets = create_widgets()
+    if colors:
+        widgets.red.set_value(colors[0])
+        widgets.green.set_value(colors[1])
+        widgets.blue.set_value(colors[2])
     root.connect("destroy", Gtk.main_quit)
     root.set_modal(True)  # Makes a floating window.
     if state.dev is None:
