@@ -7,7 +7,7 @@
 # Copyright © 2015,2016,2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-03-19T10:35:02+0100
-# Last modified: 2019-11-17T14:48:55+0100
+# Last modified: 2020-06-07T20:15:26+0200
 
 # Check for special programs that are used in this script.
 PROGS="git"
@@ -22,7 +22,7 @@ done
 set -eu
 WD=$(pwd)
 H=$(hostname)
-GITDIRS=$(find $WD -type d -name '.git'|sort)
+GITDIRS=$(find "$WD" -type d -name '.git'|sort)
 echo "Starting git-daemon for the following directories:"
 echo $GITDIRS|fmt
 echo "Press CTRL-C to quit."
