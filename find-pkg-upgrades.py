@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2020-04-01T18:15:23+0200
+# Last modified: 2020-06-07T19:38:30+0200
 """Find newer packages and ports for FreeBSD.
 
 Using this program requires that the doas 'doas' and ‘pkg’ ports are
@@ -17,45 +17,65 @@ import argparse
 import logging
 import concurrent.futures as cf
 import os
-import re
 import subprocess as sp
 import sys
-import requests
 
-__version__ = '3.0'
+__version__ = '4.0'
 
 
 def main():
     """
     Entry point for find-pkg-upgrades.py.
     """
-    setup()
+    major, arch = setup()
     # I'm using concurrent.futures here because the functions can take a long time.
     # This way we can reduce the time as much as possible.
-    with cf.ProcessPoolExecutor(max_workers=3) as ex:
-        logging.info('retrieving remote package updates')
-        remote = ex.submit(pkg_version_R)
-        logging.info('retrieving local ports tree updates')
-        local = ex.submit(pkg_version)
-        for fut in cf.as_completed([remote, local]):
-            if fut == remote:
-                rpkgs, rports, rlen = remote.result()
-                logging.info(f'finished scan of {rlen} remote packages')
-            else:
-                lpkgs, lports, llen = local.result()
-                logging.info(f'finished scan of {llen} local packages')
-    if rpkgs:
+    with cf.ProcessPoolExecutor() as ex:
+        logging.info('starting retrieval of remote packages')
+        remote_packages_f = ex.submit(pkg_version_R)
+        logging.info('starting gathering package options')
+        options_f = ex.submit(pkg_query)
+        logging.info('starting gathering default port options')
+        default_f = ex.submit(get_default_options)
+        logging.info('starting gathering of ports with local updates')
+        local_updates_f = ex.submit(pkg_version)
+        for fut in cf.as_completed(
+            [options_f, local_updates_f, remote_packages_f, default_f]
+        ):
+            if fut == options_f:
+                local_options = fut.result()
+                k = len(local_options)
+                logging.info(f'finished gathering {k} package options')
+            elif fut == local_updates_f:
+                local_updates = fut.result()
+                k = len(local_updates)
+                logging.info(f'finished gathering {k} ports with local updates')
+            elif fut == default_f:
+                default_options = fut.result()
+                k = len(default_options)
+                logging.info(f'finished gathering {k} default port options')
+            elif fut == remote_packages_f:
+                remote_packages = fut.result()
+                k = len(remote_packages)
+                logging.info(f'finished retrieving {k} remote packages.')
+    if remote_packages:
+        rpkgs = [
+            p for p in remote_packages
+            if local_options.get(p, '') == default_options.get(p, '')
+        ]
         print('# The following ports can be updated from packages:')
         print(' '.join(rpkgs))
-    if lpkgs:
+        print('# The following ports have new packages, but we use non-default options:')
+        print(' '.join(p for p in remote_packages if p not in rpkgs))
+    if local_updates:
+        lpkgs = [
+            p for p in local_updates
+            if local_options.get(p, '') == default_options.get(p, '')
+        ]
         print('# The following ports will have new packages in the future:')
         print(' '.join(lpkgs))
-    if rports:
-        print('# The following ports have new packages, but we use non-default options:')
-        print(' '.join(rports))
-    if lports:
         print('# The following must be updated from ports; non-default options:')
-        print(' '.join(lports))
+        print(' '.join(p for p in local_updates if p not in lpkgs))
 
 
 def setup():
@@ -93,28 +113,12 @@ def setup():
     # Print info for the user.
     logging.info(f'FreeBSD major version: {major}')
     logging.info(f'FreeBSD processor architecture: {arch}')
-
-
-def get_remote_pkgs(version, arch):
-    """Get a dict of the latest packages from the FreeBSD repo.
-
-    Arguments:
-        version: The FreeBSD major version number.
-        arch: The CPU architecture for which packages are to be retrieved.
-
-    Returns:
-        A dict of packages, indexed by package name and containing the version string.
-    """
-    t = re.compile('href="(.*?)"', re.MULTILINE)
-    ps = 'http://pkg.freebsd.org/FreeBSD:{:d}:{}/latest/All/'
-    pkgpage = requests.get(ps.format(version, arch))
-    data = [ln[:-4].rsplit('-', 1) for ln in t.findall(pkgpage.text)]
-    return dict(ln for ln in data if len(ln) == 2)
+    return (major, arch)
 
 
 def run(args):
     """
-    Run a subprocess and return the standard output.
+    Run a subprocess and return the standard output split into lines.
 
     Arguments:
         args (list): List of argument strings. Typically a command name
@@ -127,59 +131,60 @@ def run(args):
     return comp.stdout.splitlines()
 
 
+def pkg_query():
+    """Retrieve all set package options.
+
+    Returns:
+        A dict indexed by package name that contains a sorted string of all
+        the locally set package options.
+    """
+    data = [ln.split() for ln in run(['pkg', 'query', '%n %Ok %Ov'])]
+    names = sorted(set(ln[0] for ln in data))
+    opts = {n: [] for n in names}
+    for name, option, value in data:
+        if value == 'on':
+            opts[name].append(option)
+    res = {k: ' '.join(sorted(v)) for k, v in opts.items() if v}
+    return res
+
+
 def pkg_version():
-    """Retrieve ports that have local updates."""
+    """Retrieve package names that have local updates."""
     data = [ln.strip().split() for ln in run(['pkg', 'version'])]
-    local = [name.rsplit('-', maxsplit=1)[0]
-             for name, state in data if state == '<']
-    # These updates might be available in the future.
-    pkgs = [name for name in local if uses_default_options(name)]
-    # Newer portd, non-default options. These must be updated as ports.
-    ports = sorted(list(set(local) - set(pkgs)))
-    return pkgs, ports, len(data)
+    local = sorted(
+        name.rsplit('-', maxsplit=1)[0] for name, state in data if state == '<'
+    )
+    return local
 
 
 def pkg_version_R():
-    """Retrieve packages that have remote updates."""
+    """Retrieve package names that have remote updates."""
     data = [ln.strip().split() for ln in run(['doas', 'pkg', 'version', '-R'])]
     data = [item for item in data if len(item) == 2]
     remote = sorted(
         [name.rsplit('-', maxsplit=1)[0] for name, state in data if state == '<']
     )
-    # These packages can be updated.
-    pkgs = [name for name in remote if uses_default_options(name)]
-    # These ports have newer packages, but we don't use default options.
-    ports = sorted(list(set(remote) - set(pkgs)))
-    return pkgs, ports, len(data)
+    return remote
 
 
-def uses_default_options(name):
+def get_default_options():
     """
-    Check of a given package uses the default options or
-    if options have been changed.
-
-    Arguments:
-        name (str): Name of the package.
+    Retrieve the default options for installed ports/packages.
 
     Returns:
-        A Comparison
+        A dict indexed by package name that contains a sorted string of all
+        the default port options.
     """
-    optionlines = run(['pkg', 'query', '%Ok %Ov', name])
-    options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
-    try:
-        origin = run(['pkg', 'query', '%o', name])[0]
-        os.chdir(f'/usr/ports/{origin}')
-    except (FileNotFoundError, IndexError):
-        return False
-    default = run(['make', '-V', 'OPTIONS_DEFAULT'])
-    if not default[0]:
-        return True
-    options_default = set(default[0].split())
-    if options_default == options_set:
-        v = True
-    else:
-        v = False
-    return v
+    query = run(['pkg', 'query', '%n %o'])
+    res = {}
+    for data in query:
+        name, path = data.split()
+        os.chdir(f'/usr/ports/{path}')
+        cp = sp.run(['make', '-V', 'OPTIONS_DEFAULT'], stdout=sp.PIPE, text=True)
+        v = cp.stdout.strip()
+        if v:
+            res[name] = v
+    return res
 
 
 if __name__ == '__main__':
