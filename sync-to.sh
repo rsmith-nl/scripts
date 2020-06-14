@@ -5,11 +5,11 @@
 # SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2020-03-07T13:52:34+0100
+# Last modified: 2020-06-14T14:19:58+0200
 
 set -eu
 
-usage="Usage: sync-laptop <host> [-h][[-f][-r] <dir>]
+usage="Usage: sync-laptop <host> [-h][[-f][-r][-c] <dir>]
 
 Uses rsync to syncronize files between two computers.
 
@@ -17,7 +17,8 @@ The rsync(1) daemon should be running on <host>.  The /home directory on
 <host> should be listed as the [home] module in the rsyncd.conf(5) on <host>.
 
 Options:
-  -h: help
+  -h: Display help
+  -c: Use checksum instead of date to look for changed files.
   -r: Transfer in reverse direction; from <host> to us.
   -f: Really sync files. the default is to perform a dry run.
 
@@ -29,7 +30,7 @@ It should be the same on both machines.
 US=`hostname -s`
 HOST=${1}
 shift
-args=`getopt fhr $*`
+args=`getopt fhrc $*`
 if [ $? -ne 0 ]; then
     echo "$usage"
     exit 1
@@ -37,6 +38,7 @@ fi
 set -- $args
 FORCE=""
 REVERSE=""
+CHECKSUM=""
 while true; do
     case "$1" in
         -h)
@@ -49,6 +51,10 @@ while true; do
             ;;
         -r)
             REVERSE='yes'
+            shift
+            ;;
+        -c)
+            CHECKSUM='yes'
             shift
             ;;
         --)
@@ -71,9 +77,13 @@ if [ ! -d ${DIR} ]; then
     exit 3
 fi
 DIR=${DIR##/home/${USER}/}
+
 OPTS='-avCn'
 if [ $FORCE ]; then
     OPTS='-av'
+fi
+if [ $CHECKSUM ]; then
+    OPTS=${OPTS}'c'
 fi
 if [ $REVERSE ]; then
     echo "Syncing from ${HOST} to ${US}."
