@@ -7,8 +7,10 @@
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2020-07-12T13:53:59+0200
-# Last modified: 2020-07-12T14:19:02+0200
+# Last modified: 2020-07-12T14:32:12+0200
 
+MIXER=/usr/sbin/mixer
+OUT=/usr/local/bin/out123
 
 # Get the battery percentage
 BAT=`sysctl -n hw.acpi.battery.life`
@@ -16,8 +18,8 @@ BAT=`sysctl -n hw.acpi.battery.life`
 VOL=`mixer vol | sed -e 's/^.*://'`
 if [ $BAT -le 10 ]; then
     # Set sound level and play sound
-    mixer vol 50 >/dev/null
-    out123 --wave-freq 400 --wave-sweep 800 --sweep-count 5 --wave-pat square
+    $MIXER vol 50 >/dev/null
+    $OUT --wave-freq 400 --wave-sweep 800 --sweep-count 5 --wave-pat square
     # Restore sound volume.
-    mixer vol $VOL >/dev/null
+    $MIXER vol $VOL >/dev/null
 fi
