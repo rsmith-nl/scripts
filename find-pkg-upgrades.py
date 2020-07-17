@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-11-26T14:38:15+01:00
-# Last modified: 2020-06-07T19:38:30+0200
+# Last modified: 2020-06-19T13:25:52+0200
 """Find newer packages and ports for FreeBSD.
 
 Using this program requires that the doas 'doas' and ‘pkg’ ports are
@@ -179,11 +179,14 @@ def get_default_options():
     res = {}
     for data in query:
         name, path = data.split()
-        os.chdir(f'/usr/ports/{path}')
-        cp = sp.run(['make', '-V', 'OPTIONS_DEFAULT'], stdout=sp.PIPE, text=True)
-        v = cp.stdout.strip()
-        if v:
-            res[name] = v
+        try:
+            os.chdir(f'/usr/ports/{path}')
+            cp = sp.run(['make', '-V', 'OPTIONS_DEFAULT'], stdout=sp.PIPE, text=True)
+            v = cp.stdout.strip()
+            if v:
+                res[name] = v
+        except FileNotFoundError:
+            res[name] = ''
     return res
 
 

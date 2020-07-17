@@ -4,7 +4,7 @@
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2019-12-07T13:30:37+0100
-# Last modified: 2020-02-22T13:15:07+0100
+# Last modified: 2020-07-18T00:46:55+0200
 """Executes or evaluates Python code between <> on a single line in a file.
 Usage: param.py input output [var=value ...]
 
@@ -85,7 +85,7 @@ def mkglobals():
 
     for k in ['e', 'pi', 'log', 'log2', 'log10', 'floor', 'ceil', 'pow', 'sqrt']:
         rv[k] = eval('math.' + k)
-    for k in ['sin', 'asin', 'cos', 'acos', 'tan', 'atan']:
+    for k in ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'round']:
         rv[k] = eval(k)
 
     return rv
