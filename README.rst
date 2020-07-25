@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-04-19T15:08:28+0200
+.. Last modified: 2020-07-24T23:09:33+0200
 
 Introduction
 ============
@@ -26,8 +26,9 @@ All these programs are tested and in use on the FreeBSD operating system. The
 shell-scripts use the plain old ``sh`` that comes with FreeBSD, but should
 work with ``bash``. Bug reports and patches welcome. Most of it should work on
 other BSD systems, Linux or OS-X without major problems.
+Scripts that require FreeBSD are noted as such.
 
-All scripts use Python 3 specific features. Most recently I converted
+All Python scripts use Python 3 specific features. Most recently I converted
 ``str.format`` calls to f-strings, meaning that you'll need Python 3.6 or
 later for the Python scripts.
 
@@ -130,6 +131,10 @@ processes as your CPU has cores. This number is determined by the
 
 dvd2webm.py
 -----------
+
+(Note that I don't use this much anymore. These days I tend to use Handbrake
+for my encoding needs.)
+
 
 When I buy DVDs, I generally transfer their contents to my computer for easier
 viewing. However, the video and audio format used on DVD is not very compact.
@@ -852,6 +857,14 @@ Analogue to ``vid2mkv.py``, but converts to `H.264`_ (using the x264_ encoder)
 .. _x264: http://www.videolan.org/developers/x264.html
 .. _AAC: http://en.wikipedia.org/wiki/Advanced_Audio_Coding
 .. _MP4: http://en.wikipedia.org/wiki/MPEG-4_Part_14
+
+
+warn-battery.sh
+---------------
+
+Small script to give an audible warning when the battery of a laptop is low.
+Specific to FreeBSD because it uses ``sysctl``.
+Also requires the audio/mpg123 package.
 
 
 webm.sh

@@ -6,8 +6,9 @@
 # vim:fileencoding=utf-8:fdm=marker:ft=sh
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>
+# SPDX-License-Identifier: MIT
 # Created: 2020-07-12T13:53:59+0200
-# Last modified: 2020-07-12T14:56:15+0200
+# Last modified: 2020-07-25T16:54:26+0200
 
 # Locations of binaries.
 MIXER=/usr/sbin/mixer
