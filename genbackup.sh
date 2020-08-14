@@ -6,11 +6,11 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-08-13T22:13:23+0200
-# Last modified: 2019-10-13T13:55:32+0200
+# Last modified: 2020-08-14T13:10:46+0200
 
 set -e
 
-CURDIR=$(basename $(pwd))
+CURDIR=$(basename "$(pwd)")
 EXCLUDE=""
 # Process the options
 while [ "$1" != "" ]; do
@@ -41,5 +41,5 @@ rm -f backup-${OUTNAME}*.tar*
 # Use tar for backup. Compress with gzip.
 DF=backup-${OUTNAME}${NUM}.tar.gz
 echo "A copy of ${CURDIR} is stored in ${DF}."
-cd .. ; tar -a -cf /tmp/${DF} ${EXCLUDE} ${CURDIR}/
-mv /tmp/${DF} ${CURDIR}/
+cd .. ; tar -a -cf "/tmp/${DF}" ${EXCLUDE} "${CURDIR}/"
+mv "/tmp/${DF}" "${CURDIR}/"
