@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-08-15T20:24:57+0200
-# Last modified: 2020-08-15T22:46:46+0200
+# Last modified: 2020-08-15T23:54:36+0200
 """Generate blocklistst for dnsmasq and unbound"""
 
 # Data
@@ -65,6 +65,5 @@ print("server:")
 for kind, name in ((facebook, "facebook"), (ads, 'ads')):
     print(f'    # Block {name}')
     for domain in kind:
-        print(f'    local-zone: "{domain}" redirect')
-        print(f'    local-data: "{domain}" A {ip}')
+        print(f'    local-zone: "{domain}" always_nxdomain')
     print()
