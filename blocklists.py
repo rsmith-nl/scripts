@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-08-15T20:24:57+0200
-# Last modified: 2020-08-15T23:54:36+0200
+# Last modified: 2020-08-16T00:22:51+0200
 """Generate blocklistst for dnsmasq and unbound"""
 
 # Data
@@ -48,10 +48,6 @@ ads += [
 
 # Remove doubles, sort the list.
 ads = sorted(set(ads))
-
-# IP address to redirect to for Unbound.  Typically, you would set your firewall to deny
-# access to this particular IP address.
-ip = "127.0.0.2"
 
 print("#### DNSMASQ ####")
 for kind, name in ((facebook, "facebook"), (ads, 'ads')):
