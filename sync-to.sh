@@ -5,11 +5,11 @@
 # SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2020-06-14T14:19:58+0200
+# Last modified: 2020-08-15T14:39:29+0200
 
 set -eu
 
-usage="Usage: sync-laptop <host> [-h][[-f][-r][-c] <dir>]
+usage="Usage: sync-to <host> [-h][[-f][-r][-c] <dir>]
 
 Uses rsync to syncronize files between two computers.
 
