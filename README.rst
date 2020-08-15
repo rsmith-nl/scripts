@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-07-24T23:09:33+0200
+.. Last modified: 2020-08-15T21:46:18+0200
 
 Introduction
 ============
@@ -69,6 +69,17 @@ The aim is to have no warnings or errors.
 
 The programs
 ============
+
+
+blocklist.py
+------------
+
+This script generates configuration data for dnsmasq_ and unbound_ to block
+facebook and ad networks.
+
+.. _dnsmasq: http://www.thekelleys.org.uk/dnsmasq/doc.html
+.. _unbound: https://nlnetlabs.nl/projects/unbound/about/
+
 
 clean.sh
 --------
