@@ -6,7 +6,7 @@
 # Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-14 19:25:57 +0200
-# Last modified: 2018-04-16T22:20:24+0200
+# Last modified: 2020-08-15T14:28:17+0200
 
 RES=150 # Scanner resolution
 PAGE=a4 # Page size
@@ -31,5 +31,5 @@ for P in $PROGS; do
 done
 
 echo -n "Gathering pages in PDF file..."
-convert $@ -adjoin -page $PAGE -density $RES -units PixelsPerInch $OUTF
+convert "$@" -adjoin -page $PAGE -density $RES -units PixelsPerInch $OUTF
 echo "done."

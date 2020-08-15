@@ -5,7 +5,7 @@
 # Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2019-08-10T01:04:42+0200
+# Last modified: 2020-08-15T14:29:07+0200
 
 if [ $# -lt 3 ]; then
     echo "Usage: $(basename $0) N M file"
@@ -40,4 +40,4 @@ else
 fi
 
 gs -DNOPAUSE -sDEVICE=pdfwrite -dFirstPage=${N} -dLastPage=${M} \
-    -sOutputFile=$OUTNAME $3 -c quit 2>/dev/null | tail -n 4
+    -sOutputFile=$OUTNAME "$3" -c quit 2>/dev/null | tail -n 4

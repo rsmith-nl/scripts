@@ -5,7 +5,7 @@
 # Copyright © 2006-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2006-02-19T16:52:08+01:00
-# Last modified: 2018-04-16T22:35:01+0200
+# Last modified: 2020-08-15T14:31:48+0200
 
 # Check for arguments
 if [ $# -lt 2 ]; then
@@ -27,6 +27,6 @@ RES=$1
 shift
 
 set -e
-for f in $@; do
+for f in "$@"; do
     mogrify -units PixelsPerInch -density $RES $f
 done

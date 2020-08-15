@@ -6,7 +6,7 @@
 # Copyright © 2015 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2018-04-16T22:19:08+0200
+# Last modified: 2020-08-15T14:27:20+0200
 
 # Check for arguments
 if [ -z "$1" ]; then
@@ -27,4 +27,4 @@ done
 
 # Do the actual work
 rm -f index.jpg
-montage -tile 8 -label "%f\n%wx%h\n%[EXIF:DateTime]" $@ index.jpg
+montage -tile 8 -label "%f\n%wx%h\n%[EXIF:DateTime]" "$@" index.jpg
