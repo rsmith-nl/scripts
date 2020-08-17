@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-08-15T20:24:57+0200
-# Last modified: 2020-08-16T00:22:51+0200
+# Last modified: 2020-08-17T19:32:14+0200
 """Generate blocklistst for dnsmasq and unbound"""
 
 # Data
@@ -46,6 +46,10 @@ ads += [
     "petrovka.info", "admob.com", "adscience.nl", "adengage.com"
 ]
 
+
+# IP address to redirect to, for unbound.
+redirect = '127.0.0.2'
+
 # Remove doubles, sort the list.
 ads = sorted(set(ads))
 
@@ -61,5 +65,6 @@ print("server:")
 for kind, name in ((facebook, "facebook"), (ads, 'ads')):
     print(f'    # Block {name}')
     for domain in kind:
-        print(f'    local-zone: "{domain}" always_nxdomain')
+        print(f'    local-zone: "{domain}" redirect')
+        print(f'    local-data: "{domain} A {redirect}"')
     print()
