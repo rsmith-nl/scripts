@@ -35,11 +35,7 @@ parser.add_argument(
     help='logging level (default: warning)'
 )
 parser.add_argument(
-    '-l',
-    '--language',
-    type=str,
-    default='en',
-    help='word file language (default: en)'
+    '-l', '--language', type=str, default='en', help='word file language (default: en)'
 )
 parser.add_argument(
     '-c',
@@ -49,11 +45,7 @@ parser.add_argument(
     help='number of passphrases to generate (default: 1)'
 )
 parser.add_argument(
-    '-w',
-    '--words',
-    type=int,
-    default=3,
-    help='number of words (default: 3)'
+    '-w', '--words', type=int, default=3, help='number of words (default: 3)'
 )
 parser.add_argument('-v', '--version', action='version', version=__version__)
 args = parser.parse_args(sys.argv[1:])
