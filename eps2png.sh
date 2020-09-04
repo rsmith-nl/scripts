@@ -12,7 +12,7 @@
 RES=300
 DEV=png16m
 args=`getopt r:d:h $*`
-case $? in 0)
+case $? in [!0]*)
     echo "Usage: $0 [-r 300] [-d png16m]"
     exit 2
 esac
