@@ -12,10 +12,10 @@
 RES=300
 DEV=png16m
 args=`getopt r:d:h $*`
-if [ $? -ne 0 ]; then
-        echo "Usage: $0 [-r 300] [-d png16m]"
-        exit 2
-fi
+case $? in 0)
+    echo "Usage: $0 [-r 300] [-d png16m]"
+    exit 2
+esac
 set -- $args
 while :; do
     case "$1" in
