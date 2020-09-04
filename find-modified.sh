@@ -7,13 +7,13 @@
 # Created: 2015-05-08T22:12:45+02:00
 # Last modified: 2020-08-15T14:20:52+0200
 
-if [ -z $1 ]; then
+[ -z $1 ] && {
    echo "Error: you must give a number of days as the argument."
    echo "usage: $(basename $0) [number]"
    echo "This finds the files from the current directory downwards,"
    echo "that have been modified up to [number] days ago."
    exit 0
-fi
+}
 
 EXCLUDED="/\..*|tmp"
 
