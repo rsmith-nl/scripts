@@ -27,12 +27,14 @@ while :; do
         -d)
             DEV=$2
             BEGIN=`echo $DEV|cut -c 1-3`
-            if [ $BEGIN = 'png' ]; then
-                echo "* Using the ${DEV} device."
-            else
-                echo "\'$BEGIN\' is not a PNG device. Using png16m."
-                DEV=png16m
-            fi
+            case $BEGIN in
+                png)
+                    echo "* Using the ${DEV} device."
+                    ;;
+                *)
+                    echo "\'$BEGIN\' is not a PNG device. Using png16m."
+                    DEV=png16m
+            esac
             shift; shift
             ;;
         -h)
