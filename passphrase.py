@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2019-08-13T01:41:00+0200
+# Last modified: 2020-10-03T07:29:10+0200
 """
 Creates a passphrase.
 
@@ -17,7 +17,7 @@ import secrets
 import re
 import sys
 
-__version__ = '1.2'
+__version__ = "2019-08-13"
 
 wordfiles = {
     'en': '/usr/share/dict/words',
