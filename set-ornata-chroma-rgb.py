@@ -14,7 +14,7 @@ import logging
 import sys
 import usb.core
 
-__version__ = '0.4'
+__version__ = "2020.04.01"
 
 
 def main():

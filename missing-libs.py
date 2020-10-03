@@ -16,7 +16,7 @@ import os
 import subprocess as sp
 from enum import Enum
 
-__version__ = '2.1'
+__version__ = "2020.04.01"
 
 
 class Ftype(Enum):

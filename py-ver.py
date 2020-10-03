@@ -13,7 +13,7 @@ import os
 import re
 import sys
 
-__version__ = '1.0'
+__version__ = "2020.04.01"
 _vre = re.compile(r'^__version__\s+=\s+' + '[\'\"].+', flags=re.M)
 _vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
 

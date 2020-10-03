@@ -25,7 +25,7 @@ import time
 import traceback
 
 # Global data
-__version__ = '2.4'
+__version__ = "2020.04.01"
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 
 

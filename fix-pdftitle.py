@@ -23,7 +23,7 @@ import subprocess as sp
 import sys
 import tempfile
 
-__version__ = '1.1'
+__version__ = "2020.04.01"
 
 
 def main():

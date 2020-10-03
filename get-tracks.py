@@ -12,7 +12,7 @@ import logging
 import sys
 import subprocess as sp
 
-__version__ = '1.1'
+__version__ = "2019.07.30"
 
 
 def main(argv):

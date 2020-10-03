@@ -12,7 +12,7 @@ import csv
 import sys
 import argparse
 
-__version__ = '0.2.0'
+__version__ = "2020.03.31"
 
 
 def main():

@@ -14,7 +14,7 @@ import sys
 import logging
 import shutil
 
-__version__ = '0.2'
+__version__ = "2020.04.01"
 
 
 def main():

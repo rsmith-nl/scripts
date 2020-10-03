@@ -24,7 +24,7 @@ import sys
 import tkinter as tk
 import usb.core
 
-__version__ = '1.2'
+__version__ = "2020.04.20"
 
 
 def create_widgets(root, model):

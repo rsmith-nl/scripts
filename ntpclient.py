@@ -19,7 +19,7 @@ import struct
 import sys
 import time
 
-__version__ = '1.0'
+__version__ = "2020.04.01"
 
 
 def main():

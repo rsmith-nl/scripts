@@ -21,7 +21,7 @@ import sys
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-__version__ = '2.1'
+__version__ = "2020.04.01"
 outdir = 'foto4lb'
 extensions = ('.jpg', '.jpeg', '.raw')
 

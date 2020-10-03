@@ -36,7 +36,7 @@ from tkinter import ttk
 from tkinter.font import nametofont
 import tkinter as tk
 
-__version__ = '0.4'
+__version__ = "2020.04.27"
 
 
 def create_widgets(root):

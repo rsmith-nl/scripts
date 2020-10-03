@@ -24,7 +24,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = '0.13'
+__version__ = "2020.03.31"
 
 
 def main():

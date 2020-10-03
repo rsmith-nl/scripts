@@ -22,7 +22,7 @@ import sys
 import subprocess as sp
 from magic import from_file
 
-__version__ = '2.0'
+__version__ = "2020.03.31"
 
 
 def main():  # noqa

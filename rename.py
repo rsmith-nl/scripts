@@ -18,7 +18,7 @@ import logging
 import sys
 import os
 
-__version__ = '1.0'
+__version__ = "2020.04.01"
 
 
 def main():

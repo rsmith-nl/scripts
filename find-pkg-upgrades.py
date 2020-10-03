@@ -20,7 +20,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = '4.0'
+__version__ = "2020.06.19"
 
 
 def main():

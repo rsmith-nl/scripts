@@ -18,7 +18,7 @@ import base64
 import os
 import sys
 
-__version__ = '2.1'
+__version__ = "2020.04.01"
 
 
 def main():

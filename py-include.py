@@ -13,7 +13,7 @@ import os
 import sys
 import zlib
 
-__version__ = '0.1'
+__version__ = "2020.04.01"
 
 
 def main():

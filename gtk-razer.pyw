@@ -27,7 +27,7 @@ import gi
 gi.require_version('Gtk', '3.0')  # noqa
 from gi.repository import Gtk, Gdk
 
-__version__ = '0.2'
+__version__ = "2020.05.15"
 
 
 def create_widgets():

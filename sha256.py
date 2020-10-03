@@ -17,7 +17,7 @@ from os.path import isfile
 import sys
 import argparse
 
-__version__ = '1.0.2'
+__version__ = "2020.04.01"
 
 
 def main():
