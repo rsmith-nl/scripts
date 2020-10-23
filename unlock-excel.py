@@ -28,17 +28,17 @@ def main():
 
 
 def setup():
-    logging.basicConfig(level='INFO', format='%(levelname)s: %(message)s')
+    logging.basicConfig(level="INFO", format="%(levelname)s: %(message)s")
     if len(sys.argv) < 2:
-        logging.info(f'unlock-excel.py v{__version__}; no files to unlock')
-        print('Usage: unlock-excel.py <file> <file> ...')
+        logging.info(f"unlock-excel.py v{__version__}; no files to unlock")
+        print("Usage: unlock-excel.py <file> <file> ...")
         sys.exit(0)
     return sys.argv[1:]
 
 
 def backup_file(path):
-    first, last = path.rsplit('.', maxsplit=1)
-    backup = first + '-orig' + '.' + last
+    first, last = path.rsplit(".", maxsplit=1)
+    backup = first + "-orig" + "." + last
     logging.info(f'moving "{path}" to "{backup}"')
     shutil.move(path, backup)
     return backup
@@ -54,21 +54,21 @@ def remove_excel_password(origpath, path):
         for info in infos:
             logging.debug(f'working on "{info.filename}"')
             data = inzf.read(info)
-            if b'sheetProtect' in data:
-                regex = r'<sheetProtect.*?/>'
+            if b"sheetProtect" in data:
+                regex = r"<sheetProtect.*?/>"
                 logging.info(f'worksheet "{info.filename}" is protected')
-            elif b'workbookProtect' in data:
-                regex = r'<workbookProtect.*?/>'
-                logging.into('the workbook is protected')
+            elif b"workbookProtect" in data:
+                regex = r"<workbookProtect.*?/>"
+                logging.into("the workbook is protected")
             else:
                 outzf.writestr(info, data)
                 continue
-            text = data.decode('utf-8')
-            newtext = re.sub(regex, '', text)
+            text = data.decode("utf-8")
+            newtext = re.sub(regex, "", text)
             if len(newtext) != len(text):
                 outzf.writestr(info, newtext)
                 logging.info(f'removed password from "{info.filename}"')
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

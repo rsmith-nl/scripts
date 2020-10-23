@@ -37,53 +37,53 @@ def main():
     fmod = stat.S_IRUSR
     dmod = stat.S_IRUSR | stat.S_IXUSR
     if args.unlock:
-        logging.info('unlocking files')
+        logging.info("unlocking files")
         fmod = stat.S_IRUSR | stat.S_IWUSR
         dmod = stat.S_IRWXU
         action = unlock_path
     else:
         action = lock_path
-        logging.info('locking files')
+        logging.info("locking files")
     for p in args.paths:
         if os.path.isfile(p):
-            action('', p, fmod)
+            action("", p, fmod)
         elif os.path.isdir(p):
             if args.unlock:
-                action('', p, dmod)
+                action("", p, dmod)
             for root, dirs, files in os.walk(p, topdown=False):
                 for fn in files:
                     action(root, fn, fmod)
                 for d in dirs:
                     action(root, d, dmod)
             if not args.unlock:
-                action('', p, dmod)
+                action("", p, dmod)
 
 
 def setup():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-u',
-        '--unlock',
-        action='store_true',
-        help='unlock the files instead of locking them'
+        "-u",
+        "--unlock",
+        action="store_true",
+        help="unlock the files instead of locking them",
     )
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        'paths', nargs='*', metavar='path', help='files or directories to work on'
+        "paths", nargs="*", metavar="path", help="files or directories to work on"
     )
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'Command line arguments = {sys.argv}')
-    logging.debug(f'Parsed arguments = {args}')
+    logging.debug(f"Command line arguments = {sys.argv}")
+    logging.debug(f"Parsed arguments = {args}")
     if not args.paths:
         parser.print_help()
         sys.exit(0)
@@ -98,7 +98,7 @@ def lock_path(root, name, mode):
     if pst.st_flags & stat.UF_IMMUTABLE:
         # Temporarily remove user immutable flag, so we can chmod.
         os.chflags(p, pst.st_flags ^ stat.UF_IMMUTABLE)
-    logging.info(f'locking path “{p}”')
+    logging.info(f"locking path “{p}”")
     os.chmod(p, mode)
     os.chflags(p, pst.st_flags | addflags)
 
@@ -107,10 +107,10 @@ def unlock_path(root, name, mode):
     rmflags = stat.UF_IMMUTABLE | stat.UF_NOUNLINK
     p = os.path.join(root, name)
     pst = os.stat(p)
-    logging.info(f'unlocking path “{p}”')
+    logging.info(f"unlocking path “{p}”")
     os.chflags(p, pst.st_flags & ~rmflags)
     os.chmod(p, mode)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

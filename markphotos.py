@@ -36,25 +36,28 @@ def setup():
     """Process command-line arguments. Check for required program."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument("files", metavar='file', nargs='+', help="one or more files to process")
+    parser.add_argument("-v", "--version", action="version", version=__version__)
+    parser.add_argument(
+        "files", metavar="file", nargs="+", help="one or more files to process"
+    )
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'command line arguments = {sys.argv}')
-    logging.debug(f'parsed arguments = {args}')
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
     # Check for required programs.
     try:
-        sp.run(['exiftool'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.debug('found “exiftool”')
+        sp.run(["exiftool"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.debug("found “exiftool”")
     except FileNotFoundError:
-        logging.error('the “exiftool” program cannot be found')
+        logging.error("the “exiftool” program cannot be found")
         sys.exit(1)
     return args
 
@@ -69,22 +72,33 @@ def processfile(name):
     Returns:
         A 2-tuple of the file path and the return value of exiftool.
     """
-    args = ['exiftool', '-CreateDate', name]
+    args = ["exiftool", "-CreateDate", name]
     cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
     fields = cp.stdout.split(":")
     year = int(fields[1])
     cr = "R.F. Smith <rsmith@xs4all.nl> http://rsmith.home.xs4all.nl/"
     cmt = f"Copyright © {year} {cr}"
     args = [
-        'exiftool', f'-Copyright="Copyright (C) {year} {cr}"',
-        f'-Comment="{cmt}"', '-overwrite_original', '-q', name
+        "exiftool",
+        f'-Copyright="Copyright (C) {year} {cr}"',
+        f'-Comment="{cmt}"',
+        "-overwrite_original",
+        "-q",
+        name,
     ]
     cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     modtime = int(
         mktime(
             (
-                year, int(fields[2]), int(fields[3][:2]), int(fields[3][3:]), int(fields[4]),
-                int(fields[5]), 0, 0, -1
+                year,
+                int(fields[2]),
+                int(fields[3][:2]),
+                int(fields[3][3:]),
+                int(fields[4]),
+                int(fields[5]),
+                0,
+                0,
+                -1,
             )
         )
     )
@@ -92,5 +106,5 @@ def processfile(name):
     return name, cp.returncode
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

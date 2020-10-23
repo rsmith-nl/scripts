@@ -26,31 +26,31 @@ def main():
     """
     args = setup()
     if args.checksum and len(args.checksum) != 64:
-        print('Invalid checksum length. Skipping comparison.')
+        print("Invalid checksum length. Skipping comparison.")
         args.checksum = None
     for nm in args.file:
         if not isfile(nm):
             continue
-        with open(nm, 'rb') as f:
+        with open(nm, "rb") as f:
             data = f.read()
         hexdat = sha256(data).hexdigest()
-        print(f'SHA256 ({nm}) = {hexdat}', end='')
+        print(f"SHA256 ({nm}) = {hexdat}", end="")
         if args.checksum:
             if args.checksum != hexdat:
-                print(' [ Failed ]', end='')
+                print(" [ Failed ]", end="")
             else:
-                print(' [ OK ]', end='')
+                print(" [ OK ]", end="")
         print()
 
 
 def setup():
     """Process the command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
-    hs = '''compare file to this sha256 string;
-            will add "[ OK ]" or "[ Failed ]" after the checksum'''
-    parser.add_argument('-c', '--checksum', default=None, help=hs)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('file', nargs='*')
+    hs = """compare file to this sha256 string;
+            will add "[ OK ]" or "[ Failed ]" after the checksum"""
+    parser.add_argument("-c", "--checksum", default=None, help=hs)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
+    parser.add_argument("file", nargs="*")
     args = parser.parse_args(sys.argv[1:])
     if not args.file:
         parser.print_help()
@@ -58,5 +58,5 @@ def setup():
     return args
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

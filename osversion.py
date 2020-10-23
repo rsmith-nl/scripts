@@ -10,14 +10,14 @@
 from ctypes import CDLL
 import sys
 
-if 'freebsd' not in sys.platform:
-    print('This script only works on FreeBSD!')
+if "freebsd" not in sys.platform:
+    print("This script only works on FreeBSD!")
     sys.exit(1)
 
-with open('/usr/include/osreldate.h') as h:
+with open("/usr/include/osreldate.h") as h:
     lines = h.readlines()
-line = [ln for ln in lines if ln.startswith('#define')][0]
-print('Compilation environment version:', line.split()[-1])
+line = [ln for ln in lines if ln.startswith("#define")][0]
+print("Compilation environment version:", line.split()[-1])
 
 libc = CDLL("/lib/libc.so.7")
-print('Execution environment version:', libc.getosreldate())
+print("Execution environment version:", libc.getosreldate())

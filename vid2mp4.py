@@ -34,46 +34,53 @@ def main():
             elif rv < 0:
                 logging.warning(f'file "{fn}" has unknown extension, ignoring it.')
             else:
-                logging.error(f'conversion of {fn} failed, return code {rv}')
+                logging.error(f"conversion of {fn} failed, return code {rv}")
 
 
 def setup():
     parser = argparse.ArgumentParser(description=__doc__)
-    crfh = 'constant rate factor (lower is better, default 29)'
-    parser.add_argument('-c', '--crf', type=int, default=29, help=crfh)
+    crfh = "constant rate factor (lower is better, default 29)"
+    parser.add_argument("-c", "--crf", type=int, default=29, help=crfh)
     parser.add_argument(
-        '-p',
-        '--preset',
-        default='medium',
+        "-p",
+        "--preset",
+        default="medium",
         choices=[
-            'ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow',
-            'slower', 'veryslow'
+            "ultrafast",
+            "superfast",
+            "veryfast",
+            "faster",
+            "fast",
+            "medium",
+            "slow",
+            "slower",
+            "veryslow",
         ],
-        help='preset (default medium) slower is smaller file'
+        help="preset (default medium) slower is smaller file",
     )
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        "files", metavar='file', nargs='+', help="one or more files to process"
+        "files", metavar="file", nargs="+", help="one or more files to process"
     )
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'command line arguments = {sys.argv}')
-    logging.debug(f'parsed arguments = {args}')
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
     # Check for required programs.
     try:
-        sp.run(['ffmpeg'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.debug('found “ffmpeg”')
+        sp.run(["ffmpeg"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.debug("found “ffmpeg”")
     except FileNotFoundError:
-        logging.error('the “ffmpeg” program cannot be found')
+        logging.error("the “ffmpeg” program cannot be found")
         sys.exit(1)
     return args
 
@@ -92,21 +99,44 @@ def runencoder(fname, crf, preset):
     """
     basename, ext = os.path.splitext(fname)
     known = [
-        '.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv', '.mkv', '.webm',
-        '.gif'
+        ".mp4",
+        ".avi",
+        ".wmv",
+        ".flv",
+        ".mpg",
+        ".mpeg",
+        ".mov",
+        ".ogv",
+        ".mkv",
+        ".webm",
+        ".gif",
     ]
     if ext.lower() not in known:
         return fname, -1
-    ofn = basename + '.mp4'
+    ofn = basename + ".mp4"
     args = [
-        'ffmpeg', '-i', fname, '-c:v', 'libx264', '-crf',
-        str(crf), '-preset', preset, '-flags', '+aic+mv4', '-c:a', 'aac', '-sn', '-y', ofn
+        "ffmpeg",
+        "-i",
+        fname,
+        "-c:v",
+        "libx264",
+        "-crf",
+        str(crf),
+        "-preset",
+        preset,
+        "-flags",
+        "+aic+mv4",
+        "-c:a",
+        "aac",
+        "-sn",
+        "-y",
+        ofn,
     ]
-    logging.debug(' '.join(args))
+    logging.debug(" ".join(args))
     logging.info(f'starting conversion of "{fname}".')
     cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return fname, cp.returncode
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

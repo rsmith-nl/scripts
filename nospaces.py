@@ -49,9 +49,9 @@ def fixname(path):
     path = os.path.normpath(path)
     head, tail = os.path.split(path)
     tl = tail.split()
-    tail = '_'.join(tl)
+    tail = "_".join(tl)
     return os.path.join(head, tail)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

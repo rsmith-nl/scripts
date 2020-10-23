@@ -20,25 +20,28 @@ turned into a PDF rendering of the graph.
 
 import sys
 
-if len(sys.argv) > 1 and sys.argv[1] in ('-h', '--help'):
+if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
     print(__doc__)
     exit(0)
 output = [
-    'digraph deps {', 'rankdir=LR;', 'fontname="Alegreya";', 'concentratr=true;',
-    'node [shape=box, fontname="Alegreya"];'
+    "digraph deps {",
+    "rankdir=LR;",
+    'fontname="Alegreya";',
+    "concentratr=true;",
+    'node [shape=box, fontname="Alegreya"];',
 ]
 parent = None
 try:
     for ln in sys.stdin:
         pkgname = ln.strip()
-        if pkgname.endswith(':'):
+        if pkgname.endswith(":"):
             pkgname = pkgname[:-1]
         output.append(f'"{pkgname}" [label="{pkgname}"];')
-        if ln[0] not in ' \t':  # parent
+        if ln[0] not in " \t":  # parent
             parent = pkgname
         else:
             output.append(f'"{parent}" -> "{pkgname}";')
 except KeyboardInterrupt:
-    print('\n', __doc__)
+    print("\n", __doc__)
 else:
-    print('\n'.join(output) + '}')
+    print("\n".join(output) + "}")

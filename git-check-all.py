@@ -25,8 +25,8 @@ def main():
     Entry point of git-check-all.
     """
     args = setup()
-    for (dirpath, dirnames, filenames) in os.walk(os.environ['HOME']):
-        if '.git' in dirnames:
+    for (dirpath, dirnames, filenames) in os.walk(os.environ["HOME"]):
+        if ".git" in dirnames:
             runchecks(dirpath, args.verbose)
 
 
@@ -34,25 +34,25 @@ def setup():
     """Parse command-line arguments. Check for required programs."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--log',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'info')"
+        "--log",
+        default="info",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'info')",
     )
-    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'Command line arguments = {sys.argv}')
-    logging.debug(f'Parsed arguments = {args}')
+    logging.debug(f"Command line arguments = {sys.argv}")
+    logging.debug(f"Parsed arguments = {args}")
     # Check for required programs.
     try:
-        sp.run(['git'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “git”')
+        sp.run(["git"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info("found “git”")
     except FileNotFoundError:
-        logging.error('the program “git” cannot be found')
+        logging.error("the program “git” cannot be found")
         sys.exit(1)
     return args
 
@@ -68,13 +68,13 @@ def runchecks(d, verbose=False):
         verbose: Boolean to enable verbose messages.
     """
     os.chdir(d)
-    outp = gitcmd('status', True)
-    if 'clean' not in outp:
+    outp = gitcmd("status", True)
+    if "clean" not in outp:
         logging.info(f"'{d}' is not clean, skipping.")
         return
     if verbose:
         logging.info(f"Running check on '{d}'")
-    rv = gitcmd(['gc', '--auto', '--quiet'])
+    rv = gitcmd(["gc", "--auto", "--quiet"])
     if rv:
         print(f"git gc failed on '{d}'!")
 
@@ -92,15 +92,15 @@ def gitcmd(cmds, output=False):
         The return value or the output of the git command.
     """
     if isinstance(cmds, str):
-        if ' ' in cmds:
-            raise ValueError('No spaces in single command allowed.')
+        if " " in cmds:
+            raise ValueError("No spaces in single command allowed.")
         cmds = [cmds]
     else:
         if not isinstance(cmds, (list, tuple)):
-            raise ValueError('args should be a list or tuple')
+            raise ValueError("args should be a list or tuple")
         if not all(isinstance(x, str) for x in cmds):
-            raise ValueError('args should be a list or tuple of strings')
-    cmds = ['git'] + cmds
+            raise ValueError("args should be a list or tuple of strings")
+    cmds = ["git"] + cmds
     if output:
         cp = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, text=True)
         return cp.stdout
@@ -109,5 +109,5 @@ def gitcmd(cmds, output=False):
     return cp.returncode
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

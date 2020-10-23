@@ -14,8 +14,8 @@ import re
 import sys
 
 __version__ = "2020.04.01"
-_vre = re.compile(r'^__version__\s+=\s+' + '[\'\"].+', flags=re.M)
-_vse = re.compile('[ ]+version=.+', flags=re.M)  # in setup.py
+_vre = re.compile(r"^__version__\s+=\s+" + "['\"].+", flags=re.M)
+_vse = re.compile("[ ]+version=.+", flags=re.M)  # in setup.py
 
 
 def main():
@@ -27,16 +27,16 @@ def main():
         func = replacever
     else:
         func = printver
-    filelist = [nm for nm in args.file if os.path.isfile(nm) and nm.endswith('.py')]
+    filelist = [nm for nm in args.file if os.path.isfile(nm) and nm.endswith(".py")]
     dirs = [nm for nm in args.file if os.path.isdir(nm)]
     for nm in dirs:
         for root, dirs, files in os.walk(nm):
-            for d in ['.git', '__pycache__']:
+            for d in [".git", "__pycache__"]:
                 try:
                     dirs.remove(d)
                 except ValueError:
                     pass
-            filelist += [os.path.join(root, f) for f in files if f.endswith('.py')]
+            filelist += [os.path.join(root, f) for f in files if f.endswith(".py")]
     for p in filelist:
         func(p, args.verstr)
 
@@ -44,10 +44,10 @@ def main():
 def setup():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-s', '--set', dest='verstr', default='', type=str, help='version to set'
+        "-s", "--set", dest="verstr", default="", type=str, help="version to set"
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('file', nargs='*', help='files to process')
+    parser.add_argument("-v", "--version", action="version", version=__version__)
+    parser.add_argument("file", nargs="*", help="files to process")
     args = parser.parse_args(sys.argv[1:])
     if not args.file:
         parser.print_help()
@@ -63,14 +63,14 @@ def replacever(fn, newver):
         fn: Name of the file to read.
         newver: New version string.
     """
-    with open(fn, 'r+', encoding='utf-8') as f:
+    with open(fn, "r+", encoding="utf-8") as f:
         data = f.read()
         changed = False
         if _vre.search(data):
             newver = f"__version__ = '{newver}'"
             data = _vre.sub(newver, data, count=1)
             changed = True
-        elif fn.endswith('setup.py') and _vse.search(data):
+        elif fn.endswith("setup.py") and _vse.search(data):
             newver = f"      version='{newver}',"
             data = _vse.sub(newver, data, count=1)
             changed = True
@@ -88,10 +88,10 @@ def printver(fn, newver):
         fn: Name of the file to read.
         newver: For compatibility with replacever, ignored.
     """
-    with open(fn, 'r', encoding='utf-8') as f:
+    with open(fn, "r", encoding="utf-8") as f:
         data = f.read()
     rlist = [_vre.search(data)]
-    if fn.endswith('setup.py'):
+    if fn.endswith("setup.py"):
         rlist.append(_vse.search(data))
     rlist = [r for r in rlist if r is not None]
     for res in rlist:
@@ -99,5 +99,5 @@ def printver(fn, newver):
         print(f"{fn}: {rs}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

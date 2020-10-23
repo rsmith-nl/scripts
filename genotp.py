@@ -15,13 +15,13 @@ The format of the one-time pad is:
 
 from secrets import choice
 
-_CAPS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+_CAPS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def main():
     """Entry point."""
     r = rndcaps(10)
-    print(f'+++++ {r} +++++')
+    print(f"+++++ {r} +++++")
     print(otp())
 
 
@@ -37,10 +37,10 @@ def otp(n=65):
     """
     lines = []
     for num in range(1, n + 1):
-        i = [f'{num:02d} ']
+        i = [f"{num:02d} "]
         i += [rndcaps(5) for j in range(0, 12)]
-        lines.append(' '.join(i))
-    return '\n'.join(lines)
+        lines.append(" ".join(i))
+    return "\n".join(lines)
 
 
 def rndcaps(n):
@@ -53,8 +53,8 @@ def rndcaps(n):
     Returns:
         A string of n random capital letters.
     """
-    return ''.join([choice(_CAPS) for c in range(n)])
+    return "".join([choice(_CAPS) for c in range(n)])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

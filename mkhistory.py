@@ -26,12 +26,12 @@ def main():
     Entry point for mkhistory.
     """
     fn = setup()
-    if fn == '-':
+    if fn == "-":
         of = sys.stdout
     else:
-        of = open(fn, 'w+')
+        of = open(fn, "w+")
     try:
-        args = ['git', 'log', '--oneline']
+        args = ["git", "log", "--oneline"]
         p = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     except sp.CalledProcessError:
         print("Git not found! Stop.")
@@ -62,18 +62,18 @@ def fmtlog(txt):
         A LaTeX formatted version of the input.
     """
     # Replace TeX special characters in the whole text.
-    specials = ('_', '#', '%', r'\$', '{', '}')
+    specials = ("_", "#", "%", r"\$", "{", "}")
     for s in specials:
-        txt = re.sub(r'(?<!\\)' + s, '\\' + s, txt)
+        txt = re.sub(r"(?<!\\)" + s, "\\" + s, txt)
     # Remove periods at the end of lines.
-    txt = re.sub(r'\.$', '', txt, flags=re.MULTILINE)
-    lines = txt.split('\n')
+    txt = re.sub(r"\.$", "", txt, flags=re.MULTILINE)
+    lines = txt.split("\n")
     # Remove reference to HEAD
-    lines[0] = re.sub(r'\(.*\) ', '', lines[0])
+    lines[0] = re.sub(r"\(.*\) ", "", lines[0])
     # Use typewriter font for the commit id.
-    lines = [r'\texttt{' + re.sub(' ', r'} ', ln, count=1) for ln in lines if ln]
-    return '\\\\\n'.join(lines)
+    lines = [r"\texttt{" + re.sub(" ", r"} ", ln, count=1) for ln in lines if ln]
+    return "\\\\\n".join(lines)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

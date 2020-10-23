@@ -27,25 +27,32 @@ def main(argv):
     """Entry point for vid2webm.py."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--log',
-        default='info',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'info')"
+        "--log",
+        default="info",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'info')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        '-s', '--start', type=str, default=None, help="time (hh:mm:ss) at which to start encoding"
+        "-s",
+        "--start",
+        type=str,
+        default=None,
+        help="time (hh:mm:ss) at which to start encoding",
     )
     parser.add_argument(
-        '-d', '--dummy', action="store_true", help="print commands but do not run them"
+        "-d", "--dummy", action="store_true", help="print commands but do not run them"
     )
-    parser.add_argument("files", metavar='files', nargs='+', help="one or more files to process")
+    parser.add_argument(
+        "files", metavar="files", nargs="+", help="one or more files to process"
+    )
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'command line arguments = {argv}')
-    logging.debug(f'parsed arguments = {args}')
+    logging.debug(f"command line arguments = {argv}")
+    logging.debug(f"parsed arguments = {args}")
     if not check_ffmpeg():
         return 1
     for fn in args.files:
@@ -54,12 +61,12 @@ def main(argv):
         starttime = datetime.now()
         startstr = str(starttime)[:-7]
         tc = get_tc(fn)
-        logging.info(f'started at {startstr}.')
-        t1 = str(starttime+t1)[:-10]
-        t2 = str(starttime+t2)[:-10]
-        t3 = str(starttime+t3)[:-10]
-        logging.info(f'encoding is expected to take until {t2} on average')
-        logging.info(f'but it could be anywhere between {t1} and {t3}')
+        logging.info(f"started at {startstr}.")
+        t1 = str(starttime + t1)[:-10]
+        t2 = str(starttime + t2)[:-10]
+        t3 = str(starttime + t3)[:-10]
+        logging.info(f"encoding is expected to take until {t2} on average")
+        logging.info(f"but it could be anywhere between {t1} and {t3}")
         a1 = mkargs(
             fn,
             1,
@@ -75,35 +82,35 @@ def main(argv):
         if not args.dummy:
             origbytes, newbytes = encode(a1, a2)
         else:
-            logging.basicConfig(level='INFO')
-            logging.info('first pass: ' + ' '.join(a1))
-            logging.info('second pass: ' + ' '.join(a2))
+            logging.basicConfig(level="INFO")
+            logging.info("first pass: " + " ".join(a1))
+            logging.info("second pass: " + " ".join(a2))
             continue
         stoptime = datetime.now()
         stopstr = str(stoptime)[:-7]
-        logging.info(f'ended at {stopstr}.')
+        logging.info(f"ended at {stopstr}.")
         runtime = stoptime - starttime
         runstr = str(runtime)[:-7]
-        logging.info(f'total running time {runstr}.')
+        logging.info(f"total running time {runstr}.")
         encspeed = origbytes / (runtime.seconds * 1000)
-        logging.info(f'average input encoding speed {encspeed:.2f} kB/s.')
+        logging.info(f"average input encoding speed {encspeed:.2f} kB/s.")
 
 
 def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
-    args = ['ffmpeg']
+    args = ["ffmpeg"]
     proc = sp.run(args, text=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
-    verre = r'ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright'
+    verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
     major, minor, patch, *rest = re.findall(verre, proc.stderr)[0]
     if int(major) < 3 and int(minor) < 3:
-        logging.error(f'ffmpeg 3.3 is required; found {major}.{minor}.{patch}')
+        logging.error(f"ffmpeg 3.3 is required; found {major}.{minor}.{patch}")
         return False
-    if not re.search(r'enable-libvpx', proc.stderr):
-        logging.error('ffmpeg is not built with VP9 video support.')
+    if not re.search(r"enable-libvpx", proc.stderr):
+        logging.error("ffmpeg is not built with VP9 video support.")
         return False
-    if not re.search(r'enable-libvorbis', proc.stderr):
-        logging.error('ffmpeg is not built with Vorbis audio support.')
+    if not re.search(r"enable-libvorbis", proc.stderr):
+        logging.error("ffmpeg is not built with Vorbis audio support.")
         return False
     return True
 
@@ -117,19 +124,19 @@ def reporttime(p, dt):
         dt: datetime.timedelta instance.
     """
     s = str(dt)[:-7]
-    logging.info(f'pass {p} took {s}.')
+    logging.info(f"pass {p} took {s}.")
 
 
 def get_tc(name):
     """Determine the amount of tile columns to use."""
-    args = ['ffprobe', '-hide_banner', '-select_streams', 'v', '-show_streams', name]
+    args = ["ffprobe", "-hide_banner", "-select_streams", "v", "-show_streams", name]
     proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
     lines = proc.stdout.splitlines()
     d = {}
     for ln in lines[1:-1]:
-        key, value = ln.strip().split('=')
+        key, value = ln.strip().split("=")
         d[key] = value
-    width = d['width']
+    width = d["width"]
     return math.floor(math.log2(math.ceil(float(width) / 64.0)))
 
 
@@ -146,38 +153,61 @@ def mkargs(fn, npass, tile_columns, start=None):
         A list of strings suitable for calling a subprocess.
     """
     if npass not in (1, 2):
-        raise ValueError('npass must be 1 or 2')
-    if start and not re.search(r'\d{2}:\d{2}:\d{2}', start):
-        raise ValueError('starting time must be in the format HH:MM:SS')
+        raise ValueError("npass must be 1 or 2")
+    if start and not re.search(r"\d{2}:\d{2}:\d{2}", start):
+        raise ValueError("starting time must be in the format HH:MM:SS")
     numthreads = str(os.cpu_count())
-    basename = fn.rsplit('.', 1)[0]
-    args = ['ffmpeg', '-loglevel', 'quiet', '-probesize', '1G', '-analyzeduration', '1G']
+    basename = fn.rsplit(".", 1)[0]
+    args = [
+        "ffmpeg",
+        "-loglevel",
+        "quiet",
+        "-probesize",
+        "1G",
+        "-analyzeduration",
+        "1G",
+    ]
     if start:
-        args += ['-ss', start]
-    args += ['-i', fn, '-passlogfile', basename]
-    speed = '2'
+        args += ["-ss", start]
+    args += ["-i", fn, "-passlogfile", basename]
+    speed = "2"
     if npass == 1:
-        logging.info(f'using {numthreads} threads')
-        logging.info(f'using {tile_columns} tile columns')
-        speed = '4'
+        logging.info(f"using {numthreads} threads")
+        logging.info(f"using {tile_columns} tile columns")
+        speed = "4"
     args += [
-        '-c:v', 'libvpx-vp9', '-row-mt', '1', '-threads', numthreads, '-pass',
-        str(npass), '-b:v', '1400k', '-crf', '33', '-g', '250', '-speed', speed,
-        '-tile-columns', str(tile_columns)
+        "-c:v",
+        "libvpx-vp9",
+        "-row-mt",
+        "1",
+        "-threads",
+        numthreads,
+        "-pass",
+        str(npass),
+        "-b:v",
+        "1400k",
+        "-crf",
+        "33",
+        "-g",
+        "250",
+        "-speed",
+        speed,
+        "-tile-columns",
+        str(tile_columns),
     ]
     if npass == 2:
-        args += ['-auto-alt-ref', '1', '-lag-in-frames', '25']
-    args += ['-sn']
+        args += ["-auto-alt-ref", "1", "-lag-in-frames", "25"]
+    args += ["-sn"]
     if npass == 1:
-        args += ['-an']
+        args += ["-an"]
     elif npass == 2:
-        args += ['-c:a', 'libvorbis', '-q:a', '3']
-    args += ['-f', 'webm', '-map', '0:v', '-map', '0:a']
+        args += ["-c:a", "libvorbis", "-q:a", "3"]
+    args += ["-f", "webm", "-map", "0:v", "-map", "0:a"]
     if npass == 1:
-        outname = '/dev/null'
+        outname = "/dev/null"
     else:
-        outname = basename + '.webm'
-    args += ['-y', outname]
+        outname = basename + ".webm"
+    args += ["-y", outname]
     return args
 
 
@@ -192,26 +222,26 @@ def encode(args1, args2):
     Return values:
         A 2-tuple of the original movie size in bytes and the encoded movie size in bytes.
     """
-    oidx = args2.index('-i') + 1
+    oidx = args2.index("-i") + 1
     origsize = os.path.getsize(args2[oidx])
-    logging.info('running pass 1...')
-    logging.debug('pass 1: {}'.format(' '.join(args1)))
+    logging.info("running pass 1...")
+    logging.debug("pass 1: {}".format(" ".join(args1)))
     start = datetime.utcnow()
     proc = sp.run(args1, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
     if proc.returncode:
-        logging.error(f'pass 1 returned {proc.returncode}.')
+        logging.error(f"pass 1 returned {proc.returncode}.")
         return origsize, 0
     else:
         dt = end - start
         reporttime(1, dt)
-    logging.info('running pass 2...')
-    logging.debug('pass 2: {}'.format(' '.join(args2)))
+    logging.info("running pass 2...")
+    logging.debug("pass 2: {}".format(" ".join(args2)))
     start = datetime.utcnow()
     proc = sp.run(args2, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     end = datetime.utcnow()
     if proc.returncode:
-        logging.error(f'pass 2 returned {proc.returncode}.')
+        logging.error(f"pass 2 returned {proc.returncode}.")
     else:
         dt = end - start
         reporttime(2, dt)
@@ -242,9 +272,9 @@ def expectedtime(fn):
     return (
         timedelta(seconds=minsecs),
         timedelta(seconds=avgsecs),
-        timedelta(seconds=maxsecs)
+        timedelta(seconds=maxsecs),
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

@@ -34,26 +34,26 @@ def main(argv):
     sep = csvsep(lines)
     # Get the filename and remove the extension.
     fname = os.path.basename(argv[1])
-    if fname.endswith(('.csv', '.CSV')):
+    if fname.endswith((".csv", ".CSV")):
         fname = fname[:-4]
     # Create a format definition for the tabular environment.
     columns = len(lines[1].split(sep))
-    columns = 'l' * columns
+    columns = "l" * columns
     # Print the output.
-    print('% Generated from ' + str(argv[1]))
-    print('% by csv2tbl.py on ' + str(date.today()))
-    print(r'\begin{table}[!htbp]')
-    print(r'  \centering')
-    print(r'  \caption{\label{tb:' + fname + r'}' + fname + r'}')
-    print(r'  \begin{tabular}{' + columns + r'}')
-    print(r'    \toprule')
+    print("% Generated from " + str(argv[1]))
+    print("% by csv2tbl.py on " + str(date.today()))
+    print(r"\begin{table}[!htbp]")
+    print(r"  \centering")
+    print(r"  \caption{\label{tb:" + fname + r"}" + fname + r"}")
+    print(r"  \begin{tabular}{" + columns + r"}")
+    print(r"    \toprule")
     fmtcsv(lines[0], sep)
-    print(r'    \midrule')
+    print(r"    \midrule")
     for l in lines[1:]:
         fmtcsv(l, sep)
-    print(r'    \bottomrule')
-    print(r'  \end{tabular}')
-    print(r'\end{table}')
+    print(r"    \bottomrule")
+    print(r"  \end{tabular}")
+    print(r"\end{table}")
 
 
 def readlines(filename):
@@ -71,7 +71,7 @@ def readlines(filename):
     return [l.strip() for l in lines]
 
 
-def csvsep(lines, separators=',\t;:'):
+def csvsep(lines, separators=",\t;:"):
     """
     Determine the separator used in the lines of csv data.
 
@@ -85,7 +85,7 @@ def csvsep(lines, separators=',\t;:'):
     letters, sep = Counter(), Counter()
     for ln in lines:
         letters.update(ln)
-    for s in ',\t;:':
+    for s in ",\t;:":
         sep[s] = letters[s]
     return sep.most_common()[0][0]
 
@@ -102,12 +102,12 @@ def fmtcsv(line, sep):
     if len(line) == line.count(sep):
         return
     if line.endswith(sep):
-        line = line[:-len(sep)]
+        line = line[: -len(sep)]
     # Escape existing ampersands.
-    line = line.replace(r'&', r'\&')
-    outs = '    ' + line.replace(sep, r' & ') + r'\\'
+    line = line.replace(r"&", r"\&")
+    outs = "    " + line.replace(sep, r" & ") + r"\\"
     print(outs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

@@ -43,19 +43,19 @@ def main(names):  # {{{1
     # Look for required programs.
     err = sys.stderr
     try:
-        for prog in ('pkg', 'make'):
+        for prog in ("pkg", "make"):
             sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     except FileNotFoundError:
-        print('ERROR: required program “{prog}” not found', file=err)
+        print("ERROR: required program “{prog}” not found", file=err)
         sys.exit(1)
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for pkg, result in tp.map(check, names):
             if result == Comparison.SAME:
                 print(pkg)
             elif result == Comparison.UNKNOWN:
-                print(f'# “{pkg}” is unknown in the ports tree.', file=err)
+                print(f"# “{pkg}” is unknown in the ports tree.", file=err)
             else:
-                print(f'# “{pkg}” uses non-default options.', file=err)
+                print(f"# “{pkg}” uses non-default options.", file=err)
 
 
 def run(args):  # {{{1
@@ -84,14 +84,14 @@ def check(pkgname):  # {{{1
     Returns:
         A tuple of a string containing the package origin and a Comparison enum.
     """
-    optionlines = run(['pkg', 'query', '%Ok %Ov', pkgname]).splitlines()
-    options_set = set(opt.split()[0] for opt in optionlines if opt.endswith('on'))
+    optionlines = run(["pkg", "query", "%Ok %Ov", pkgname]).splitlines()
+    options_set = set(opt.split()[0] for opt in optionlines if opt.endswith("on"))
     try:
-        origin = run(['pkg', 'info', '-o', pkgname]).split()[-1]
-        os.chdir('/usr/ports/{}'.format(origin))
+        origin = run(["pkg", "info", "-o", pkgname]).split()[-1]
+        os.chdir("/usr/ports/{}".format(origin))
     except FileNotFoundError:
         return (pkgname, Comparison.UNKNOWN)
-    default = run(['make', '-V', 'OPTIONS_DEFAULT'])
+    default = run(["make", "-V", "OPTIONS_DEFAULT"])
     options_default = set(default.split())
     if options_default == options_set:
         v = Comparison.SAME
@@ -100,5 +100,5 @@ def check(pkgname):  # {{{1
     return (origin, v)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

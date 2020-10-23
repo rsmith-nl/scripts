@@ -15,6 +15,7 @@ import logging
 import os
 import subprocess as sp
 import sys
+
 # For performance measurments
 # import time
 
@@ -22,8 +23,8 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 
 __version__ = "2020.04.01"
-outdir = 'foto4lb'
-extensions = ('.jpg', '.jpeg', '.raw')
+outdir = "foto4lb"
+extensions = (".jpg", ".jpeg", ".raw")
 
 
 def main():
@@ -35,27 +36,30 @@ def main():
     count = 0
     for path in args.path:
         if os.path.exists(path + os.sep + outdir):
-            logging.warning(f'"{outdir}" already exists in "{path}", skipping this path.')
+            logging.warning(
+                f'"{outdir}" already exists in "{path}", skipping this path.'
+            )
             continue
         files = [
-            f.name for f in os.scandir(path)
+            f.name
+            for f in os.scandir(path)
             if f.is_file() and f.name.lower().endswith(extensions)
         ]
         count += len(files)
         pairs.append((path, files))
         logging.debug(f'Path: "{path}"')
-        logging.debug(f'Files: {files}')
+        logging.debug(f"Files: {files}")
     if len(pairs) == 0:
-        logging.info('nothing to do.')
+        logging.info("nothing to do.")
         return
-    logging.info(f'found {count} files.')
-    logging.info('creating output directories.')
+    logging.info(f"found {count} files.")
+    logging.info("creating output directories.")
     for dirname, _ in pairs:
         os.mkdir(dirname + os.sep + outdir)
     infodict = {
         0: "file '{}' processed.",
         1: "file '{}' is not an image, skipped.",
-        2: "error running convert on '{}'."
+        2: "error running convert on '{}'.",
     }
     # For performance measurements.
     # start = time.monotonic()
@@ -72,36 +76,36 @@ def setup():
     """Process the command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-w',
-        '--width',
+        "-w",
+        "--width",
         default=886,
         type=int,
-        help='width of the images in pixels (default 886)'
+        help="width of the images in pixels (default 886)",
     )
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
-    parser.add_argument('path', nargs='*', help='directory in which to work')
+    parser.add_argument("-v", "--version", action="version", version=__version__)
+    parser.add_argument("path", nargs="*", help="directory in which to work")
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'Command line arguments = {sys.argv}')
-    logging.debug(f'Parsed arguments = {args}')
+    logging.debug(f"Command line arguments = {sys.argv}")
+    logging.debug(f"Parsed arguments = {args}")
     if not args.path:
         parser.print_help()
         sys.exit(0)
     # Check for required programs.
     try:
-        sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.debug('found “convert”')
+        sp.run(["convert"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.debug("found “convert”")
     except FileNotFoundError:
-        logging.error('the program “convert” cannot be found')
+        logging.error("the program “convert” cannot be found")
         sys.exit(1)
     return args
 
@@ -130,17 +134,28 @@ def processfile(packed):
         for tag, value in img._getexif().items():
             decoded = TAGS.get(tag, tag)
             ld[decoded] = value
-        want = set(['DateTime', 'DateTimeOriginal', 'CreateDate', 'DateTimeDigitized'])
+        want = set(["DateTime", "DateTimeOriginal", "CreateDate", "DateTimeDigitized"])
         available = sorted(list(want.intersection(set(ld.keys()))))
-        fields = ld[available[0]].replace(' ', ':').split(':')
+        fields = ld[available[0]].replace(" ", ":").split(":")
         dt = datetime(*map(int, fields))
     except Exception:
-        logging.warning('exception raised when reading the file time.')
+        logging.warning("exception raised when reading the file time.")
         dt = datetime.today()
     args = [
-        'convert', fname, '-strip', '-resize',
-        str(newwidth), '-units', 'PixelsPerInch', '-density', '300', '-unsharp',
-        '2x0.5+0.7+0', '-quality', '80', oname
+        "convert",
+        fname,
+        "-strip",
+        "-resize",
+        str(newwidth),
+        "-units",
+        "PixelsPerInch",
+        "-density",
+        "300",
+        "-unsharp",
+        "2x0.5+0.7+0",
+        "-quality",
+        "80",
+        oname,
     ]
     rp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     if rp.returncode != 0:
@@ -153,5 +168,5 @@ def processfile(packed):
     return (fname, 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

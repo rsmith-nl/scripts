@@ -21,7 +21,7 @@ import re
 import requests
 import sys
 
-base = 'https://www.youtube.com/feeds/videos.xml?channel_id='
+base = "https://www.youtube.com/feeds/videos.xml?channel_id="
 now = datetime.datetime.now(tz=datetime.timezone.utc)
 
 # Read limit and channels from the configuration file.
@@ -39,18 +39,18 @@ now = datetime.datetime.now(tz=datetime.timezone.utc)
 # The "viewer" is also optional. If not present, it will be set to 'mpv'.
 # Note that the channelId's above are not real, they're randomly generated!
 # You can find the “channelId” in the source of the channel's homepage.
-rcpath = os.environ['HOME'] + os.sep + '.youtube-feedrc'
+rcpath = os.environ["HOME"] + os.sep + ".youtube-feedrc"
 with open(rcpath) as rc:
     settings = json.load(rc)
-    channels = settings['channels']
-    if 'limit' in settings:
-        limit = settings['limit']
+    channels = settings["channels"]
+    if "limit" in settings:
+        limit = settings["limit"]
     else:
         limit = 7
-    if 'viewer' in settings:
-        viewer = settings['viewer']
+    if "viewer" in settings:
+        viewer = settings["viewer"]
     else:
-        viewer = 'mpv'
+        viewer = "mpv"
 
 
 # Flush after every line.
@@ -59,18 +59,18 @@ sys.stdout.reconfigure(line_buffering=True)
 for channel_title, channel_id in channels.items():
     res = requests.get(base + channel_id)
     if not res.ok:
-        print(f'Could not retrieve data for “{channel_title}”, skipping it.\n')
+        print(f"Could not retrieve data for “{channel_title}”, skipping it.\n")
         continue
-    titles = re.findall('<title>(.*)</title>', res.text, re.IGNORECASE)
+    titles = re.findall("<title>(.*)</title>", res.text, re.IGNORECASE)
     links = re.findall('<link rel="alternate" href="(.*)"/>', res.text, re.IGNORECASE)
     published = [
-        datetime.datetime.fromisoformat(pt) for pt in
-        re.findall('<published>(.*)</published>', res.text, re.IGNORECASE)
+        datetime.datetime.fromisoformat(pt)
+        for pt in re.findall("<published>(.*)</published>", res.text, re.IGNORECASE)
     ]
     items = tuple(
         (html.unescape(title), link, date)
         for title, link, date in zip(titles, links, published)
-        if 'watch' in link and (now-date).days < limit
+        if "watch" in link and (now - date).days < limit
     )
     if not items:
         print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
@@ -80,7 +80,7 @@ for channel_title, channel_id in channels.items():
         print(f"∙ title: “{title}”")
         print(f"   date: {date}")
         # Instruct mpv to use youtube-dl.
-        if viewer == 'mpv':
-            link = re.sub('^https', 'ytdl', link)
+        if viewer == "mpv":
+            link = re.sub("^https", "ytdl", link)
         print(f"   view: {viewer} '{link}' &")
     print()

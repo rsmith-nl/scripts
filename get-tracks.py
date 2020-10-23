@@ -22,18 +22,18 @@ def main(argv):
     Arguments:
         argv: command line arguments
     """
-    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-    DVD = '/dev/cd1'
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    DVD = "/dev/cd1"
     if len(argv) == 0:
-        print('get-tracks version', __version__)
-        print('Example: get-tracks 3 4 5 retrieves tracks 3, 4 and 5')
+        print("get-tracks version", __version__)
+        print("Example: get-tracks 3 4 5 retrieves tracks 3, 4 and 5")
         exit(0)
     # Check for required programs.
     try:
-        sp.run(['tccat'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “tccat”')
+        sp.run(["tccat"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info("found “tccat”")
     except FileNotFoundError:
-        logging.error('the program “tccat” cannot be found')
+        logging.error("the program “tccat” cannot be found")
         sys.exit(1)
     for a in argv:
         try:
@@ -51,13 +51,13 @@ def retrieve(dvddev, num):
         dvddev: String containing the device node for the DVD.
         num: The integer number of a track to retrieve.
     """
-    args = ['tccat', '-i', dvddev, '-T', f'{num},-1', '-P']
-    trackname = f'track{num:02d}.mpg'
+    args = ["tccat", "-i", dvddev, "-T", f"{num},-1", "-P"]
+    trackname = f"track{num:02d}.mpg"
     logging.info(f'writing track {num} as "{trackname}"... ')
-    with open(trackname, 'wb') as outf:
+    with open(trackname, "wb") as outf:
         sp.run(args, stdout=outf, stderr=sp.DEVNULL)
-    logging.info('done.')
+    logging.info("done.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

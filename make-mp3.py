@@ -43,51 +43,52 @@ __version__ = "2020.04.01"
 
 def main():
     """Entry point for make-mp3."""
-    tfn = 'album.json'
+    tfn = "album.json"
     with open(tfn) as jf:
         data = json.load(jf)
     keys = data.keys()
-    for key in ['title', 'year', 'genre', 'artist', 'tracks']:
+    for key in ["title", "year", "genre", "artist", "tracks"]:
         if key not in keys:
             logging.error(f'key "{key}" not in "{tfn}"')
             sys.exit(1)
-    logging.info('album name: ' + data['title'])
-    logging.info('artist: ' + data['artist'])
-    logging.info('year: ' + str(data['year']))
-    logging.info('genre: ' + data['genre'])
-    num = len(data['tracks'])
+    logging.info("album name: " + data["title"])
+    logging.info("artist: " + data["artist"])
+    logging.info("year: " + str(data["year"]))
+    logging.info("genre: " + data["genre"])
+    num = len(data["tracks"])
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for idx, rv in tp.map(partial(runmp3, data=data), range(num)):
             tnum = idx + 1
             if rv == 0:
-                tt = data['tracks'][idx]
+                tt = data["tracks"][idx]
                 logging.info(f'finished track {tnum}, "{tt}"')
             else:
-                logging.error(f'conversion of track {tnum} failed, return code {rv}')
+                logging.error(f"conversion of track {tnum} failed, return code {rv}")
 
 
 def setup():
     """Process command-line arguments. Check for required programs."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'command line arguments = {sys.argv}')
-    logging.debug(f'parsed arguments = {args}')
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
     # Check for required programs.
     try:
-        sp.run(['lame'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “lame”')
+        sp.run(["lame"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info("found “lame”")
     except FileNotFoundError:
-        logging.error('the program “lame” cannot be found')
+        logging.error("the program “lame” cannot be found")
         sys.exit(1)
 
 
@@ -104,13 +105,28 @@ def runmp3(idx, data):
     """
     num = idx + 1
     args = [
-        'lame', '-S', '--preset', 'standard', '--tt', data['tracks'][idx], '--ta', data['artist'],
-        '--tl', data['title'], '--ty', str(data['year']), '--tn', '{:02d}'.format(num),
-        '--tg', data['genre'], f'track{num:02d}.cdda.wav', f'track{num:02d}.mp3'
+        "lame",
+        "-S",
+        "--preset",
+        "standard",
+        "--tt",
+        data["tracks"][idx],
+        "--ta",
+        data["artist"],
+        "--tl",
+        data["title"],
+        "--ty",
+        str(data["year"]),
+        "--tn",
+        "{:02d}".format(num),
+        "--tg",
+        data["genre"],
+        f"track{num:02d}.cdda.wav",
+        f"track{num:02d}.mp3",
     ]
     p = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return (idx, p.returncode)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

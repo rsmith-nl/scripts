@@ -19,7 +19,7 @@ def main():
     """Entry point for csvcolumn.py."""
     args = setup()
     for path in args.path:
-        print('file:', path)
+        print("file:", path)
         results = getdata(path, args.column, args.delimiter)
         if args.rows:
             rg = range(args.rows[0], args.rows[1] + 1)
@@ -31,17 +31,26 @@ def main():
 def setup():
     """Process command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        '-r', '--rows', nargs=2, type=int, metavar=('min', 'max'), help='only show rows min--max'
+        "-r",
+        "--rows",
+        nargs=2,
+        type=int,
+        metavar=("min", "max"),
+        help="only show rows min--max",
     )
-    parser.add_argument('-d', '--delimiter', default=';', help="delimiter to use (defaults to ';')")
-    parser.add_argument('column', type=int, help='number of the column to print (starts at 0)')
-    parser.add_argument('path', type=str, nargs='*', help='path of the file to process')
+    parser.add_argument(
+        "-d", "--delimiter", default=";", help="delimiter to use (defaults to ';')"
+    )
+    parser.add_argument(
+        "column", type=int, help="number of the column to print (starts at 0)"
+    )
+    parser.add_argument("path", type=str, nargs="*", help="path of the file to process")
     return parser.parse_args(sys.argv[1:])
 
 
-def getdata(fn, colnum, delim=';'):
+def getdata(fn, colnum, delim=";"):
     """
     Read a column of data from a CSV file.
 
@@ -61,5 +70,5 @@ def getdata(fn, colnum, delim=';'):
     return data
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

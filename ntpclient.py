@@ -38,38 +38,46 @@ def main():
     res = None
     if os.geteuid() == 0:
         time.clock_settime(time.CLOCK_REALTIME, ntptime)
-        res = 'Time set to NTP time.'
+        res = "Time set to NTP time."
     localtime = datetime.fromtimestamp(localtime)
     ntptime = datetime.fromtimestamp(ntptime)
     if not args.quiet:
-        print(f'Using server {args.server}.')
-        print(f'NTP call took approximately {roundtrip} s.')
-        print('Local time value:', localtime.strftime('%a %b %d %H:%M:%S.%f %Y.'))
-        print('NTP time value:', ntptime.strftime('%a %b %d %H:%M:%S.%f %Y.'),
-              '±', roundtrip/2, 's.')
-        print(f'Local time - ntp time: {diff:.6f} s.')
+        print(f"Using server {args.server}.")
+        print(f"NTP call took approximately {roundtrip} s.")
+        print("Local time value:", localtime.strftime("%a %b %d %H:%M:%S.%f %Y."))
+        print(
+            "NTP time value:",
+            ntptime.strftime("%a %b %d %H:%M:%S.%f %Y."),
+            "±",
+            roundtrip / 2,
+            "s.",
+        )
+        print(f"Local time - ntp time: {diff:.6f} s.")
         if res:
             print(res)
 
 
 def setup():
     """Process command-line arguments."""
-    if 'NTPSERVER' in os.environ:
-        defaultserver = os.environ['NTPSERVER']
+    if "NTPSERVER" in os.environ:
+        defaultserver = os.environ["NTPSERVER"]
     else:
-        defaultserver = 'pool.ntp.org'
+        defaultserver = "pool.ntp.org"
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        '-q',
-        '--quiet',
-        action='store_true',
+        "-q",
+        "--quiet",
+        action="store_true",
         default=False,
-        help='Suppress output (default: no)'
+        help="Suppress output (default: no)",
     )
     parser.add_argument(
-        '-s', '--server', type=str, default=defaultserver,
-        help=f'NTP server to use (default: “{defaultserver}”)'
+        "-s",
+        "--server",
+        type=str,
+        default=defaultserver,
+        help=f"NTP server to use (default: “{defaultserver}”)",
     )
     args = parser.parse_args(sys.argv[1:])
     return args
@@ -82,7 +90,7 @@ def setup():
 # * client packet = 3 (3 bits)
 # In [1]: hex((0 & 0b11) << 6 | (3 & 0b111) << 3 | (3 & 0b111))
 # Out[1]: '0x1b'
-_query = b'\x1b' + 47 * b'\0'
+_query = b"\x1b" + 47 * b"\0"
 
 
 def get_ntp_time(host="pool.ntp.org", port=123):
@@ -90,15 +98,15 @@ def get_ntp_time(host="pool.ntp.org", port=123):
     with socket(AF_INET, SOCK_DGRAM) as s:
         s.sendto(_query, (host, port))
         msg, address = s.recvfrom(1024)
-    unpacked = struct.unpack(fmt, msg[0:struct.calcsize(fmt)])
+    unpacked = struct.unpack(fmt, msg[0 : struct.calcsize(fmt)])
     # Return the average of receive and transmit timestamps.
     # Note that 2208988800 is the difference in seconds between the
     # UNIX epoch 1970-1-1 and the NTP epoch 1900-1-1.
     # See: (datetime.datetime(1970,1,1) - datetime.datetime(1900,1,1)).total_seconds()
-    t2 = unpacked[8] + float(unpacked[9]) / 2**32 - 2208988800
-    t3 = unpacked[10] + float(unpacked[11]) / 2**32 - 2208988800
+    t2 = unpacked[8] + float(unpacked[9]) / 2 ** 32 - 2208988800
+    t3 = unpacked[10] + float(unpacked[11]) / 2 ** 32 - 2208988800
     return (t2 + t3) / 2
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

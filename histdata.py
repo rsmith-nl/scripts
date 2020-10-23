@@ -40,7 +40,7 @@ def readdata(name):
     Returns:
         A tuple (counts list, length of data).
     """
-    f = open(name, 'rb')
+    f = open(name, "rb")
     data = f.read()
     f.close()
     ba = bytearray(data)
@@ -82,7 +82,7 @@ def histogram_gnuplot(counts, sz, name):
     """
     counts = [100 * c / sz for c in counts]
     rnd = 1.0 / 256 * 100
-    pl = ['set terminal pdfcairo size 18 cm,10 cm']
+    pl = ["set terminal pdfcairo size 18 cm,10 cm"]
 
     pl += ["set style line 1 lc rgb '#E41A1C' pt 1 ps 1 lt 1 lw 4"]
     pl += ["set style line 2 lc rgb '#377EB8' pt 6 ps 1 lt 1 lw 4"]
@@ -104,20 +104,22 @@ def histogram_gnuplot(counts, sz, name):
     pl += ["set grid back ls 12"]
     nm = os.path.basename(name)
     pl += [f"set output 'hist-{nm}.pdf'"]
-    pl += ['set xrange[-1:256]']
-    pl += ['set yrange[0:*]']
-    pl += ['set key right top']
+    pl += ["set xrange[-1:256]"]
+    pl += ["set yrange[0:*]"]
+    pl += ["set key right top"]
     pl += ['set xlabel "byte value"']
     pl += ['set ylabel "occurance [%]"']
-    pl += [f'rnd(x) = {rnd:.6f}']
-    pl += [f"plot '-' using 1:2 with points ls 1 title '{name}', "
-           f"rnd(x) with lines ls 2 title 'continuous uniform ({rnd:.6f}%)'"]
+    pl += [f"rnd(x) = {rnd:.6f}"]
+    pl += [
+        f"plot '-' using 1:2 with points ls 1 title '{name}', "
+        f"rnd(x) with lines ls 2 title 'continuous uniform ({rnd:.6f}%)'"
+    ]
     for n, v in enumerate(counts):
-        pl += [f'{n} {v}']
-    pl += ['e']
-    pt = '\n'.join(pl)
-    sp.run(['gnuplot'], input=pt.encode('utf-8'), check=True)
+        pl += [f"{n} {v}"]
+    pl += ["e"]
+    pt = "\n".join(pl)
+    sp.run(["gnuplot"], input=pt.encode("utf-8"), check=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

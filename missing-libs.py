@@ -34,7 +34,9 @@ def main():
     """
     args = setup()
     programs = (
-        e.path for d in args.dirs for e in os.scandir(d)
+        e.path
+        for d in args.dirs
+        for e in os.scandir(d)
         if get_type(e.path) == Ftype.executable
     )
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
@@ -46,21 +48,21 @@ def main():
 def setup():
     """Process the command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument("dirs", nargs='*', help="one or more directory to process")
+    parser.add_argument("dirs", nargs="*", help="one or more directory to process")
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'Command line arguments = {sys.argv}')
-    logging.debug(f'Parsed arguments = {args}')
+    logging.debug(f"Command line arguments = {sys.argv}")
+    logging.debug(f"Parsed arguments = {args}")
     return args
 
 
@@ -72,14 +74,14 @@ def get_type(path):
         The Ftype for the given path.
     """
     try:
-        with open(path, 'rb') as p:
+        with open(path, "rb") as p:
             data = p.read(2)
     except OSError:
         logging.warning(f"cannot access {path}")
         return Ftype.unaccessible
-    if data == b'#!':
+    if data == b"#!":
         return Ftype.script
-    elif data == b'\x7f\x45':
+    elif data == b"\x7f\x45":
         return Ftype.executable
     else:
         return Ftype.other
@@ -96,14 +98,16 @@ def check_missing_libs(path):
         A tuple of the path and a list of missing libraries.
     """
     logging.info(f"checking {path}")
-    p = sp.run(['ldd', path], stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True)
-    if 'not a dynamic executable' in p.stderr:
+    p = sp.run(["ldd", path], stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True)
+    if "not a dynamic executable" in p.stderr:
         logging.info(f'"path" is not a dynamic executable')
         rv = []
     else:
-        rv = [ln for ln in p.stdout.splitlines() if 'missing' in ln or 'not found' in ln]
+        rv = [
+            ln for ln in p.stdout.splitlines() if "missing" in ln or "not found" in ln
+        ]
     return (path, rv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

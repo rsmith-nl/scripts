@@ -32,55 +32,58 @@ def main():
     """
     args = setup()
     if not args.fn:
-        logging.error('no files to process')
+        logging.error("no files to process")
         sys.exit(1)
     if args.quality != 80:
-        logging.info(f'quality set to {args.quality}')
+        logging.info(f"quality set to {args.quality}")
     if args.level:
-        logging.info('applying level correction.')
+        logging.info("applying level correction.")
     convert_partial = partial(convert, quality=args.quality, level=args.level)
     starttime = str(datetime.now())[:-7]
-    logging.info(f'started at {starttime}.')
+    logging.info(f"started at {starttime}.")
     with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         for infn, outfn, rv in tp.map(convert_partial, args.fn):
-            logging.info(f'finished conversion of {infn} to {outfn} (returned {rv})')
+            logging.info(f"finished conversion of {infn} to {outfn} (returned {rv})")
     endtime = str(datetime.now())[:-7]
-    logging.info(f'completed at {endtime}.')
+    logging.info(f"completed at {endtime}.")
 
 
 def setup():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        '-l',
-        '--level',
-        action='store_true',
+        "-l",
+        "--level",
+        action="store_true",
         default=False,
-        help='Correct color levels (default: no)'
+        help="Correct color levels (default: no)",
     )
     parser.add_argument(
-        '-q', '--quality', type=int, default=80, help='JPEG quailty level (default: 80)'
+        "-q", "--quality", type=int, default=80, help="JPEG quailty level (default: 80)"
     )
-    parser.add_argument('fn', nargs='*', metavar='filename', help='DICOM files to process')
+    parser.add_argument(
+        "fn", nargs="*", metavar="filename", help="DICOM files to process"
+    )
     args = parser.parse_args(sys.argv[1:])
-    logging.debug(f'command line arguments = {sys.argv}')
-    logging.debug(f'parsed arguments = {args}')
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format="%(levelname)s: %(message)s",
     )
     # Check for required programs
     try:
-        sp.run(['convert'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info('found “convert”')
+        sp.run(["convert"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.info("found “convert”")
     except FileNotFoundError:
-        logging.error('the program “convert” cannot be found')
+        logging.error("the program “convert” cannot be found")
         sys.exit(1)
     return args
 
@@ -99,19 +102,29 @@ def convert(filename, quality, level):
     Returns:
         Tuple of (input filename, output filename, convert return value)
     """
-    outname = filename.strip() + '.jpg'
-    size = '1574x2048'
+    outname = filename.strip() + ".jpg"
+    size = "1574x2048"
     args = [
-        'convert', filename, '-units', 'PixelsPerInch', '-density', '300', '-crop',
-        size + '+232+0', '-page', size + '+0+0', '-auto-gamma', '-quality',
-        str(quality)
+        "convert",
+        filename,
+        "-units",
+        "PixelsPerInch",
+        "-density",
+        "300",
+        "-crop",
+        size + "+232+0",
+        "-page",
+        size + "+0+0",
+        "-auto-gamma",
+        "-quality",
+        str(quality),
     ]
     if level:
-        args += ['-level', '-35%,70%,0.5']
+        args += ["-level", "-35%,70%,0.5"]
     args.append(outname)
     cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return (filename, outname, cp.returncode)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

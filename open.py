@@ -26,8 +26,7 @@ __version__ = "2020.03.31"
 
 
 def main():  # noqa
-    """Entry point for open.
-    """
+    """Entry point for open."""
     filetypes, othertypes = readconfig()
     args = setup()
     fail = "opening '{}' failed: {}"
@@ -40,7 +39,7 @@ def main():  # noqa
         logging.info(f"trying '{nm}'")
         if not args.application:
             if isdir(nm):
-                cmds = othertypes['dir'] + [nm]
+                cmds = othertypes["dir"] + [nm]
             elif isfile(nm):
                 cmds = matchfile(filetypes, othertypes, nm)
             else:
@@ -64,29 +63,28 @@ def main():  # noqa
 
 def setup():
     """Process command-line arguments."""
-    opts = argparse.ArgumentParser(prog='open', description=__doc__)
-    opts.add_argument('-v', '--version', action='version', version=__version__)
-    opts.add_argument('-a', '--application', help='application to use')
+    opts = argparse.ArgumentParser(prog="open", description=__doc__)
+    opts.add_argument("-v", "--version", action="version", version=__version__)
+    opts.add_argument("-a", "--application", help="application to use")
     opts.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
     opts.add_argument(
-        '-n', '--noisy', action='store_true',
-        help='do not hide messages on stderr'
+        "-n", "--noisy", action="store_true", help="do not hide messages on stderr"
     )
     opts.add_argument(
-        "files", metavar='file', nargs='*', help="one or more files to process"
+        "files", metavar="file", nargs="*", help="one or more files to process"
     )
     args = opts.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.info(f'command line arguments = {sys.argv}')
-    logging.info(f'parsed arguments = {args}')
+    logging.info(f"command line arguments = {sys.argv}")
+    logging.info(f"parsed arguments = {args}")
     return args
 
 
@@ -120,10 +118,10 @@ def readconfig():
     them to suit your preferences.  It is recommended to not remove the keys
     “dir” and “txt” in “othertypes”.
     """
-    rcpath = os.environ['HOME'] + os.sep + '.openrc'
+    rcpath = os.environ["HOME"] + os.sep + ".openrc"
     with open(rcpath) as rcfile:
         config = json.load(rcfile)
-    return config['filetypes'], config['othertypes']
+    return config["filetypes"], config["othertypes"]
 
 
 def matchfile(fdict, odict, fname):
@@ -142,8 +140,8 @@ def matchfile(fdict, odict, fname):
     for k, v in fdict.items():
         if search(k, fname, IGNORECASE) is not None:
             return v + [fname]
-    if 'text' in from_file(fname):
-        return odict['txt'] + [fname]
+    if "text" in from_file(fname):
+        return odict["txt"] + [fname]
     return None
 
 
@@ -156,7 +154,9 @@ def locate(args):
             if exists(nm):
                 files.append(nm)
             else:
-                cp = sp.run(['locate', nm], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True)
+                cp = sp.run(
+                    ["locate", nm], stdout=sp.PIPE, stderr=sp.DEVNULL, text=True
+                )
                 paths = cp.stdout.splitlines()
                 if len(paths) == 1:
                     files.append(paths[0])
@@ -180,5 +180,5 @@ def locate(args):
     return files
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

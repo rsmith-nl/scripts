@@ -20,24 +20,30 @@ def main():
     args = setup()
     codec = None
     if args.text:
-        codec = 'utf-8'
+        codec = "utf-8"
     for path in args.files:
         print(to_include(path, args.compress, codec))
 
 
 def setup():
-    opts = argparse.ArgumentParser(prog='open', description=__doc__)
-    opts.add_argument('-v', '--version', action='version', version=__version__)
+    opts = argparse.ArgumentParser(prog="open", description=__doc__)
+    opts.add_argument("-v", "--version", action="version", version=__version__)
     opts.add_argument(
-        '-c', '--compress', action='store_true', default=False,
-        help='compress files before encoding (off by default)'
+        "-c",
+        "--compress",
+        action="store_true",
+        default=False,
+        help="compress files before encoding (off by default)",
     )
     opts.add_argument(
-        '-t', '--text', action='store_true', default=False,
-        help='decode the file into text (off by default)'
+        "-t",
+        "--text",
+        action="store_true",
+        default=False,
+        help="decode the file into text (off by default)",
     )
     opts.add_argument(
-        "files", metavar='file', nargs='*', help="one or more files to process"
+        "files", metavar="file", nargs="*", help="one or more files to process"
     )
     return opts.parse_args(sys.argv[1:])
 
@@ -54,21 +60,21 @@ def to_include(path, compress=False, decode=None):
         The file as a piece of Python code to reproduce its contents.
     """
     linelen = 74
-    with open(path, 'rb') as img:
+    with open(path, "rb") as img:
         data = img.read()
     if compress:
         data = zlib.compress(data, level=9)
-    data = base64.b85encode(data).decode('ascii')
+    data = base64.b85encode(data).decode("ascii")
     i = 0
-    lines = ['# ' + path]
+    lines = ["# " + path]
     if compress:
-        lines.append('data = zlib.decompress(base64.b85decode(')
-        end = '))'
+        lines.append("data = zlib.decompress(base64.b85decode(")
+        end = "))"
     else:
-        lines.append('data = base64.b85decode(')
-        end = ')'
+        lines.append("data = base64.b85decode(")
+        end = ")"
     while i < len(data):
-        lines.append("    '" + data[i:i+linelen] + "'")
+        lines.append("    '" + data[i : i + linelen] + "'")
         i += linelen
     if decode:
         lines.append(end + f'.decode("{decode}")' + os.linesep)
@@ -77,5 +83,5 @@ def to_include(path, compress=False, decode=None):
     return os.linesep.join(lines)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -33,7 +33,7 @@ import sys
 
 
 def main(args):
-    logging.basicConfig(level='INFO', format='%(levelname)s: %(message)s')
+    logging.basicConfig(level="INFO", format="%(levelname)s: %(message)s")
     if len(args) < 2:
         print(__doc__)
         exit(0)
@@ -49,8 +49,8 @@ def main(args):
 def getvars(args):
     vdict = {}
     for arg in args:
-        if '=' not in arg:
-            logging.warning('no “=” in “{arg}”; skipped')
+        if "=" not in arg:
+            logging.warning("no “=” in “{arg}”; skipped")
             continue
         exec(arg, None, vdict)
     return vdict
@@ -83,9 +83,9 @@ def mkglobals():
     def atan(num):
         return math.degrees(math.atan(num))
 
-    for k in ['e', 'pi', 'log', 'log2', 'log10', 'floor', 'ceil', 'pow', 'sqrt']:
-        rv[k] = eval('math.' + k)
-    for k in ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'round']:
+    for k in ["e", "pi", "log", "log2", "log10", "floor", "ceil", "pow", "sqrt"]:
+        rv[k] = eval("math." + k)
+    for k in ["sin", "asin", "cos", "acos", "tan", "atan", "round"]:
         rv[k] = eval(k)
 
     return rv
@@ -93,33 +93,33 @@ def mkglobals():
 
 def writefile(path, lines, globvar, overrides):
     locvar = {k: v for k, v in overrides.items()}
-    if path == '-':
+    if path == "-":
         outf = sys.stdout
     else:
-        outf = open(path, 'w')
+        outf = open(path, "w")
         outf.reconfigure(newline=os.linesep)
     for num, line in lines:
         outline = line
-        expr = re.findall('<[^@<>]*>', line)
+        expr = re.findall("<[^@<>]*>", line)
         for e in expr:
-            if '=' in e:
+            if "=" in e:
                 rep = e[1:-1]
                 exec(e[1:-1], globvar, locvar)
                 for k in overrides.keys():
                     if k in locvar and locvar[k] != overrides[k]:
                         locvar[k] = overrides[k]
-                        logging.info(f'{k} overridden by command line on line {num}')
-                        rep = f'{k} = {overrides[k]}'
+                        logging.info(f"{k} overridden by command line on line {num}")
+                        rep = f"{k} = {overrides[k]}"
                 outline = outline.replace(e, rep)
             else:
                 try:
                     res = str(eval(e[1:-1], globvar, locvar))
                     outline = outline.replace(e, res)
                 except (NameError, TypeError) as err:
-                    logging.error(f'line {num}, evaluating {e} ' + str(err))
+                    logging.error(f"line {num}, evaluating {e} " + str(err))
         outf.write(outline)
     outf.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

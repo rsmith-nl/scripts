@@ -26,7 +26,13 @@ def main(argv):
     try:
         for fn in files:
             args = [
-                'git', '--no-pager', 'log', '--diff-filter=A', '--format=%ai', '--', fn
+                "git",
+                "--no-pager",
+                "log",
+                "--diff-filter=A",
+                "--format=%ai",
+                "--",
+                fn,
             ]
             cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, text=True, check=True)
             # Sometimes this git command will return *multiple dates*!
@@ -49,5 +55,5 @@ def setup():
     return sys.argv[1:]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -28,42 +28,45 @@ def main():
     """
     args = setup()
     if not args.files:
-        args.files = ['/var/log/security']
-    reps = '  IP: {:16s} port: {:10s} rule: {}'
+        args.files = ["/var/log/security"]
+    reps = "  IP: {:16s} port: {:10s} rule: {}"
     serv = services()
     for f in args.files:
-        print('File:', f)
+        print("File:", f)
         try:
             matches = parselogfile(f)
         except FileNotFoundError as e:
             print(e)
             continue
         if not matches:
-            print('  Nothing to report.')
+            print("  Nothing to report.")
             continue
         for rule, IP, port in matches:
-            print(reps.format(IP + ',', serv[int(port)] + ',', rule))
+            print(reps.format(IP + ",", serv[int(port)] + ",", rule))
 
 
 def setup():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
-    args =  parser.parse_args(sys.argv[1:])
+    parser.add_argument(
+        "files", metavar="file", nargs="*", help="one or more files to process"
+    )
+    args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
-        level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+        level=getattr(logging, args.log.upper(), None),
+        format="%(levelname)s: %(message)s",
     )
     return args
 
 
-def services(filename='/etc/services'):
+def services(filename="/etc/services"):
     """
     Generate a dictionary of the available services from /etc/services.
 
@@ -75,7 +78,7 @@ def services(filename='/etc/services'):
     """
     with open(filename) as serv:
         data = serv.read()
-    matches = re.findall('\n' + r'(\S+)\s+(\d+)/', data)
+    matches = re.findall("\n" + r"(\S+)\s+(\d+)/", data)
     return {int(num): name for name, num in set(matches)}
 
 
@@ -89,16 +92,17 @@ def parselogfile(filename):
     Returns:
         A tuple of (rule, source IP, port) tuples
     """
-    if filename.endswith('.bz2'):
-        df = bz2.open(filename, 'rt')
+    if filename.endswith(".bz2"):
+        df = bz2.open(filename, "rt")
     else:
         df = open(filename)
     data = df.read()
     df.close()
-    patt = r'ipfw: (\d+) Deny (?:\S+) ' \
-           r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in'
+    patt = (
+        r"ipfw: (\d+) Deny (?:\S+) " r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+).*in"
+    )
     return tuple(set(re.findall(patt, data)))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

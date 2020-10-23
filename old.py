@@ -32,13 +32,15 @@ def main():
             continue
         if dirname.endswith(os.sep):
             dirname = dirname[:-1]
-        dt = datetime.now().strftime('-%Y%m%dT%H%M')
-        if dirname.startswith('.'):
-            newname = ''.join(['old-dot', dirname[1:], dt])
+        dt = datetime.now().strftime("-%Y%m%dT%H%M")
+        if dirname.startswith("."):
+            newname = "".join(["old-dot", dirname[1:], dt])
         else:
-            newname = ''.join(['old-', dirname, dt])
+            newname = "".join(["old-", dirname, dt])
         if os.path.exists(newname):
-            logging.warning(f"'{newname}' already exists. Skipping rename of '{dirname}'.")
+            logging.warning(
+                f"'{newname}' already exists. Skipping rename of '{dirname}'."
+            )
             continue
         os.rename(dirname, newname)
 
@@ -49,9 +51,9 @@ def setup():
         print(f"{binary} ver. {__version__}", file=sys.stderr)
         print(f"Usage: {binary} directory ...", file=sys.stderr)
         sys.exit(1)
-    logging.basicConfig(format='%(levelname)s: %(message)s')
+    logging.basicConfig(format="%(levelname)s: %(message)s")
     return sys.argv[1:]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

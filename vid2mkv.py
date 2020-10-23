@@ -40,42 +40,42 @@ def main():
 def setup():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-q',
-        '--videoquality',
+        "-q",
+        "--videoquality",
         type=int,
         default=6,
-        help='video quality (0-10, default 6)'
+        help="video quality (0-10, default 6)",
     )
     parser.add_argument(
-        '-a',
-        '--audioquality',
+        "-a",
+        "--audioquality",
         type=int,
         default=3,
-        help='audio quality (0-10, default 3)'
+        help="audio quality (0-10, default 3)",
     )
     parser.add_argument(
-        '--log',
-        default='warning',
-        choices=['debug', 'info', 'warning', 'error'],
-        help="logging level (defaults to 'warning')"
+        "--log",
+        default="warning",
+        choices=["debug", "info", "warning", "error"],
+        help="logging level (defaults to 'warning')",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        "files", metavar='file', nargs='+', help="one or more files to process"
+        "files", metavar="file", nargs="+", help="one or more files to process"
     )
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
-        format='%(levelname)s: %(message)s'
+        format="%(levelname)s: %(message)s",
     )
-    logging.debug(f'command line arguments = {args}')
-    logging.debug(f'parsed arguments = {args}')
+    logging.debug(f"command line arguments = {args}")
+    logging.debug(f"parsed arguments = {args}")
     # Check for required programs.
     try:
-        sp.run(['ffmpeg'], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.debug('found “ffmpeg”')
+        sp.run(["ffmpeg"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        logging.debug("found “ffmpeg”")
     except FileNotFoundError:
-        logging.error('the “ffmpeg” program cannot be found')
+        logging.error("the “ffmpeg” program cannot be found")
         sys.exit(1)
     return args
 
@@ -94,22 +94,42 @@ def runencoder(fname, vq, aq):
     """
     basename, ext = os.path.splitext(fname)
     known = [
-        '.mp4', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.mov', '.ogv', '.mkv', '.webm',
-        '.gif'
+        ".mp4",
+        ".avi",
+        ".wmv",
+        ".flv",
+        ".mpg",
+        ".mpeg",
+        ".mov",
+        ".ogv",
+        ".mkv",
+        ".webm",
+        ".gif",
     ]
     if ext.lower() not in known:
         return (fname, -1)
-    ofn = basename + '.mkv'
+    ofn = basename + ".mkv"
     args = [
-        'ffmpeg', '-i', fname, '-c:v', 'libtheora', '-q:v',
-        str(vq), '-c:a', 'libvorbis', '-q:a',
-        str(aq), '-sn', '-y', ofn
+        "ffmpeg",
+        "-i",
+        fname,
+        "-c:v",
+        "libtheora",
+        "-q:v",
+        str(vq),
+        "-c:a",
+        "libvorbis",
+        "-q:a",
+        str(aq),
+        "-sn",
+        "-y",
+        ofn,
     ]
-    logging.debug(' '.join(args))
+    logging.debug(" ".join(args))
     logging.info(f'starting conversion of "{fname}".')
     cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
     return fname, cp.returncode
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -23,7 +23,7 @@ from offsetsrt import str2ms, ms2str
 def test_rndcaps():
     rv = rndcaps(20)
     assert len(rv) == 20
-    assert all(j in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' for j in rv)
+    assert all(j in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" for j in rv)
     v = Counter(rndcaps(100000)).values()
     mxc = max(v)
     mnc = min(v)
@@ -55,8 +55,8 @@ def test_genpw():
 
 
 def test_fixname():
-    rv = fixname('dit is  een\ttest')
-    assert rv == 'dit_is_een_test'
+    rv = fixname("dit is  een\ttest")
+    assert rv == "dit_is_een_test"
 
 
 def test_srt():

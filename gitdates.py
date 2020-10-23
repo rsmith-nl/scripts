@@ -18,17 +18,19 @@ import time
 
 def main():
     """Entry point for gitdates."""
-    logging.basicConfig(level='WARNING', format='%(levelname)s: %(message)s')
+    logging.basicConfig(level="WARNING", format="%(levelname)s: %(message)s")
     # List of all files
     allfiles = []
     # Get a list of excluded files.
-    if '.git' not in os.listdir('.'):
-        logging.error('This directory is not managed by git.')
+    if ".git" not in os.listdir("."):
+        logging.error("This directory is not managed by git.")
         sys.exit(0)
-    exargs = ['git', 'ls-files', '-i', '-o', '--exclude-standard']
-    exc = sp.run(exargs, universal_newlines=True, stdout=sp.PIPE, stderr=sp.DEVNULL).stdout.split()
-    for root, dirs, files in os.walk('.'):
-        for d in ['.git', '__pycache__']:
+    exargs = ["git", "ls-files", "-i", "-o", "--exclude-standard"]
+    exc = sp.run(
+        exargs, universal_newlines=True, stdout=sp.PIPE, stderr=sp.DEVNULL
+    ).stdout.split()
+    for root, dirs, files in os.walk("."):
+        for d in [".git", "__pycache__"]:
             try:
                 dirs.remove(d)
             except ValueError:
@@ -41,10 +43,10 @@ def main():
     filedata = [r for r in res if r is not None]
     # Sort the data (latest modified first) and print it
     filedata.sort(key=lambda a: a[2], reverse=True)
-    dfmt = '%Y-%m-%d %H:%M:%S %Z'
+    dfmt = "%Y-%m-%d %H:%M:%S %Z"
     for name, tag, date in filedata:
         ds = time.strftime(dfmt, date)
-        print(f'{name}|{tag}|{ds}')
+        print(f"{name}|{tag}|{ds}")
 
 
 def filecheck(fname):
@@ -61,13 +63,15 @@ def filecheck(fname):
         A 3-tuple containing the file name, latest short hash and latest
         commit date.
     """
-    args = ['git', '--no-pager', 'log', '-1', '--format=%h|%at', fname]
+    args = ["git", "--no-pager", "log", "-1", "--format=%h|%at", fname]
     try:
-        b = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, universal_newlines=True, check=True).stdout
+        b = sp.run(
+            args, stdout=sp.PIPE, stderr=sp.DEVNULL, universal_newlines=True, check=True
+        ).stdout
         if len(b) == 0:
             return None
         data = b[:-1]
-        h, t = data.split('|')
+        h, t = data.split("|")
         out = (fname[2:], h, time.gmtime(float(t)))
     except (sp.CalledProcessError, ValueError):
         logging.error('git log failed for "{}"'.format(fname))
@@ -75,5 +79,5 @@ def filecheck(fname):
     return out
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

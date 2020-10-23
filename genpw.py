@@ -29,7 +29,7 @@ def main():
         if args.groupby > 0:
             n = args.groupby
             count = len(pw) // n
-            pw = ' '.join([pw[k:k + n] for k in range(0, n * count, n)])
+            pw = " ".join([pw[k : k + n] for k in range(0, n * count, n)])
         print(pw)
 
 
@@ -37,28 +37,28 @@ def setup():
     """Process command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '-l',
-        '--length',
+        "-l",
+        "--length",
         default=16,
         type=int,
-        help='# of random character for password (default 16)'
+        help="# of random character for password (default 16)",
     )
     parser.add_argument(
-        '-r',
-        '--repeat',
+        "-r",
+        "--repeat",
         default=1,
         type=int,
-        help='number of passwords to generate (default: 1)'
+        help="number of passwords to generate (default: 1)",
     )
     parser.add_argument(
-        '-g',
-        '--groupby',
+        "-g",
+        "--groupby",
         default=0,
-        metavar='N',
+        metavar="N",
         type=int,
-        help='group by N characters (default: 0; no grouping)'
+        help="group by N characters (default: 0; no grouping)",
     )
-    parser.add_argument('-v', '--version', action='version', version=__version__)
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     return parser.parse_args(sys.argv[1:])
 
 
@@ -74,7 +74,7 @@ def genpw(length):
     """
     n = roundup(length)
     d = os.urandom(n)
-    return base64.b64encode(d, b'__').decode()[:length]
+    return base64.b64encode(d, b"__").decode()[:length]
 
 
 def roundup(characters):
@@ -93,9 +93,9 @@ def roundup(characters):
     upto = 24
     rem = bits % upto
     if rem:
-        bits += (upto - rem)
+        bits += upto - rem
     return int(bits / 8)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

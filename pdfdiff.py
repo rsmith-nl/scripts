@@ -20,11 +20,11 @@ import sys
 
 # Standard ANSI colors.
 fgcolor = SimpleNamespace(
-    brightred='\033[31;1m',
-    brightgreen='\033[32;1m',
-    brightyellow='\033[33;1m',
-    brightmagenta='\033[35;1m',
-    reset='\033[0m'
+    brightred="\033[31;1m",
+    brightgreen="\033[32;1m",
+    brightyellow="\033[33;1m",
+    brightmagenta="\033[35;1m",
+    reset="\033[0m",
 )
 
 
@@ -36,14 +36,14 @@ def main(argv):
         argv: command line arguments
     """
     if len(argv) != 2:
-        print('Usage: pdfdiff.py first second')
+        print("Usage: pdfdiff.py first second")
         sys.exit(1)
     tmpnam = []
     for j in range(2):
-        tmpnam.append(binascii.hexlify(os.urandom(10)).decode('ascii') + '.txt')
-        with open(tmpnam[j], 'w') as f:
+        tmpnam.append(binascii.hexlify(os.urandom(10)).decode("ascii") + ".txt")
+        with open(tmpnam[j], "w") as f:
             f.write(pdftotext(argv[j]))
-    diffargs = ['diff', '-d', '-u', '-w'] + tmpnam
+    diffargs = ["diff", "-d", "-u", "-w"] + tmpnam
     result = sp.run(diffargs, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     lines = result.stdout.splitlines()
     os.remove(tmpnam[0])
@@ -60,7 +60,7 @@ def pdftotext(path):
     """
     Generate a text rendering of a PDF file in the form of a list of lines.
     """
-    args = ['pdftotext', '-layout', path, '-']
+    args = ["pdftotext", "-layout", path, "-"]
     cp = sp.run(args, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     return cp.stdout
 
@@ -74,20 +74,20 @@ def colordiff(txt):
     """
     for line in txt:
         line = line.rstrip()
-        if line.startswith(('+++ ', '--- ')):
+        if line.startswith(("+++ ", "--- ")):
             print(fgcolor.brightyellow, line)
             continue
-        if line.startswith('+'):
+        if line.startswith("+"):
             print(fgcolor.brightgreen, line)
             continue
-        if line.startswith('-'):
+        if line.startswith("-"):
             print(fgcolor.brightred, line)
             continue
-        if line.startswith('@@'):
+        if line.startswith("@@"):
             print(fgcolor.brightmagenta, line)
             continue
         print(fgcolor.reset, line)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

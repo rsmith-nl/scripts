@@ -18,47 +18,47 @@ import sys
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
-    '--log',
-    default='warning',
-    choices=['debug', 'info', 'warning', 'error'],
-    help="logging level (defaults to 'warning')"
+    "--log",
+    default="warning",
+    choices=["debug", "info", "warning", "error"],
+    help="logging level (defaults to 'warning')",
 )
 parser.add_argument(
-    'filenames', nargs='*', metavar='filename', help='TeX files to process'
+    "filenames", nargs="*", metavar="filename", help="TeX files to process"
 )
 args = parser.parse_args(sys.argv[1:])
 logging.basicConfig(
-    level=getattr(logging, args.log.upper(), None), format='%(levelname)s: %(message)s'
+    level=getattr(logging, args.log.upper(), None), format="%(levelname)s: %(message)s"
 )
 
 if not args.filenames:
-    logging.warning('no filenames given')
+    logging.warning("no filenames given")
     sys.exit(1)
 
 for infn in args.filenames:
-    logging.debug(f'processing file {infn}')
-    if not infn.endswith('.tex'):
-        logging.error(f'{infn} is not a TeX file; skipping')
+    logging.debug(f"processing file {infn}")
+    if not infn.endswith(".tex"):
+        logging.error(f"{infn} is not a TeX file; skipping")
         continue  # Skip.
 
-    outfn = infn[:-4] + '.hash'
+    outfn = infn[:-4] + ".hash"
 
-    logcmd = ['git', '--no-pager', 'log', '-1', '--pretty=format:%h', infn]
+    logcmd = ["git", "--no-pager", "log", "-1", "--pretty=format:%h", infn]
     cp = sp.run(logcmd, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     logdata = cp.stdout
     logging.debug(f'logdata: "{logdata}"')
 
-    statcmd = ['git', '--no-pager', 'status', '-s', '--', infn]
+    statcmd = ["git", "--no-pager", "status", "-s", "--", infn]
     cp = sp.run(statcmd, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     statdata = cp.stdout[:2].strip()
     logging.debug(f'statdata: "{statdata}"')
 
     if statdata:
-        logdata = logdata + r'\,\textcolor{red}{' + statdata + r'}%'
-        logging.info(f'{infn} has unrecorded changes')
+        logdata = logdata + r"\,\textcolor{red}{" + statdata + r"}%"
+        logging.info(f"{infn} has unrecorded changes")
     else:
-        logdata += '%'
+        logdata += "%"
 
-    with open(outfn, 'wt') as outf:
+    with open(outfn, "wt") as outf:
         outf.write(logdata)
         logging.info(f'wrote "{outfn}"')
