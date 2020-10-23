@@ -17,7 +17,9 @@ def get_req(wheel):
     name = [nm for nm in z.namelist() if nm.endswith("METADATA")][0]
     with z.open(name) as f:
         data = f.read().decode().splitlines()
-    requirements = [ln.split(maxsplit=1)[1] for ln in data if ln.startswith('Requires-Dist:')]
+    requirements = [
+        ln.split(maxsplit=1)[1] for ln in data if ln.startswith("Requires-Dist:")
+    ]
     return requirements
 
 
