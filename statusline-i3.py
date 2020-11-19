@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2020-04-01T20:53:40+0200
+# Last modified: 2020-11-19T12:33:40+0100
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -359,7 +359,14 @@ def cpu(storage):
 def battery():
     """Return battery condition as a string."""
     # Battery states acc. to /usr/src/sys/dev/acpica/acpiio.h
-    lookup = {0: "on AC", 1: "discharging", 2: "charging", 3: "invalid", 4: "CRITICAL!"}
+    lookup = {
+        0: "on AC",
+        1: "discharging",
+        2: "charging",
+        3: "invalid",
+        4: "CRITICAL!",
+        7: "unknown",
+    }
     idx = sysctlbyname("hw.acpi.battery.state", convert=to_int)
     state = lookup[idx]
     percent = sysctlbyname("hw.acpi.battery.life", convert=to_int)
