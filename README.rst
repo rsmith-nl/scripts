@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-08-15T21:46:18+0200
+.. Last modified: 2020-12-13T22:50:19+0100
 
 Introduction
 ============
@@ -70,6 +70,16 @@ The aim is to have no warnings or errors.
 The programs
 ============
 
+
+all-git.py
+----------
+
+This script traverses all the directories under the current directory.
+If it finds a directory that is managed by git_, it runs ``git log`` to get
+the time and hash of the latest commit.
+This is then printed followed by the directory name.
+
+.. _git: http://git-scm.com/
 
 blocklist.py
 ------------
@@ -232,7 +242,6 @@ a tar-file. The name of the backup file generally consists of;
 * the date in the form YYYYMMDD,
 * the short hash-tag if the directory is managed by git_.
 
-.. _git: http://git-scm.com/
 
 These parts are separated by dashes, and the file gets the ``.tar`` extension.
 It requires the ``tar`` program. Tested with FreeBSD's tar. Should work with
