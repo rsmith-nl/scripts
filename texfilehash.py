@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: texfilehash.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-28T16:13:39+0200
-# Last modified: 2019-11-15T17:02:52+0100
+# Last modified: 2020-12-16T00:24:48+0100
 """
 Create a file containing the abbreviated git commit hash for TeX source files.
 If the file has uncommitted changes, it appends the status in red text.

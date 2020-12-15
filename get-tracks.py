@@ -1,45 +1,18 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: get-tracks.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-09-10T12:15:13+02:00
-# Last modified: 2019-07-30T15:31:11+0200
+# Last modified: 2020-12-16T00:25:11+0100
 """Retrieve the numbered tracks from a dvd."""
 
 import logging
 import sys
 import subprocess as sp
 
-__version__ = "2019.07.30"
-
-
-def main(argv):
-    """
-    Entry point for get-tracks.py.
-
-    Arguments:
-        argv: command line arguments
-    """
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    DVD = "/dev/cd1"
-    if len(argv) == 0:
-        print("get-tracks version", __version__)
-        print("Example: get-tracks 3 4 5 retrieves tracks 3, 4 and 5")
-        exit(0)
-    # Check for required programs.
-    try:
-        sp.run(["tccat"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info("found “tccat”")
-    except FileNotFoundError:
-        logging.error("the program “tccat” cannot be found")
-        sys.exit(1)
-    for a in argv:
-        try:
-            retrieve(DVD, int(a))
-        except ValueError:
-            print(f'"{a}" is not an integer, skipping')
+__version__ = "2020.12.16"
 
 
 def retrieve(dvddev, num):
@@ -59,5 +32,24 @@ def retrieve(dvddev, num):
     logging.info("done.")
 
 
-if __name__ == "__main__":
-    main(sys.argv[1:])
+# Main program.
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+DVD = "/dev/cd1"
+args = sys.argv[1:]
+if len(args) == 0:
+    print("get-tracks version", __version__)
+    print("Example: get-tracks 3 4 5 retrieves tracks 3, 4 and 5")
+    exit(0)
+# Check for required programs.
+try:
+    sp.run(["tccat"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    logging.info("found “tccat”")
+except FileNotFoundError:
+    logging.error("the program “tccat” cannot be found")
+    sys.exit(1)
+# Retrieve tracks.
+for a in args:
+    try:
+        retrieve(DVD, int(a))
+    except ValueError:
+        print(f'"{a}" is not an integer, skipping')
