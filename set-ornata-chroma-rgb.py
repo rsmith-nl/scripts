@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: set-ornata-chroma-rgb.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #

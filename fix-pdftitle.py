@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: fix-pdftitle.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #

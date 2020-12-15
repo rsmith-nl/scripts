@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: git-check-all.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #

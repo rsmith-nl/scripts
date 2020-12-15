@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: statusline-i3.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #

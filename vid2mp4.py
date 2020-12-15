@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: vid2mp4.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #

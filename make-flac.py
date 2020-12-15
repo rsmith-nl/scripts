@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: make-flac.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
