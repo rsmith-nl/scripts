@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2020-04-01T18:17:07+0200
+# Last modified: 2020-12-18T17:00:36+0100
 """
 Fix PDF file titles.
 
@@ -23,7 +23,7 @@ import subprocess as sp
 import sys
 import tempfile
 
-__version__ = "2020.04.01"
+__version__ = "2020.12.18"
 
 
 def main():
@@ -74,8 +74,8 @@ def setup():
         logging.debug("using verbose logging")
     # Look for required programs.
     try:
-        for prog in ("pdfinfo", "gs", "qpdf"):
-            sp.run([prog], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        for prog in (["pdfinfo"], ["gs", "-v"], ["qpdf"]):
+            sp.run(prog, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
             logging.debug(f"found “{prog}”")
     except FileNotFoundError:
         logging.error("required program “{prog}” not found")
@@ -140,8 +140,9 @@ def set_title(path, fn, tempdir, newtitle):
     orig = os.getcwd()
     os.chdir(tempdir)
     with open("pdfmarks", "w") as marksfile:
-        marks = "[ /Title ({})\n  /ModDate (D:{:%Y%m%d%H%M%z})\n  /DOCINFO pdfmark"
-        marksfile.write(marks.format(newtitle), datetime.now())
+        marks = f"[ /Title ({newtitle})\n  /ModDate ({datetime.now():%Y%m%d%H%M%z})\n  /DOCINFO pdfmark"
+        marksfile.write(marks)
+        logging.debug(marks)
     args = [
         "gs",
         "-q",
@@ -149,21 +150,23 @@ def set_title(path, fn, tempdir, newtitle):
         "-dNOPAUSE",
         "-sDEVICE=pdfwrite",
         "-sOutputFile=withmarks.pdf",
-        path,
+        orig+os.sep+path,
         "pdfmarks",
     ]
-    rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+    logging.debug(args)
+    rv = sp.run(args, stdout=sp.DEVNULL, stderr=sp.PIPE)
     os.remove("pdfmarks")
     os.chdir(orig)
     if rv.returncode != 0:
         os.remove(tempdir + os.sep + "withmarks.pdf")
+        logging.debug(rv.stderr)
         logging.error(
             f"could not change title of “{path}”; ghostscript returned {rv.returncode}"
         )
     else:
         try:
             os.remove(path)
-            os.rename(tempdir + os.sep + "withmarks.pdf", path)
+            shutil.copy(tempdir + os.sep + "withmarks.pdf", path)
             logging.info(f"title of “{path}” changed")
         except OSError as e:
             logging.error(f"could not rename withmarks.pdf to “{path}”: {e}")
