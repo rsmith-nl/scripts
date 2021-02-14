@@ -5,27 +5,34 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2020-04-01T00:07:04+0200
+# Last modified: 2021-02-14T15:57:38+0100
 """
 Generate random passwords.
 
-The passwords are random data from ``os.urandom`` which is encoded in base64
+The passwords are random data from ``os.urandom`` which is encoded in a chosen
 format.
 """
 
 import argparse
 import base64
-import os
+import secrets
 import sys
 
-__version__ = "2020.04.01"
+__version__ = "2021.02.14"
 
 
 def main():
     """Entry point for genpw."""
     args = setup()
+    encoder_choice = {
+        "base64": base64.b64encode,
+        "base64-urlsafe": base64.urlsafe_b64encode,
+        "ascii85": base64.a85encode,
+        "base85": base64.b85encode,
+    }
+    encoder = encoder_choice[args.encoding]
     for _ in range(args.repeat):
-        pw = genpw(args.length)
+        pw = genpw(args.length, encoder)
         if args.groupby > 0:
             n = args.groupby
             count = len(pw) // n
@@ -41,7 +48,14 @@ def setup():
         "--length",
         default=16,
         type=int,
-        help="# of random character for password (default 16)",
+        help="# of random characters for password (default 16)",
+    )
+    parser.add_argument(
+        "-e",
+        "--encoding",
+        choices=["base64", "base64-urlsafe", "ascii85", "base85"],
+        default="base64-urlsafe",
+        help="encoding for password (default base64-urlsafe)",
     )
     parser.add_argument(
         "-r",
@@ -62,39 +76,19 @@ def setup():
     return parser.parse_args(sys.argv[1:])
 
 
-def genpw(length):
+def genpw(length, encoder):
     """
     Generate a random password.
 
     Arguments:
         length: Length of the requested password.
+        encoder: function to encode the bytes data.
 
     Returns:
         A password string.
     """
-    n = roundup(length)
-    d = os.urandom(n)
-    return base64.b64encode(d, b"__").decode()[:length]
-
-
-def roundup(characters):
-    """
-    Prevent '=' at the end of base64 encoded strings.
-
-    This is done by rounding up the number of characters.
-
-    Arguments:
-        characters: The number of requested (8-bit) characters.
-
-    Returns:
-        The revised number.
-    """
-    bits = characters * 6
-    upto = 24
-    rem = bits % upto
-    if rem:
-        bits += upto - rem
-    return int(bits / 8)
+    d = secrets.token_bytes(2*length)
+    return encoder(d).decode()[:length]
 
 
 if __name__ == "__main__":
