@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2020-03-31T23:50:43+0200
+# Last modified: 2021-02-28T16:56:32+0100
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -285,7 +285,7 @@ def mkargs(
         args += ["-c:a", "libvorbis", "-q:a", "3"]
     args += ["-f", "webm"]
     if not subt:  # SRT file
-        args += [f"-map", "0:v", "-map", "0:a:{atrack}"]
+        args += ["-map", "0:v", "-map", f"0:a:{atrack}"]
         vf = []
         if subf:
             vf = [f"subtitles={subf}"]
