@@ -4,8 +4,8 @@
 #
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2021-02-28T13:49:42+0100
-# Last modified: 2021-02-28T16:01:05+0100
-"""Update the DOCINFO directory in a PDF file."""
+# Last modified: 2021-02-28T16:13:37+0100
+"""Update the DOCINFO directory in a PDF file using ghostscript."""
 
 from datetime import datetime as dt
 import argparse
@@ -29,9 +29,6 @@ def main():
     with tempfile.TemporaryDirectory() as path:
         docinfo = mkdocinfo(args, path)
         # print(f"DEBUG: docinfo = {docinfo}")
-        with open(docinfo) as di:
-            for ln in di:
-                print(ln.strip())
         try:
             cp = sp.run(
                 [
