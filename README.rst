@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2020-12-13T22:50:19+0100
+.. Last modified: 2021-02-28T16:03:00+0100
 
 Introduction
 ============
@@ -631,6 +631,12 @@ pdfselect.sh
 
 Select consecutive pages from a PDF document and put them in a separate
 document. Requires ghostscript_.
+
+
+pdfsetinfo
+----------
+
+Update the DOCINFO dictionary in a PDF file with the given values.
 
 
 pdftopdf.sh
