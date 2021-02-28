@@ -6,8 +6,9 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-11-15T22:05:09+0100
-# Last modified: 2018-11-17T12:36:34+0100
+# Last modified: 2021-02-28T20:49:59+0100
 
+set -e
 
 RES=300
 DEV=png16m

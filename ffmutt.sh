@@ -5,5 +5,5 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2018-04-16T21:55:39+0200
-exec urxvt -e sh -c "mutt $$@"
+# Last modified: 2021-02-28T20:44:51+0100
+exec st -e sh -c "mutt $$@"

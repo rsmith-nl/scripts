@@ -6,7 +6,9 @@
 # Copyright © 2015 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2020-08-15T14:27:20+0200
+# Last modified: 2021-02-28T20:46:39+0100
+
+set -e
 
 # Check for arguments
 if [ -z "$1" ]; then

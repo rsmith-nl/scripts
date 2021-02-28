@@ -8,7 +8,9 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2020-07-12T13:53:59+0200
-# Last modified: 2020-07-25T16:54:26+0200
+# Last modified: 2021-02-28T20:48:30+0100
+
+set -e
 
 # Locations of binaries.
 MIXER=/usr/sbin/mixer

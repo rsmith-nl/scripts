@@ -6,7 +6,9 @@
 # Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-14 19:25:57 +0200
-# Last modified: 2020-08-15T14:28:17+0200
+# Last modified: 2021-02-28T20:46:58+0100
+
+set -e
 
 RES=150 # Scanner resolution
 PAGE=a4 # Page size

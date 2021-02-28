@@ -5,7 +5,9 @@
 # Copyright © 2014-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-02-27T00:15:14+0100
-# Last modified: 2019-07-08T17:09:15+0200
+# Last modified: 2021-02-28T20:47:59+0100
+
+set -e
 
 if [ $# -lt 1 ]; then
     echo "Usage: $(basename $0) file"

@@ -5,7 +5,9 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2020-08-15T14:20:52+0200
+# Last modified: 2021-02-28T20:45:20+0100
+
+set -e
 
 if [ -z $1 ]; then
    echo "Error: you must give a number of days as the argument."

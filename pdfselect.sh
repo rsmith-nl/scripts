@@ -5,7 +5,9 @@
 # Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2020-08-15T14:29:07+0200
+# Last modified: 2021-02-28T20:47:39+0100
+
+set -e
 
 if [ $# -lt 3 ]; then
     echo "Usage: $(basename $0) N M file"
