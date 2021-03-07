@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-02-28T16:03:00+0100
+.. Last modified: 2021-03-07T14:14:42+0100
 
 Introduction
 ============
@@ -184,6 +184,19 @@ format. Using command-line arguments the resolution and the type of PNG file
 can be changed.
 
 .. _ghostscript: http://www.ghostscript.com/
+
+epubinfo
+--------
+
+Extract and print the metadata from an epub_ file, a standardized_ form of
+book readable on a computer, tablet or other compatible device.
+
+The metadata is contained in a file traditionally named ``content.opf``, which
+might or might not be located in the root directory of the zip-file that is an
+epub.
+
+.. _epub: https://en.wikipedia.org/wiki/EPUB
+.. _standardized: https://www.w3.org/publishing/epub32/
 
 
 ffmutt.sh
