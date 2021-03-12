@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2020-03-07T08:54:01+0100
+# Last modified: 2021-03-12T23:15:09+0100
 """Get the latest video's from your favorite youtube channels.
 
     This script now generates commands for the mpv viewer that force it
@@ -18,7 +18,7 @@ import html
 import json
 import os
 import re
-import requests
+import urllib.request
 import sys
 
 base = "https://www.youtube.com/feeds/videos.xml?channel_id="
@@ -57,15 +57,17 @@ with open(rcpath) as rc:
 sys.stdout.reconfigure(line_buffering=True)
 # Retrieve and print video information
 for channel_title, channel_id in channels.items():
-    res = requests.get(base + channel_id)
-    if not res.ok:
+    with urllib.request.urlopen(base + channel_id) as con:
+        text = con.read().decode('utf-8')
+        rv = con.code
+    if not rv == 200:
         print(f"Could not retrieve data for “{channel_title}”, skipping it.\n")
         continue
-    titles = re.findall("<title>(.*)</title>", res.text, re.IGNORECASE)
-    links = re.findall('<link rel="alternate" href="(.*)"/>', res.text, re.IGNORECASE)
+    titles = re.findall("<title>(.*)</title>", text, re.IGNORECASE)
+    links = re.findall('<link rel="alternate" href="(.*)"/>', text, re.IGNORECASE)
     published = [
         datetime.datetime.fromisoformat(pt)
-        for pt in re.findall("<published>(.*)</published>", res.text, re.IGNORECASE)
+        for pt in re.findall("<published>(.*)</published>", text, re.IGNORECASE)
     ]
     items = tuple(
         (html.unescape(title), link, date)
