@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2021-03-12T23:15:09+0100
+# Last modified: 2021-03-13T19:20:06+0100
 """Get the latest video's from your favorite youtube channels.
 
     This script now generates commands for the mpv viewer that force it
@@ -60,8 +60,8 @@ for channel_title, channel_id in channels.items():
     with urllib.request.urlopen(base + channel_id) as con:
         text = con.read().decode('utf-8')
         rv = con.code
-    if not rv == 200:
-        print(f"Could not retrieve data for “{channel_title}”, skipping it.\n")
+    if rv != 200:
+        print(f"Could not retrieve data for “{channel_title}” (code: {rv}), skipping it.\n")
         continue
     titles = re.findall("<title>(.*)</title>", text, re.IGNORECASE)
     links = re.findall('<link rel="alternate" href="(.*)"/>', text, re.IGNORECASE)
