@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-03-07T14:14:42+0100
+.. Last modified: 2021-03-13T19:19:09+0100
 
 Introduction
 ============
@@ -919,11 +919,7 @@ youtube-feed.py
 ---------------
 
 Checks youtube for the latest video's from your favorite channels.
-Requires the `requests module`_ (version 2.x).
-
-.. _requests module: https://2.python-requests.org/en/master/
-
-It also requires you to have a JSON-file called ``.youtube-feedrc`` in your
+It requires you to have a JSON-file called ``.youtube-feedrc`` in your
 ``$HOME`` directory. What this file should contain is documented in the script.
 
 
