@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# file: youtube-feed.py
+# file: ytfd.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2021-03-13T19:20:06+0100
+# Last modified: 2021-04-04T17:14:16+0200
 """Get the latest video's from your favorite youtube channels.
 
     This script now generates commands for the mpv viewer that force it
@@ -39,7 +39,7 @@ now = datetime.datetime.now(tz=datetime.timezone.utc)
 # The "viewer" is also optional. If not present, it will be set to 'mpv'.
 # Note that the channelId's above are not real, they're randomly generated!
 # You can find the “channelId” in the source of the channel's homepage.
-rcpath = os.environ["HOME"] + os.sep + ".youtube-feedrc"
+rcpath = os.environ["HOME"] + os.sep + ".ytfdrc"
 with open(rcpath) as rc:
     settings = json.load(rc)
     channels = settings["channels"]

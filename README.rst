@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-03-13T19:19:09+0100
+.. Last modified: 2021-04-04T17:13:43+0200
 
 Introduction
 ============
@@ -915,11 +915,11 @@ container, using a 2-pass process.
 .. _webm: https://en.wikipedia.org/wiki/WebM
 
 
-youtube-feed.py
----------------
+ytfd.py
+-------
 
 Checks youtube for the latest video's from your favorite channels.
-It requires you to have a JSON-file called ``.youtube-feedrc`` in your
+It requires you to have a JSON-file called ``.ytfdrc`` in your
 ``$HOME`` directory. What this file should contain is documented in the script.
 
 
