@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2021-04-04T17:14:16+0200
+# Last modified: 2021-04-04T17:37:12+0200
 """Get the latest video's from your favorite youtube channels.
 
     This script now generates commands for the mpv viewer that force it
@@ -75,7 +75,7 @@ for channel_title, channel_id in channels.items():
         if "watch" in link and (now - date).days < limit
     )
     if not items:
-        print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
+        # print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
         continue
     print(f"Channel “{channel_title}”")
     for title, link, date in items:
