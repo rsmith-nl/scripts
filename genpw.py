@@ -5,7 +5,7 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2021-02-14T15:57:38+0100
+# Last modified: 2021-05-22T18:19:09+0200
 """
 Generate random passwords.
 
@@ -18,7 +18,7 @@ import base64
 import secrets
 import sys
 
-__version__ = "2021.02.14"
+__version__ = "2021.05.22"
 
 
 def main():
@@ -46,9 +46,9 @@ def setup():
     parser.add_argument(
         "-l",
         "--length",
-        default=16,
+        default=64,
         type=int,
-        help="# of random characters for password (default 16)",
+        help="# of random characters for password (default 64)",
     )
     parser.add_argument(
         "-e",
