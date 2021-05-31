@@ -5,7 +5,7 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-05T01:26:59+01:00
-# Last modified: 2020-04-01T00:15:43+0200
+# Last modified: 2021-05-31T12:36:26+0200
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse
@@ -161,7 +161,7 @@ def getpdfbb(fn):
         fn,
     ]
     gsres = sp.run(gsopts, stdout=sp.PIPE, stderr=sp.STDOUT, text=True, check=True)
-    bbs = gsres.stdout.splitlines()[0]
+    bbs = [ln for ln in gsres.stdout.splitlines() if ln.startswith("%%BoundingBox")][0]
     return bbs.split(" ")[1:]
 
 
