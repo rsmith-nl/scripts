@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2021-04-04T17:37:12+0200
+# Last modified: 2021-07-03T14:51:26+0200
 """Get the latest video's from your favorite youtube channels.
 
     This script now generates commands for the mpv viewer that force it
@@ -81,8 +81,5 @@ for channel_title, channel_id in channels.items():
     for title, link, date in items:
         print(f"∙ title: “{title}”")
         print(f"   date: {date}")
-        # Instruct mpv to use youtube-dl.
-        if viewer == "mpv":
-            link = re.sub("^https", "ytdl", link)
         print(f"   view: {viewer} '{link}' &")
     print()
