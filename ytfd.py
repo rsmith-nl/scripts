@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2021-07-03T14:51:26+0200
+# Last modified: 2021-08-11T00:07:03+0200
 """Get the latest video's from your favorite youtube channels.
 
     This script now generates commands for the mpv viewer that force it
@@ -57,9 +57,12 @@ with open(rcpath) as rc:
 sys.stdout.reconfigure(line_buffering=True)
 # Retrieve and print video information
 for channel_title, channel_id in channels.items():
-    with urllib.request.urlopen(base + channel_id) as con:
-        text = con.read().decode('utf-8')
-        rv = con.code
+    try:
+        with urllib.request.urlopen(base + channel_id) as con:
+            text = con.read().decode('utf-8')
+            rv = con.code
+    except urllib.error.HTTPError:
+        rv = -1
     if rv != 200:
         print(f"Could not retrieve data for “{channel_title}” (code: {rv}), skipping it.\n")
         continue
