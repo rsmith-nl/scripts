@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2020-04-01T00:12:13+0200
+# Last modified: 2021-09-05T22:43:17+0200
 """
 Run ``git gc`` on all the user's git repositories.
 
@@ -25,7 +25,8 @@ def main():
     Entry point of git-check-all.
     """
     args = setup()
-    for (dirpath, dirnames, filenames) in os.walk(os.environ["HOME"]):
+    #for (dirpath, dirnames, filenames) in os.walk(os.environ["HOME"]):
+    for (dirpath, dirnames, filenames) in os.walk(os.getcwd()):
         if ".git" in dirnames:
             runchecks(dirpath, args.verbose)
 
@@ -50,7 +51,7 @@ def setup():
     # Check for required programs.
     try:
         sp.run(["git"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info("found “git”")
+        logging.debug("found “git”")
     except FileNotFoundError:
         logging.error("the program “git” cannot be found")
         sys.exit(1)
@@ -67,16 +68,16 @@ def runchecks(d, verbose=False):
         d: Directory to run the checks in.
         verbose: Boolean to enable verbose messages.
     """
+    if verbose:
+        logging.info(f"in '{d}'")
     os.chdir(d)
     outp = gitcmd("status", True)
-    if "clean" not in outp:
-        logging.info(f"'{d}' is not clean, skipping.")
+    if b"clean" not in outp:
+        logging.warning(f"'{d}' is not clean, skipping.")
         return
-    if verbose:
-        logging.info(f"Running check on '{d}'")
     rv = gitcmd(["gc", "--auto", "--quiet"])
     if rv:
-        print(f"git gc failed on '{d}'!")
+        logging.info(f"git gc failed on '{d}'!")
 
 
 def gitcmd(cmds, output=False):
@@ -102,7 +103,7 @@ def gitcmd(cmds, output=False):
             raise ValueError("args should be a list or tuple of strings")
     cmds = ["git"] + cmds
     if output:
-        cp = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, text=True)
+        cp = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT)
         return cp.stdout
     else:
         cp = sp.run(cmds, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
