@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-04-04T17:13:43+0200
+.. Last modified: 2021-09-05T15:01:37+0200
 
 Introduction
 ============
@@ -698,6 +698,13 @@ py-ver.py
 
 List or set the ``__version__`` string in all Python files given on the
 command line or recursively in all directories given on the command line.
+
+
+recentf.py
+----------
+
+Recursively finds the most recently modified files in each directory.
+List the modification date/time in ISO format followed by the path.
 
 
 rename.py
