@@ -4,7 +4,7 @@
 #
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2021-09-05T14:00:45+0200
-# Last modified: 2021-09-05T15:50:15+0200
+# Last modified: 2021-09-10T13:00:52+0200
 """For each given directory, recursively find the COUNT most recent modified files."""
 
 
@@ -14,7 +14,7 @@ import os
 import sys
 from datetime import datetime
 
-__version__ = "2021.09.05"
+__version__ = "2021.09.10"
 
 
 def main():
@@ -74,6 +74,7 @@ def processdir(path, count):
         ]
         intermediate.sort(key=lambda x: -x[1])
         targetfiles += intermediate[:count]
+    targetfiles.sort(key=lambda x: -x[1])
     for recent in targetfiles:
         dt = datetime.fromtimestamp(recent[1])
         dt = dt.replace(microsecond=0)
