@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-09-05T15:01:37+0200
+.. Last modified: 2021-09-18T21:21:52+0200
 
 Introduction
 ============
@@ -243,6 +243,17 @@ foto4lb.py
 Scales fotos for including them into LaTeX documents. The standard
 configuration sets the width to 886 pixels and sets the resolution to 300 dpi.
 This gives an image 75 mm (about 3 in) wide.
+
+foto4lb-wand.py
++++++++++++++++
+
+This uses and requires the wand_ binding for ImageMagick.
+
+.. _wand: https://docs.wand-py.org/en/0.6.7/
+
+In my (limited) testing with Wand 0.6.7 it was *slightly* faster than using
+``convert`` from Python with ``subprocess``.
+It is definitely more Pythonic.
 
 
 genbackup.sh
