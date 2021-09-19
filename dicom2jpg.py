@@ -2,10 +2,10 @@
 # file: dicom2jpg.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2016-2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2020-03-31T23:46:06+0200
+# Last modified: 2021-09-19T12:06:21+0200
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -23,7 +23,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = "2020.03.31"
+__version__ = "2021.09.19"
 
 
 def main():
@@ -72,13 +72,13 @@ def setup():
         "fn", nargs="*", metavar="filename", help="DICOM files to process"
     )
     args = parser.parse_args(sys.argv[1:])
-    logging.debug(f"command line arguments = {sys.argv}")
-    logging.debug(f"parsed arguments = {args}")
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
         format="%(levelname)s: %(message)s",
     )
-    # Check for required programs
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
+    # Check for requisites
     try:
         sp.run(["convert"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         logging.info("found “convert”")
@@ -98,7 +98,6 @@ def convert(filename, quality, level):
         filename: name of the file to convert.
         quality: JPEG quality to apply
         level: Boolean to indicate whether level adustment should be done.
-
     Returns:
         Tuple of (input filename, output filename, convert return value)
     """
@@ -111,6 +110,8 @@ def convert(filename, quality, level):
         "PixelsPerInch",
         "-density",
         "300",
+        "-depth",
+        "8"
         "-crop",
         size + "+232+0",
         "-page",
