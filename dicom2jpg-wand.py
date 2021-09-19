@@ -5,13 +5,16 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2021-09-19T12:08:46+0200
-# Last modified: 2021-09-19T12:10:46+0200
+# Last modified: 2021-09-19T12:38:03+0200
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
 During the conversion process, blank areas are removed. The blank area removal
 is based on the image size of a Philips flat detector. The image goes from
-2048x2048 pixels to 1574x2048 pixels.
+2048x2048 pixels to 1574x2048 pixels. Additionally, bit depth is reduced to
+8 bits. Optionally the black and wite levels and gamma are adjusted.
+
+This implementation used the “Wand” binding to the ImageMagick shared library.
 """
 
 from datetime import datetime
