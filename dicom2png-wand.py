@@ -2,10 +2,10 @@
 # file: dicom2png.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
-# Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2021-09-19T11:35:11+0200
+# Created: 2021-09-19T01:49:10+0200
+# Last modified: 2021-09-19T12:10:26+0200
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
