@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-09-18T21:21:52+0200
+.. Last modified: 2021-09-19T16:17:46+0200
 
 Introduction
 ============
@@ -131,6 +131,18 @@ dicom2jpg.py
 
 A modification of the ``dicom2png`` program mentioned below to produce JPEG
 output. This is meant for situaties where lossy compression is acceptable.
+For ms-windows users, this version is recommended.
+Just make sure that the location where the ImageMagick programs are installed
+is part of your PATH environment variable.
+
+dicom2jpg-wand.py
++++++++++++++++++
+
+Variant which used the wand_ binding to ImageMagick, instead of calling
+``convert`` in a subprocess.
+It is advised to use ImageMagick 7 with “wand”.
+This is what I use myself.
+For programmers, wand_ is a very Pythonic interface to ImageMagick.
 
 
 dicom2png.py
@@ -143,11 +155,21 @@ The image goes from 2048x2048 pixels to 1574x2048 pixels.
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
 This program requires the `convert`` program from ImageMagick_.
+For ms-windows users, this version is recommended.
 
 Multiple images are processed in parallel using a ``ThreadPoolExecutor`` from
 the ``concurrent.futures`` module to start subprocesses using as many worker
 processes as your CPU has cores. This number is determined by the
 ``os.cpu_count`` function, so this program requires at least Python 3.4.
+
+This version is recommended for ms-windows users.
+
+dicom2png-wand.py
++++++++++++++++++
+
+Variant which used the wand_ binding to ImageMagick, instead of calling
+``convert`` in a subprocess.
+It is advised to use ImageMagick 7 with “wand”.
 
 
 dvd2webm.py
