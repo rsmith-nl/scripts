@@ -5,7 +5,7 @@
 # Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2020-03-31T23:46:34+0200
+# Last modified: 2021-09-19T11:29:19+0200
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
@@ -75,12 +75,12 @@ def setup():
         "fn", nargs="*", metavar="filename", help="DICOM files to process"
     )
     args = parser.parse_args(sys.argv[1:])
-    logging.debug(f"command line arguments = {sys.argv}")
-    logging.debug(f"parsed arguments = {args}")
     logging.basicConfig(
         level=getattr(logging, args.log.upper(), None),
         format="%(levelname)s: %(message)s",
     )
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
     # Check for requisites
     try:
         sp.run(["convert"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
@@ -113,6 +113,8 @@ def convert(filename, quality, level):
         "PixelsPerInch",
         "-density",
         "300",
+        "-depth",
+        "8"
         "-crop",
         size + "+232+0",
         "-page",
