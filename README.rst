@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-09-19T16:17:46+0200
+.. Last modified: 2021-10-24T18:46:37+0200
 
 Introduction
 ============
@@ -733,6 +733,13 @@ List or set the ``__version__`` string in all Python files given on the
 command line or recursively in all directories given on the command line.
 
 
+pull-git.py
+-----------
+
+Pull the current git-managed directory from another server and rebase around that.
+Works in conjunction with ``serve-git``.
+
+
 recentf.py
 ----------
 
@@ -789,6 +796,7 @@ serve-git.sh
 
 Start a ``git daemon`` for every directory under the current working directory
 that is under git_ control.
+Works in conjunction with ``pull-git``.
 
 
 set-ornata-chroma-rgb.py
