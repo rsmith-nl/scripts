@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2020-10-03T12:20:58+0200
+# Last modified: 2021-10-29T15:34:16+0200
 """
 Creates a passphrase.
 
@@ -14,10 +14,11 @@ It picks words from a word list, and adds filler characters between the words.
 import argparse
 import logging
 import secrets
+import itertools as it
 import re
 import sys
 
-__version__ = "2019.08.13"
+__version__ = "2021.10.29"
 
 wordfiles = {
     "en": "/usr/share/dict/words",
@@ -25,7 +26,7 @@ wordfiles = {
 }
 minwordlen = 4
 maxwordlen = 9
-fillchars = "!@#$%&*_-"
+fillchars = "?!@#$%&*_+-,;:><[]{}"
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
@@ -64,6 +65,6 @@ logging.info("{} words of correct length in {}".format(len(words), wf))
 aantal = len(words) + 1
 for n in range(args.count):
     choices = [secrets.choice(words) for _ in range(args.words)]
-    filler = [secrets.choice(fillchars) for _ in range(args.words)]
+    filler = secrets.choice(list(it.combinations(fillchars, args.words)))
     phrase = "".join([k for t in zip(choices, filler) for k in t])[:-1]
     print(phrase)
