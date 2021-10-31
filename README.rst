@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-10-24T18:46:37+0200
+.. Last modified: 2021-10-31T10:27:26+0100
 
 Introduction
 ============
@@ -852,6 +852,15 @@ manager.
 
 .. _conky: https://github.com/brndnmtthws/conky/wiki
 .. _i3: https://i3wm.org/
+
+
+stepviewer.sh
+-------------
+
+This script uses `Open CASCADE`_'s ``DRAWEXE`` program to show a 3D view of a STEP
+file.
+
+.. _Open CASCADE: https://dev.opencascade.org/
 
 
 sync-to.sh
