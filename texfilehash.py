@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-28T16:13:39+0200
-# Last modified: 2020-12-16T00:24:48+0100
+# Last modified: 2021-12-18T11:34:25+0100
 """
 Create a file containing the abbreviated git commit hash for TeX source files.
 If the file has uncommitted changes, it appends the status in red text.
@@ -48,7 +48,7 @@ for infn in args.filenames:
     logdata = cp.stdout
     logging.debug(f'logdata: "{logdata}"')
 
-    statcmd = ["git", "--no-pager", "status", "-s", "--", infn]
+    statcmd = ["git", "status", "--porcelain", infn]
     cp = sp.run(statcmd, stdout=sp.PIPE, stderr=sp.DEVNULL, check=True, text=True)
     statdata = cp.stdout[:2].strip()
     logging.debug(f'statdata: "{statdata}"')
