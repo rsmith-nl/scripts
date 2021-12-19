@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: tk-razer.pyw
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2020-04-20T00:51:17+0200
+# Last modified: 2021-12-19T10:46:17+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the tkinter toolkit that comes with Python.

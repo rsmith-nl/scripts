@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-10-31T10:27:26+0100
+.. Last modified: 2021-12-19T10:47:57+0100
 
 Introduction
 ============
@@ -31,6 +31,8 @@ Scripts that require FreeBSD are noted as such.
 All Python scripts use Python 3 specific features. Most recently I converted
 ``str.format`` calls to f-strings, meaning that you'll need Python 3.6 or
 later for the Python scripts.
+
+Note that these scripts assume that Python 3 is installed as ``python``.
 
 
 Running tests

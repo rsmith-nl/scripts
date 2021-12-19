@@ -5,15 +5,15 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-27T14:20:52+02:00
-# Last modified: 2018-07-07T11:09:44+0200
+# Last modified: 2021-12-19T10:45:28+0100
 """
-Creates a graph of FreeBSD package dependencies.
+Creates a graph of FreeBSD package dependencies. Requires Python 3 as python.
 
 Use it like this:
 
-    pkg info -dx py27- | python3 graph-deps.py | dot -o py27-deps.pdf -Tpdf
+    pkg info -dx py39- | python graph-deps.py | dot -o py39-deps.pdf -Tpdf
 
-This will output a graphviz digraph for all Python 2.7 packages on stdout,
+This will output a graphviz digraph for all Python 3.9 packages on stdout,
 which is processed by the “dot” program from the graphics/graphviz port and
 turned into a PDF rendering of the graph.
 """

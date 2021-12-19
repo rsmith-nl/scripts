@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # file: gtk-razer.pyw
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2020-05-15T06:48:00+0200
+# Last modified: 2021-12-19T10:46:25+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
