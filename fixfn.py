@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2021-12-26T10:31:34+0100
+# Last modified: 2021-12-26T10:57:00+0100
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -27,7 +27,7 @@ def main():
     # Real work starts here.
     for path in args.files:
         # Split off the path
-        origpath, fn = os.path.basename(path)
+        origpath, fn = os.path.split(path)
         # Remove IDs.
         newfn = re.sub(r"-\[.*?\]", "", fn)
         newfn = re.sub(r"-\d+", "", newfn)
@@ -40,9 +40,15 @@ def main():
         newfn = newfn.lower()
         # Rename the file.
         newpath = os.path.join(origpath, newfn)
+        if newpath == path:
+            logging.info("path “{path}” not modified")
+            continue
+        if args.dryrun:
+            logging.info(f"“{path}” would be moved to “{newpath}”")
+            continue
         try:
             shutil.move(path, newpath)
-            logging.info(f"moved “{path}” to “newpath”")
+            logging.info(f"moved “{path}” to “{newpath}”")
         except PermissionError as e:
             logging.error(e)
 
@@ -79,13 +85,16 @@ def setup():
     args = parser.parse_args(sys.argv[1:])
     # Configure logging
     if args.dryrun:
-        logging.basicConfig(level="INFO", format="%(levelname)s: %(message)s")
+        if args.log.upper() != "DEBUG":
+            args.log = "info"
+    logging.basicConfig(
+        level=getattr(logging, args.log.upper(), None),
+        format="%(levelname)s: %(message)s",
+    )
+    if args.dryrun:
         logging.info("performing dry run")
-    else:
-        logging.basicConfig(
-            level=getattr(logging, args.log.upper(), None),
-            format="%(levelname)s: %(message)s",
-        )
+    logging.debug(f"command line arguments = {sys.argv}")
+    logging.debug(f"parsed arguments = {args}")
     return args
 
 
