@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-12-19T10:47:57+0100
+.. Last modified: 2021-12-26T10:39:04+0100
 
 Introduction
 ============
@@ -259,6 +259,13 @@ Corrects the ``BoundingBox`` for single-page PostScript_ documents.
 It requires the ghostscript_ program.
 
 .. _PostScript: http://en.wikipedia.org/wiki/PostScript
+
+
+fixfn.py
+--------
+
+Fix filenames by replacing whitespace, converting to lower case and removing
+trailing IDs.
 
 
 foto4lb.py
@@ -591,12 +598,6 @@ Use ``convert`` from the ImageMagick_ suite to convert scanned images to PDF fil
 It assumes that images are scanned at 150 PPI, and the target page is A4.
 
 
-nospaces.py
------------
-
-Replaces whitespace in filenames with underscores.
-
-
 ntpclient.py
 ------------
 
@@ -905,13 +906,6 @@ Convert TIFF files to PDF format using the utilities ``tiffinfo`` and
 ``tiff2pdf`` from the libtiff package.
 
 .. _libtiff: http://www.remotesensing.org/libtiff/
-
-
-tolower.sh
-----------
-
-Changes the names of all the files that it is given on the command-line to
-lower case.
 
 
 unlock-excel.py
