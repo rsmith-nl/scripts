@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2021-12-26T10:57:00+0100
+# Last modified: 2021-12-26T11:35:52+0100
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -33,11 +33,18 @@ def main():
         newfn = re.sub(r"-\d+", "", newfn)
         if newfn != fn:
             logging.info(f"removed ID from “{fn}”")
+        # Replace dashes
+        dashes = r"\s+[\u002D\u058A\u05BE\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2E3A]+\s+"
+        newfn, n = re.subn(dashes, "-", newfn)
+        logging.info(f"replaced {n} instances of dashes with whitespace in “{fn}”")
         # Replace whitespace
-        newfn, n = re.subn("\s", args.replacement, newfn)
-        logging.info(f"replaced {n} instances of whitespace in “{fn}”")
+        newfn, m = re.subn("\s+", args.replacement, newfn)
+        logging.info(f"replaced {m} instances of whitespace in “{fn}”")
         # Make lowercase
-        newfn = newfn.lower()
+        if not args.nolower:
+            newfn = newfn.lower()
+        else:
+            logging.info(f"not converting “{newfn}” to lower case")
         # Rename the file.
         newpath = os.path.join(origpath, newfn)
         if newpath == path:
@@ -73,12 +80,20 @@ def setup():
         help=f"logging level (defaults to “{logdefault}”)",
     )
     parser.add_argument(
-        "-n",
+        "-d",
         "--dry-run",
         dest="dryrun",
         action="store_true",
         help="perform a trial run with no changes made",
     )
+    parser.add_argument(
+        "-n",
+        "--no-lower",
+        dest="nolower",
+        action="store_true",
+        help="do not convert to lower case",
+    )
+
     parser.add_argument(
         "files", metavar="file", nargs="*", help="one or more files to process"
     )
