@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2021-12-26T13:00:53+0100
+# Last modified: 2021-12-26T14:08:54+0100
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -24,27 +24,27 @@ def main():
     Entry point for .py.
     """
     args = setup()
-    # Real work starts here.
     for path in args.files:
-        # Split off the path
+        # We only want to modify the filename itself.
         origpath, fn = os.path.split(path)
-        # Remove IDs at the end of the filename.
+        # Remove IDs from e.g. youtube at the end of the filename.
         newfn = re.sub(r"-\[?[0-9a-zA-Z_-]{6,11}\]?\.", ".", fn)
         if newfn != fn:
             logging.info(f"removed ID from “{fn}”")
-        # Replace dashes
-        dashes = r"\s+[\u002D\u058A\u05BE\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2E3A]+\s+"
+        # Remove all dash-like Unicode characters surrounded by whitespace.
+        # See https://jkorpela.fi/dashes.html
+        dashes = (
+            r"\s+[\-\u058A\u05BE\u1806\u2010-\u2015\u2053\u207B\u208B\u2212"
+            r"\u2E3A\u2E3B\uFE58\uFE63\uFF0D]+\s+"
+        )
         newfn, n = re.subn(dashes, "-", newfn)
         logging.info(f"replaced {n} instances of dashes with whitespace in “{fn}”")
-        # Replace whitespace
         newfn, m = re.subn("\s+", args.replacement, newfn)
         logging.info(f"replaced {m} instances of whitespace in “{fn}”")
-        # Make lowercase
         if not args.nolower:
             newfn = newfn.lower()
         else:
             logging.info(f"not converting “{newfn}” to lower case")
-        # Rename the file.
         newpath = os.path.join(origpath, newfn)
         if newpath == path:
             logging.info("path “{path}” not modified")
@@ -97,7 +97,6 @@ def setup():
         "files", metavar="file", nargs="*", help="one or more files to process"
     )
     args = parser.parse_args(sys.argv[1:])
-    # Configure logging
     if args.dryrun:
         if args.log.upper() != "DEBUG":
             args.log = "info"
