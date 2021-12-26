@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2021-12-26T11:35:52+0100
+# Last modified: 2021-12-26T13:00:53+0100
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -28,9 +28,8 @@ def main():
     for path in args.files:
         # Split off the path
         origpath, fn = os.path.split(path)
-        # Remove IDs.
-        newfn = re.sub(r"-\[.*?\]", "", fn)
-        newfn = re.sub(r"-\d+", "", newfn)
+        # Remove IDs at the end of the filename.
+        newfn = re.sub(r"-\[?[0-9a-zA-Z_-]{6,11}\]?\.", ".", fn)
         if newfn != fn:
             logging.info(f"removed ID from “{fn}”")
         # Replace dashes
