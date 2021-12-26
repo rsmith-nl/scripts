@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2021-12-26T14:08:54+0100
+# Last modified: 2021-12-26T19:26:07+0100
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -47,7 +47,7 @@ def main():
             logging.info(f"not converting “{newfn}” to lower case")
         newpath = os.path.join(origpath, newfn)
         if newpath == path:
-            logging.info("path “{path}” not modified")
+            logging.info(f"path “{path}” not modified")
             continue
         if args.dryrun:
             logging.info(f"“{path}” would be moved to “{newpath}”")
