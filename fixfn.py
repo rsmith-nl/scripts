@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2021-12-26T19:26:07+0100
+# Last modified: 2021-12-26T19:34:37+0100
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -38,9 +38,11 @@ def main():
             r"\u2E3A\u2E3B\uFE58\uFE63\uFF0D]+\s+"
         )
         newfn, n = re.subn(dashes, "-", newfn)
-        logging.info(f"replaced {n} instances of dashes with whitespace in “{fn}”")
+        logging.info(f"replaced {n} instances of dashes in “{fn}”")
         newfn, m = re.subn("\s+", args.replacement, newfn)
         logging.info(f"replaced {m} instances of whitespace in “{fn}”")
+        # Remove “waves” (_-_).
+        newfn, p = re.subn("_-_", args.replacement, newfn)
         if not args.nolower:
             newfn = newfn.lower()
         else:
