@@ -5,24 +5,29 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-08-15T20:24:57+0200
-# Last modified: 2020-08-17T19:32:14+0200
+# Last modified: 2021-12-19T23:07:24+0100
 """Generate blocklistst for dnsmasq and unbound"""
 
 # Data
 facebook = [
     "cdninstagram.com",
-    "edgekey.net",
     "edgesuite.net",
     "facebook.com",
+    "facebook.de",
+    "facebook.fr",
     "facebook.net",
     "fb.com",
-    "fb.me",
     "fbcdn.com",
     "fbcdn.net",
     "fbsbx.com",
+    "freebasics.com",
     "instagram.com",
+    "internet.org",
+    "online-metrix.net",
     "tfbnw.net",
+    "thefacebook.com",
     "whatsapp.com",
+    "whatsapp.net",
 ]
 
 # Data based on the 80-domain list from:
@@ -110,26 +115,23 @@ ads = [
 # Some additions from myself.  These are based on ads that I've seen myself
 # and domains that often occur in the someonewhocares blocklist.
 ads += [
-    "runative-syndicate.com",
-    "cnzz.com",
-    "fastclick.net",
-    "p2l.info",
-    "oewabox.at",
-    "am15.net",
-    "checkm8.com",
+    "adengage.com",
+    "admob.com",
+    "adscience.nl",
     "adtech.de",
     "adtech.fr",
     "adtech.us",
-    "sitemeter.com",
+    "am15.net",
+    "checkm8.com",
+    "cnzz.com",
+    "fastclick.net",
+    "oewabox.at",
+    "p2l.info",
     "petrovka.info",
-    "admob.com",
-    "adscience.nl",
-    "adengage.com",
+    "runative-syndicate.com",
+    "sitemeter.com",
 ]
 
-
-# IP address to redirect to, for unbound.
-redirect = "127.0.0.2"
 
 # Remove doubles, sort the list.
 ads = sorted(set(ads))
@@ -146,6 +148,5 @@ print("server:")
 for kind, name in ((facebook, "facebook"), (ads, "ads")):
     print(f"    # Block {name}")
     for domain in kind:
-        print(f'    local-zone: "{domain}" redirect')
-        print(f'    local-data: "{domain} A {redirect}"')
+        print(f'    local-zone: "{domain}" always_nxdomain')
     print()
