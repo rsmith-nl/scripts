@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-06T11:45:52+0200
-# Last modified: 2020-04-01T20:44:25+0200
+# Last modified: 2021-12-31T14:56:39+0100
 """
 Utility to rename files.
 
@@ -15,10 +15,11 @@ given to <prefix><number>, keeping the extension of the original file.
 
 import argparse
 import logging
-import sys
 import os
+import re
+import sys
 
-__version__ = "2020.04.01"
+__version__ = "2021.12.31"
 
 
 def main():
@@ -26,12 +27,18 @@ def main():
     Entry point for rename.py.
     """
     args = setup()
+    if args.numbers:
+        logging.info("sort files by number")
+        args.files = sorted_by_number(args.files)
     pairs = newnames(args.files, args.prefix, args.start, args.width)
-    for old, new in pairs:
-        try:
-            os.rename(old, new)
-        except OSError as e:
-            print(f'Could not rename "{old}" to "{new}": {e}')
+    if not args.dryrun:
+        rename(pairs)
+    else:
+        logging.basicConfig(
+            level=logging.INFO, format="%(levelname)s: %(message)s", force=True
+        )
+        logging.info("dry run")
+        report(pairs)
 
 
 def setup():
@@ -47,6 +54,19 @@ def setup():
     )
     parser.add_argument(
         "-w", "--width", type=int, default=2, help="field width for number (default 2)"
+    )
+    parser.add_argument(
+        "-n",
+        "--numbers",
+        action="store_true",
+        help="sort filenames by the last number that is part of the name",
+    )
+    parser.add_argument(
+        "-d",
+        "--dry-run",
+        dest="dryrun",
+        action="store_true",
+        help="do not actually rename, but report how files would be renamed",
     )
     parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
@@ -64,6 +84,26 @@ def setup():
         format="%(levelname)s: %(message)s",
     )
     return args
+
+
+def rename(pairs):
+    for old, new in pairs:
+        try:
+            os.rename(old, new)
+        except OSError as e:
+            print(f'Could not rename "{old}" to "{new}": {e}')
+
+
+def report(pairs):
+    for old, new in pairs:
+        logging.info(f"“{old}” would be renamed to “{new}”")
+
+
+def sorted_by_number(paths):
+    """Sort paths by the last number occurring in the filename."""
+    combined = [(re.findall("\d+", p), p) for p in paths]
+    cleaned = sorted([(int(nl[-1]), p) for nl, p in combined if nl], key=lambda x: x[0])
+    return [p for n, p in cleaned]
 
 
 def newnames(paths, prefix, start, precision):
