@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2020-04-01T21:03:12+0200
+# Last modified: 2022-01-11T20:33:31+0100
 """Convert video files to H.264/AAC streams in an MP4 container."""
 
 from functools import partial
@@ -16,7 +16,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = "2020.04.01"
+__version__ = "2022.01.11"
 
 
 def main():
@@ -99,7 +99,6 @@ def runencoder(fname, crf, preset):
     """
     basename, ext = os.path.splitext(fname)
     known = [
-        ".mp4",
         ".avi",
         ".wmv",
         ".flv",
@@ -113,7 +112,10 @@ def runencoder(fname, crf, preset):
     ]
     if ext.lower() not in known:
         return fname, -1
-    ofn = basename + ".mp4"
+    if ext.lower() == ".mp4":
+        ofn = basename + "_mod.mp4"
+    else:
+        ofn = basename + ".mp4"
     args = [
         "ffmpeg",
         "-i",
@@ -125,7 +127,7 @@ def runencoder(fname, crf, preset):
         "-preset",
         preset,
         "-flags",
-        "+aic+mv4",
+        "+mv4+aic",
         "-c:a",
         "aac",
         "-sn",

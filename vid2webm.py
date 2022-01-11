@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2019-07-27T21:17:04+0200
+# Last modified: 2022-01-11T20:43:05+0100
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -99,7 +99,7 @@ def main(argv):
 def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
-    args = ["ffmpeg"]
+    args = ["ffmpeg", "-version"]
     proc = sp.run(args, text=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
     verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
     major, minor, patch, *rest = re.findall(verre, proc.stderr)[0]
@@ -157,7 +157,7 @@ def mkargs(fn, npass, tile_columns, start=None):
     if start and not re.search(r"\d{2}:\d{2}:\d{2}", start):
         raise ValueError("starting time must be in the format HH:MM:SS")
     numthreads = str(os.cpu_count())
-    basename = fn.rsplit(".", 1)[0]
+    basename, ext = fn.rsplit(".", 1)
     args = [
         "ffmpeg",
         "-loglevel",
@@ -206,7 +206,10 @@ def mkargs(fn, npass, tile_columns, start=None):
     if npass == 1:
         outname = "/dev/null"
     else:
-        outname = basename + ".webm"
+        if ext.lower() == "webm":
+            outname = basename + "_mod.webm"
+        else:
+            outname = basename + ".webm"
     args += ["-y", outname]
     return args
 

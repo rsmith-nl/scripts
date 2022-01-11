@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2020-04-01T21:01:18+0200
+# Last modified: 2022-01-11T20:37:02+0100
 """Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
@@ -16,7 +16,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = "2020.04.01"
+__version__ = "2022.01.11"
 
 
 def main():
@@ -102,13 +102,15 @@ def runencoder(fname, vq, aq):
         ".mpeg",
         ".mov",
         ".ogv",
-        ".mkv",
         ".webm",
         ".gif",
     ]
     if ext.lower() not in known:
         return (fname, -1)
-    ofn = basename + ".mkv"
+    if ext.lower() == ".mkv":
+        ofn = basename + "_mod.mkv"
+    else:
+        ofn = basename + ".mkv"
     args = [
         "ffmpeg",
         "-i",
