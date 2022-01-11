@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2022-01-11T20:33:31+0100
+# Last modified: 2022-01-11T21:06:35+0100
 """Convert video files to H.264/AAC streams in an MP4 container."""
 
 from functools import partial
@@ -99,6 +99,7 @@ def runencoder(fname, crf, preset):
     """
     basename, ext = os.path.splitext(fname)
     known = [
+        ".mp4",
         ".avi",
         ".wmv",
         ".flv",

@@ -5,7 +5,7 @@
 # Copyright © 2013-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-11-16T18:41:21+01:00
-# Last modified: 2022-01-11T20:37:02+0100
+# Last modified: 2022-01-11T21:05:11+0100
 """Convert video files to Theora/Vorbis streams in a Matroska container."""
 
 from functools import partial
@@ -102,6 +102,7 @@ def runencoder(fname, vq, aq):
         ".mpeg",
         ".mov",
         ".ogv",
+        ".mkv",
         ".webm",
         ".gif",
     ]
