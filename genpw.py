@@ -5,7 +5,7 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2022-01-16T14:36:27+0100
+# Last modified: 2022-01-16T14:37:17+0100
 """
 Generate random passwords.
 
@@ -28,7 +28,7 @@ def shannon(n):
     Calculate the Shannon entropy of an alphabet of size n, where every
     character has the same chance of being selected.
     """
-    return -(1/n)*math.log(1/n, 2)*n
+    return -(1 / n) * math.log(1 / n, 2) * n
 
 
 def genpw(length, encoder):
@@ -42,7 +42,7 @@ def genpw(length, encoder):
     Returns:
         A password string.
     """
-    d = secrets.token_bytes(2*length)
+    d = secrets.token_bytes(2 * length)
     return encoder(d).decode()[:length]
 
 
@@ -102,7 +102,7 @@ encoder_choice = {
 encoder, alphabetsize = encoder_choice[args.encoding]
 se = shannon(alphabetsize)
 logging.info(f"{args.encoding} encoder is used, {se:.3f} bits/character entropy")
-length = math.ceil(args.entropy/se)
+length = math.ceil(args.entropy / se)
 logging.info(f"{length} characters required for ≥{args.entropy} bits of entropy")
 if args.groupby:
     logging.info(f"grouping by {args.groupby} characters")
