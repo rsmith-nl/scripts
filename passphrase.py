@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2022-01-16T12:53:20+0100
+# Last modified: 2022-01-16T13:11:39+0100
 """
 Creates a passphrase.
 
@@ -49,6 +49,8 @@ parser.add_argument(
     default=1,
     help="number of passphrases to generate (default: 1)",
 )
+# The idea of using entropy is based on
+# https://pthree.org/2017/09/04/a-practical-and-secure-password-and-passphrase-generator/
 parser.add_argument(
     "-e", "--entropy", type=int, default=70, help="bits of entropy (default: 75)"
 )
@@ -70,12 +72,12 @@ word_entropy = math.log(len(words), 2)
 logging.info(f"word entropy is {word_entropy:.4f} bits/word")
 logging.info(f"filler entropy is {fill_entropy:.4f} bits/character")
 # num_words * word_entropy + (num_words - 1) * fill_entropy ≥ args.entropy
-num_words = math.ceil((args.entropy+fill_entropy)/(word_entropy+fill_entropy))
+num_words = math.ceil((args.entropy + fill_entropy) / (word_entropy + fill_entropy))
 logging.info(f"{num_words} words required for ≥{args.entropy} bits of entropy")
 for n in range(args.count):
     choices = [secrets.choice(words) for _ in range(num_words)]
     filler = list(secrets.choice(list(it.combinations(fillchars, num_words))))
     # Ensure that one filler character is a nonzero digit.
-    filler[secrets.randbelow(num_words-1)] = secrets.choice("123456789")
+    filler[secrets.randbelow(num_words - 1)] = secrets.choice("123456789")
     phrase = "".join([k for t in zip(choices, filler) for k in t])[:-1]
     print(phrase)
