@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2021-12-19T10:45:59+0100
+# Last modified: 2022-01-16T09:45:09+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm).
 
 This is a multithreaded version of unlock-excel.pyw.  All the work that was
@@ -74,21 +74,18 @@ def create_widgets(root):
     w.backup = backup
     ttk.Checkbutton(root, text='backup', variable=backup,
                     command=on_backup).grid(row=1, column=1, sticky='ew')
-    suffixlabel = ttk.Label(root, text='suffix:')
-    suffixlabel['state'] = 'disabled'
+    suffixlabel = ttk.Label(root, text='suffix:', state=tk.DISABLED)
     suffixlabel.grid(row=1, column=2, sticky='ew')
     w.suffixlabel = suffixlabel
     suffix = tk.StringVar()
     suffix.set('-orig')
     w.suffix = suffix
-    se = ttk.Entry(root, justify='left', textvariable=suffix)
+    se = ttk.Entry(root, justify='left', textvariable=suffix, state=tk.DISABLED)
     se.grid(row=1, column=3, columnspan=1, sticky='w')
-    se['state'] = 'disabled'
     w.suffixentry = se
     # Third row
     ttk.Label(root, text='(3)').grid(row=2, column=0, sticky='ew')
-    gobtn = ttk.Button(root, text="Go!", command=do_start)
-    gobtn['state'] = 'disabled'
+    gobtn = ttk.Button(root, text="Go!", command=do_start, state=tk.DISABLED)
     gobtn.grid(row=2, column=1, sticky='ew')
     w.gobtn = gobtn
     # Fourth row
