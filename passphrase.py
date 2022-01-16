@@ -2,9 +2,10 @@
 # file: passphrase.py
 # vim:fileencoding=utf-8:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
+# Copyright © 2015-2022 R.F. Smith <rsmith@xs4all.nl>
+# SPDX-License-Identifier: MIT
 # Created: 2015-12-28 12:11:31 +0100
-# Last modified: 2022-01-16T13:11:39+0100
+# Last modified: 2022-01-16T15:52:30+0100
 """
 Creates a passphrase.
 
