@@ -5,7 +5,7 @@
 # Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2022-01-16T14:37:17+0100
+# Last modified: 2022-01-16T14:38:13+0100
 """
 Generate random passwords.
 
@@ -15,10 +15,10 @@ format.
 
 import argparse
 import base64
+import logging
+import math
 import secrets
 import sys
-import math
-import logging
 
 __version__ = "2022.01.16"
 
