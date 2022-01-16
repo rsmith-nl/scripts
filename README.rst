@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2021-12-26T10:39:04+0100
+.. Last modified: 2022-01-16T16:11:27+0100
 
 Introduction
 ============
@@ -377,21 +377,63 @@ pseudorandom data.
 .. _Wikipedia: http://en.wikipedia.org/?title=/dev/random
 .. _other: http://www.2uo.de/myths-about-urandom/
 
+Using the new ``secrets`` module in Python;
+
+.. code-block:: console
+
+    > python
+    Python 3.9.9 (main, Dec 11 2021, 14:34:11) 
+    [Clang 12.0.1 (git@github.com:llvm/llvm-project.git llvmorg-12.0.1-0-gfed41342a on freebsd13
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import secrets
+    >>> data = secrets.token_bytes(1024*1024)
+    >>> with open("rpdata.bin", "wb") as bf:
+    ...     bf.write(data)
+    ...
+    1048576
+    >>> quit()
+
+    > ent rpdata.bin
+    - Entropy is 7.999836 bits per byte.
+    - Optimum compression would reduce the size
+    of this 1048576 byte file by 0%.
+    - χ² distribution for 1048576 samples is 238.34, and randomly
+    would exceed this value 76.58% of the times.
+    According to the χ² test, this sequence looks random.
+    - Arithmetic mean value of data bytes is 127.5072 (random = 127.5).
+    - Monte Carlo value for π is 3.140614092 (error 0.03%).
+    - Serial correlation coefficient is 0.000215 (totally uncorrelated = 0.0).
+
+This looks good enough as well.
+
 
 genpw.py
 --------
 
-Generates random passwords. Like ``genotp``, It uses random numbers from the
-operating system via Python's ``os.urandom`` function and converts them to
-text using base64 encoding. On FreeBSD I think this is secure enough given the
+Generates random passwords. It uses random numbers from the operating system
+via Python's ``secrets.token_bytes`` function and converts them to text using
+a choice of encoding. On FreeBSD I think this is secure enough given the
 previous section.
 
-An example:
+As of version 2022.01.16 is uses the requested amount of entropy (75 bits by
+default) to calculate the required length.
+
+Some examples:
 
 .. code-block:: console
 
-    > python3 genpw.py -l 24 -g 4
-    BU_7 7RcI jjce zAKo 83v8 RAk_
+    > genpw --log=info -e 128 -g 4
+    INFO: base85 encoder is used, 6.409 bits/character entropy
+    INFO: 20 characters required for ≥128 bits of entropy
+    INFO: grouping by 4 characters
+    JnX< aqd% y9J$ -<4W ?<d8
+
+    > genpw -e 128 -r 5
+    il)1|ASvX@Xv<+oX0j(;
+    oJcpJ+!H%R`M4OfqE(f3
+    f13}Hrf{B3z%hu!C%fK-
+    9%KiUJgaKjp<3hqtxS+*
+    +!<O%9xW4!r${xq`9<Zw
 
 
 getbb.sh
@@ -666,6 +708,17 @@ param.py
 --------
 
 Script to do simple parameter substitution in files.
+
+
+passphrase.py
+-------------
+
+Generate a passphrase from random words from a wordlist.
+It determines the amount of words to use from the desired amount of entropy.
+
+.. Note:: You should update the ``wordfiles`` dictionary at the top of the
+   script to point to suitable word lists. These word lists should contain one
+   word per line.
 
 
 pdfdiff.py
