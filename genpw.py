@@ -2,10 +2,10 @@
 # file: genpw.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2013-2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-12-11T23:33:07+01:00
-# Last modified: 2022-01-16T14:38:13+0100
+# Last modified: 2022-01-16T15:39:23+0100
 """
 Generate random passwords.
 
