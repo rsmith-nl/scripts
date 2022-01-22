@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-01-16T16:11:27+0100
+.. Last modified: 2022-01-22T19:15:29+0100
 
 Introduction
 ============
@@ -466,6 +466,13 @@ git-origdate.py
 
 For all command-line arguments, print out when they were first checked into
 ``git``.
+
+
+git-status-all.py
+-----------------
+
+For all the subdirectories under the current working directory, report those
+that are not clean or are ahead of their remote(s).
 
 
 gitdates.py
