@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2020-08-15T14:39:29+0200
+# Last modified: 2022-01-22T21:25:37+0100
 
 set -eu
 
@@ -17,7 +17,8 @@ The rsync(1) daemon should be running on <host>.  The /home directory on
 <host> should be listed as the [home] module in the rsyncd.conf(5) on <host>.
 
 Options:
-  -h: Display help
+  -h: Display help.
+  -a: Don't hide files related to revision control.
   -c: Use checksum instead of date to look for changed files.
   -r: Transfer in reverse direction; from <host> to us.
   -f: Really sync files. the default is to perform a dry run.
@@ -30,13 +31,14 @@ It should be the same on both machines.
 US=`hostname -s`
 HOST=${1}
 shift
-args=`getopt fhrc $*`
+args=`getopt fhrca $*`
 if [ $? -ne 0 ]; then
     echo "$usage"
     exit 1
 fi
 set -- $args
 FORCE=""
+ALL=""
 REVERSE=""
 CHECKSUM=""
 while true; do
@@ -44,6 +46,10 @@ while true; do
         -h)
             echo "$usage"
             exit 1
+            ;;
+        -a)
+            ALL='yes'
+            shift
             ;;
         -f)
             FORCE='yes'
@@ -81,6 +87,8 @@ DIR=${DIR##/home/${USER}/}
 OPTS='-avCn'
 if [ $FORCE ]; then
     OPTS='-av'
+elif [ $ALL ]; then
+    OPTS='-avn'
 fi
 if [ $CHECKSUM ]; then
     OPTS=${OPTS}'c'
