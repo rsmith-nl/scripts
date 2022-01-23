@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2022-01-22T18:26:05+0100
+# Last modified: 2022-01-23T17:49:33+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -25,9 +25,14 @@ def main():
     Entry point of git-status-all.
     """
     args = setup()
-    for (dirpath, dirnames, filenames) in os.walk(os.getcwd()):
-        if ".git" in dirnames:
-            runstatus(dirpath, args.verbose)
+    if not args.directories:
+        args.directories = [""]
+    cwd = os.getcwd() + os.sep
+    args.directories = [cwd + d for d in args.directories]
+    for d in args.directories:
+        for (dirpath, dirnames, filenames) in os.walk(d):
+            if ".git" in dirnames:
+                runstatus(dirpath, args.verbose)
 
 
 def setup():
@@ -41,6 +46,9 @@ def setup():
     )
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="also report on repos that are OK"
+    )
+    parser.add_argument(
+        "directories", nargs="*", help="one or more directories to process"
     )
     args = parser.parse_args(sys.argv[1:])
     logging.basicConfig(
