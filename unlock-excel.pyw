@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2022-01-16T09:40:50+0100
+# Last modified: 2022-01-28T15:05:56+0100
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -21,19 +21,17 @@ from tkinter import ttk
 from tkinter.font import nametofont
 import tkinter as tk
 
+__version__ = "2022.01.28"
+widgets = SimpleNamespace()
+state = SimpleNamespace()
 
-__version__ = "2020.04.20"
 
-
-def create_widgets(root):
+def create_widgets(root, w):
     """Create the window and its widgets.
 
     Arguments:
         root: the root window.
-
-    Returns:
-        A SimpleNamespace of widgets
-
+        w: SimpleNamespace to store widgets.
     """
     # Set the font.
     default_font = nametofont("TkDefaultFont")
@@ -44,66 +42,58 @@ def create_widgets(root):
     root.wm_title('Unlock excel files v' + __version__)
     root.columnconfigure(3, weight=1)
     root.rowconfigure(5, weight=1)
-    # A SimpleNamespace is used to save widgets that need to be accessed later.
-    w = SimpleNamespace()
     # First row
     ttk.Label(root, text='(1)').grid(row=0, column=0, sticky='ew')
-    fb = ttk.Button(root, text="Select file", command=do_file)
-    fb.grid(row=0, column=1, columnspan=2, sticky="w")
-    w.fb = fb
-    fn = ttk.Label(root)
-    fn.grid(row=0, column=3, columnspan=2, sticky="ew")
-    w.fn = fn
+    w.fb = ttk.Button(root, text="Select file", command=do_file)
+    w.fb.grid(row=0, column=1, columnspan=2, sticky="w")
+    w.fn = ttk.Label(root)
+    w.fn.grid(row=0, column=3, columnspan=2, sticky="ew")
     # Second row
     ttk.Label(root, text='(2)').grid(row=1, column=0, sticky='ew')
-    backup = tk.IntVar()
-    backup.set(0)
-    w.backup = backup
-    ttk.Checkbutton(root, text='backup', variable=backup,
+    w.backup = tk.IntVar()
+    w.backup.set(0)
+    ttk.Checkbutton(root, text='backup', variable=w.backup,
                     command=on_backup).grid(row=1, column=1, sticky='ew')
-    suffixlabel = ttk.Label(root, text='suffix:', state=tk.DISABLED)
-    suffixlabel.grid(row=1, column=2, sticky='ew')
-    w.suffixlabel = suffixlabel
-    suffix = tk.StringVar()
-    suffix.set('-orig')
-    w.suffix = suffix
-    se = ttk.Entry(root, justify='left', textvariable=suffix, state=tk.DISABLED)
+    w.suffixlabel = ttk.Label(root, text='suffix:', state=tk.DISABLED)
+    w.suffixlabel.grid(row=1, column=2, sticky='ew')
+    w.suffix = tk.StringVar()
+    w.suffix.set('-orig')
+    se = ttk.Entry(root, justify='left', textvariable=w.suffix, state=tk.DISABLED)
     se.grid(row=1, column=3, columnspan=1, sticky='w')
     w.suffixentry = se
     # Third row
     ttk.Label(root, text='(3)').grid(row=2, column=0, sticky='ew')
-    gobtn = ttk.Button(root, text="Go!", command=do_start, state=tk.DISABLED)
-    gobtn.grid(row=2, column=1, sticky='ew')
-    w.gobtn = gobtn
+    w.gobtn = ttk.Button(root, text="Go!", command=do_start, state=tk.DISABLED)
+    w.gobtn.grid(row=2, column=1, sticky='ew')
     # Fourth row
     ttk.Label(root, text='(4)').grid(row=3, column=0, sticky='ew')
     ttk.Label(root, text='Progress:').grid(row=3, column=1, sticky='w')
     # Fifth row
     sb = tk.Scrollbar(root, orient="vertical")
-    status = tk.Listbox(root, width=40, yscrollcommand=sb.set)
-    status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="nsew")
-    w.status = status
+    w.status = tk.Listbox(root, width=60, yscrollcommand=sb.set)
+    w.status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="nsew")
     sb.grid(row=4, rowspan=5, column=5, sticky="ns")
-    sb.config(command=status.yview)
+    sb.config(command=w.status.yview)
     # Ninth row
     ttk.Button(root, text="Quit", command=do_exit).grid(row=9, column=1, sticky='ew')
-    # Return the widgets that need to be accessed.
-    return w
 
 
-def create_state():
-    """Create and initialize the global state."""
-    state = SimpleNamespace()
-    state.interval = 10
-    state.path = ''
-    state.inzf, state.outzf = None, None
-    state.infos = None
-    state.currinfo = None
-    state.worksheets_unlocked = 0
-    state.workbook_unlocked = False
-    state.directory = None
-    state.remove = None
-    return state
+def initialize_state(s):
+    """
+    Initialize the global state.
+
+    Arguments:
+        s: SimpleNamespace to store application state.
+    """
+    s.interval = 10
+    s.path = ''
+    s.inzf, s.outzf = None, None
+    s.infos = None
+    s.currinfo = None
+    s.worksheets_unlocked = 0
+    s.workbook_unlocked = False
+    s.directory = None
+    s.remove = None
 
 
 def statusmsg(text):
@@ -264,8 +254,6 @@ if __name__ == '__main__':
         root.tk.call('set', '::tk::dialog::file::showHiddenVar', '0')
     except Exception:
         pass
-    # Widgets is a namespace of widgets that needs to be accessed by the callbacks.
-    # State is a namespace of the global state.
-    widgets = create_widgets(root)
-    state = create_state()
+    create_widgets(root, widgets)
+    initialize_state(state)
     root.mainloop()
