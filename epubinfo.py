@@ -20,7 +20,7 @@ if len(sys.argv) < 2:
     print(f"Usage: {os.path.basename(sys.argv[0])} file ...")
     sys.exit(0)
 for fn in sys.argv[1:]:
-    if not fn.lower().endswith('epub'):
+    if not fn.lower().endswith("epub"):
         print(f"File {fn} is not an epub file; skipping.")
         continue
     print(f"File: {fn}")

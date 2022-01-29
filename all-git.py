@@ -22,7 +22,7 @@ for root, dirs, files in os.walk("."):
             ["git", "-P", "log", "-n", "1", "--pretty=%H %at"],
             stdout=sp.PIPE,
             stderr=sp.DEVNULL,
-            text=True
+            text=True,
         ).stdout[:-1]
         try:
             commit_id, seconds = data.split()
@@ -34,4 +34,6 @@ for root, dirs, files in os.walk("."):
 # Move the most recently changed to the end of the list.
 results.sort(key=lambda x: x[1])
 for commit_id, seconds, path in results:
-    print(commit_id, time.strftime("%Y-%m-%dT%H:%M%:%S%z", time.localtime(seconds)), path)
+    print(
+        commit_id, time.strftime("%Y-%m-%dT%H:%M%:%S%z", time.localtime(seconds)), path
+    )

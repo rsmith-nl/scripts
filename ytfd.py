@@ -59,12 +59,14 @@ sys.stdout.reconfigure(line_buffering=True)
 for channel_title, channel_id in channels.items():
     try:
         with urllib.request.urlopen(base + channel_id) as con:
-            text = con.read().decode('utf-8')
+            text = con.read().decode("utf-8")
             rv = con.code
     except urllib.error.HTTPError:
         rv = -1
     if rv != 200:
-        print(f"Could not retrieve data for “{channel_title}” (code: {rv}), skipping it.\n")
+        print(
+            f"Could not retrieve data for “{channel_title}” (code: {rv}), skipping it.\n"
+        )
         continue
     titles = re.findall("<title>(.*)</title>", text, re.IGNORECASE)
     links = re.findall('<link rel="alternate" href="(.*)"/>', text, re.IGNORECASE)

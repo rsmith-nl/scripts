@@ -25,7 +25,7 @@ def main():
     Entry point of git-check-all.
     """
     args = setup()
-    #for (dirpath, dirnames, filenames) in os.walk(os.environ["HOME"]):
+    # for (dirpath, dirnames, filenames) in os.walk(os.environ["HOME"]):
     for (dirpath, dirnames, filenames) in os.walk(os.getcwd()):
         if ".git" in dirnames:
             runchecks(dirpath, args.verbose)

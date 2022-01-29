@@ -39,8 +39,6 @@ for dirname in sys.argv[1:]:
     else:
         newname = "".join(["old-", dirname, dt])
     if os.path.exists(newname):
-        logging.warning(
-            f"'{newname}' already exists. Skipping rename of '{dirname}'."
-        )
+        logging.warning(f"'{newname}' already exists. Skipping rename of '{dirname}'.")
         continue
     os.rename(dirname, newname)

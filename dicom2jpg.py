@@ -5,7 +5,7 @@
 # Copyright © 2016-2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-13T10:51:55+01:00
-# Last modified: 2021-09-19T12:06:21+0200
+# Last modified: 2022-01-29T22:11:33+0100
 """
 Convert DICOM files from an X-ray machine to JPEG format.
 
@@ -111,7 +111,7 @@ def convert(filename, quality, level):
         "-density",
         "300",
         "-depth",
-        "8"
+        "8",
         "-crop",
         size + "+232+0",
         "-page",

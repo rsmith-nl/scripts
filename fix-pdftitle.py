@@ -150,7 +150,7 @@ def set_title(path, fn, tempdir, newtitle):
         "-dNOPAUSE",
         "-sDEVICE=pdfwrite",
         "-sOutputFile=withmarks.pdf",
-        orig+os.sep+path,
+        orig + os.sep + path,
         "pdfmarks",
     ]
     logging.debug(args)
