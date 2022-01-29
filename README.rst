@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-01-22T19:15:29+0100
+.. Last modified: 2022-01-29T22:22:15+0100
 
 Introduction
 ============
@@ -33,6 +33,11 @@ All Python scripts use Python 3 specific features. Most recently I converted
 later for the Python scripts.
 
 Note that these scripts assume that Python 3 is installed as ``python``.
+
+For the Python code:
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
 
 
 Running tests
