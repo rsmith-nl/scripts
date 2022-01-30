@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2022-01-30T20:49:53+0100
+# Last modified: 2022-01-30T20:51:24+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -28,7 +28,9 @@ def main():
     if not args.directories:
         args.directories = [""]
     cwd = os.getcwd() + os.sep
-    args.directories = [cwd + d for d in args.directories]
+    args.directories = [
+        d if d.startswith(os.sep) else cwd + d for d in args.directories
+    ]
     for d in args.directories:
         for (dirpath, dirnames, filenames) in os.walk(d):
             if any(w in dirpath for w in args.ignore):
