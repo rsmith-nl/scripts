@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2022-01-23T17:49:33+0100
+# Last modified: 2022-01-30T20:49:53+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -31,6 +31,8 @@ def main():
     args.directories = [cwd + d for d in args.directories]
     for d in args.directories:
         for (dirpath, dirnames, filenames) in os.walk(d):
+            if any(w in dirpath for w in args.ignore):
+                continue
             if ".git" in dirnames:
                 runstatus(dirpath, args.verbose)
 
@@ -46,6 +48,13 @@ def setup():
     )
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="also report on repos that are OK"
+    )
+    parser.add_argument(
+        "-i",
+        "--ignore",
+        action="append",
+        default=[],
+        help="directories that contain IGNORE are ignored (can be use multiple times)",
     )
     parser.add_argument(
         "directories", nargs="*", help="one or more directories to process"
