@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-01-29T22:22:15+0100
+.. Last modified: 2022-02-05T21:18:01+0100
 
 Introduction
 ============
@@ -1031,6 +1031,21 @@ Convert video files to VP9_ video and Vorbis_ audio streams in a webm_
 container, using a 2-pass process.
 
 .. _webm: https://en.wikipedia.org/wiki/WebM
+
+
+whl-req.py
+----------
+
+Extract and print the requirements of Python wheel file(s). Example::
+
+    > whl-req matplotlib-3.4.2-cp39-cp39-win_amd64.whl
+    matplotlib-3.4.2-cp39-cp39-win_amd64.whl
+        cycler (>=0.10)
+        kiwisolver (>=1.0.1)
+        numpy (>=1.16)
+        pillow (>=6.2.0)
+        pyparsing (>=2.2.1)
+        python-dateutil (>=2.7)
 
 
 ytfd.py
