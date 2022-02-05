@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-02-05T21:18:01+0100
+.. Last modified: 2022-02-05T21:20:19+0100
 
 Introduction
 ============
@@ -850,6 +850,27 @@ extension of the original file. Example:
     holiday2014-031.jpg  holiday2014-039.jpg  holiday2014-008.jpg
     holiday2014-016.jpg  holiday2014-024.jpg  holiday2014-032.jpg
     holiday2014-040.jpg
+
+By default, the script renames files in the sequence they were given as
+arguments.
+For example, if you have files like this::
+
+    file-1.jpg file-10.jpg file-11.jpg file-12.jpg file-13.jpg file-14.jpg
+    file-15.jpg file-16.jpg file-17.jpg file-18.jpg file-19.jpg file-2.jpg
+    file-20.jpg file-21.jpg file-22.jpg file-23.jpg file-24.jpg file-25.jpg
+    file-26.jpg file-27.jpg file-28.jpg file-29.jpg file-3.jpg file-4.jpg
+    file-5.jpg file-6.jpg file-7.jpg file-8.jpg file-9.jpg
+
+You give the command::
+
+    rename -p holiday- *.jpg
+
+This would rename ``file-1.jpg`` to ``holiday-01.jpg``, but
+``file-10.jpg`` to ``holiday-02.jpg`` et cetera.
+
+For this case, the ``-n`` option was implemented.
+It sorts the given filenames in ascending order of the last number in the
+original filename.
 
 
 scripts-tests.py
