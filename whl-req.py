@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-# file: req.py
+# file: wheel-req.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-08-17T23:42:00+0200
-# Last modified: 2020-08-17T23:51:03+0200
+# Last modified: 2022-02-05T20:19:53+0100
 """Extract the requirements from wheel files."""
 
+import os
 import sys
 import zipfile as zf
 
@@ -18,12 +19,15 @@ def get_req(wheel):
     with z.open(name) as f:
         data = f.read().decode().splitlines()
     requirements = [
-        ln.split(maxsplit=1)[1] for ln in data if ln.startswith("Requires-Dist:")
+        ln.split(maxsplit=1)[1]
+        for ln in data
+        if ln.startswith("Requires-Dist:") and "extra ==" not in ln
     ]
     return requirements
 
 
-for path in sys.argv[1:]:
-    print(path)
-    for dep in get_req(path):
-        print("    ", dep)
+if __name__ == "__main__":
+    for path in sys.argv[1:]:
+        print(path.rsplit(os.sep, maxsplit=1)[1])
+        for dep in get_req(path):
+            print("    ", dep)
