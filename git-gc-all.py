@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-# file: git-check-all.py
+# file: git-gc-all.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2012 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-09-02T17:45:51+02:00
-# Last modified: 2021-09-05T22:43:17+0200
+# Last modified: 2022-02-12T13:20:29+0100
 """
-Run ``git gc`` on all the user's git repositories.
+Run ``git gc`` on all s git repositories under the current working directory.
 
-Find all directories in the user's home directory that are managed with
+Find all directories under the current working directory that are managed with
 git, and run ``git gc`` on them unless they have uncommitted changes.
 """
 
@@ -25,7 +25,6 @@ def main():
     Entry point of git-check-all.
     """
     args = setup()
-    # for (dirpath, dirnames, filenames) in os.walk(os.environ["HOME"]):
     for (dirpath, dirnames, filenames) in os.walk(os.getcwd()):
         if ".git" in dirnames:
             runchecks(dirpath, args.verbose)
@@ -77,7 +76,7 @@ def runchecks(d, verbose=False):
         return
     rv = gitcmd(["gc", "--auto", "--quiet"])
     if rv:
-        logging.info(f"git gc failed on '{d}'!")
+        logging.warning(f"git gc failed on '{d}'!")
 
 
 def gitcmd(cmds, output=False):
