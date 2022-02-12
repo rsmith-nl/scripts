@@ -2,10 +2,10 @@
 # file: gitdates.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Copyright © 2012-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2012 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-10-28T14:07:21+01:00
-# Last modified: 2020-01-13T19:08:56+0100
+# Last modified: 2022-02-12T11:56:23+0100
 """Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
@@ -13,7 +13,6 @@ import logging
 import os
 import subprocess as sp
 import sys
-import time
 
 
 def main():
@@ -43,10 +42,10 @@ def main():
     filedata = [r for r in res if r is not None]
     # Sort the data (latest modified first) and print it
     filedata.sort(key=lambda a: a[2], reverse=True)
-    dfmt = "%Y-%m-%d %H:%M:%S %Z"
+    maxlen = max(len(n) for n, _, _ in filedata)
+    sep = " | "
     for name, tag, date in filedata:
-        ds = time.strftime(dfmt, date)
-        print(f"{name}|{tag}|{ds}")
+        print(f"{name:{maxlen}s}{sep}{tag}{sep}{date}")
 
 
 def filecheck(fname):
@@ -63,7 +62,7 @@ def filecheck(fname):
         A 3-tuple containing the file name, latest short hash and latest
         commit date.
     """
-    args = ["git", "--no-pager", "log", "-1", "--format=%h|%at", fname]
+    args = ["git", "--no-pager", "log", "-1", "--format=%h|%aI", fname]
     try:
         b = sp.run(
             args, stdout=sp.PIPE, stderr=sp.DEVNULL, universal_newlines=True, check=True
@@ -72,7 +71,7 @@ def filecheck(fname):
             return None
         data = b[:-1]
         h, t = data.split("|")
-        out = (fname[2:], h, time.gmtime(float(t)))
+        out = (fname[2:], h, t)
     except (sp.CalledProcessError, ValueError):
         logging.error('git log failed for "{}"'.format(fname))
         return None
