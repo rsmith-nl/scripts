@@ -5,7 +5,7 @@
 # Copyright © 2012 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-10-28T14:07:21+01:00
-# Last modified: 2022-02-12T11:56:23+0100
+# Last modified: 2022-02-12T13:03:46+0100
 """Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
@@ -40,8 +40,8 @@ def main():
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
         res = tp.map(filecheck, allfiles)
     filedata = [r for r in res if r is not None]
-    # Sort the data (latest modified first) and print it
-    filedata.sort(key=lambda a: a[2], reverse=True)
+    # Sort the data (latest modified last) and print it
+    filedata.sort(key=lambda a: a[2])
     maxlen = max(len(n) for n, _, _ in filedata)
     sep = " | "
     for name, tag, date in filedata:
