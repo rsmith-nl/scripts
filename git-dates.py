@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# file: gitdates.py
+# file: git-dates.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2012 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-10-28T14:07:21+01:00
-# Last modified: 2022-02-12T13:03:46+0100
+# Last modified: 2022-02-12T13:29:15+0100
 """Get the short hash and most recent commit date for files."""
 
 from concurrent.futures import ThreadPoolExecutor
@@ -16,7 +16,7 @@ import sys
 
 
 def main():
-    """Entry point for gitdates."""
+    """Entry point for git-dates."""
     logging.basicConfig(level="WARNING", format="%(levelname)s: %(message)s")
     # List of all files
     allfiles = []
