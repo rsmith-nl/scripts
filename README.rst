@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-02-05T21:20:19+0100
+.. Last modified: 2022-02-14T23:26:25+0100
 
 Introduction
 ============
@@ -12,6 +12,10 @@ Introduction
 This is a collection of small utilities that I've written over the years.
 Some of them are simple front-ends for a utility with some standard options,
 to save me from having to recall the options every time I need them.
+
+Given that there are a number of different programs in this repository,
+releases or packages for this repo should not be expected.
+Just clone the repo or download the zipfile from the ``main`` branch.
 
 Another portion are basically Python_ front-ends to run a utility in parallel
 on different files.
