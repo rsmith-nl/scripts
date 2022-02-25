@@ -3,10 +3,10 @@
 # vim:fileencoding=utf-8:fdm=marker:ft=sh
 # Generate a full backup of the current directory.
 #
-# Copyright © 2013-2018 R.F. Smith <rsmith@xs4all.nl>.
+# Copyright © 2013 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-08-13T22:13:23+0200
-# Last modified: 2020-08-14T18:37:20+0200
+# Last modified: 2022-02-25T21:15:42+0100
 
 set -e
 
@@ -20,9 +20,11 @@ while [ "$1" != "" ]; do
                                 ;;
         -n | --name )           shift
                                 OUTNAME=$1
+                                shift
                                 ;;
         -x | --exclude )        shift
                                 EXCLUDE=${EXCLUDE}" --exclude $1"
+                                shift
                                 ;;
     esac
 done
