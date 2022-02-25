@@ -5,7 +5,7 @@
 # Copyright © 2014-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-05T01:26:59+01:00
-# Last modified: 2021-05-31T12:36:26+0200
+# Last modified: 2022-02-25T12:29:09+0100
 """Create a suitable LaTeX figure environment for image files."""
 
 import argparse
@@ -15,7 +15,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = "2020.04.01"
+__version__ = "2022.02.25"
 
 
 def main():
@@ -181,7 +181,7 @@ def getpicsize(fn):
     for ln in rv.stdout.splitlines():
         k, v = ln.strip().split(":", 1)
         data[k] = v.strip()
-    if data["Units"] != "Undefined":
+    if data["Units"] != "Undefined" and "Resolution" in data:
         res = float(data["Resolution"].split("x")[0])
     else:
         res = 72  # default for includegraphics.
