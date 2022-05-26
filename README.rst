@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-02-14T23:26:25+0100
+.. Last modified: 2022-05-26T18:08:14+0200
 
 Introduction
 ============
@@ -630,13 +630,16 @@ This scripts adds a copyright notice to pictures.
 .. _exiftool: https://www.sno.phy.queensu.ca/~phil/exiftool/
 
 
-mkhistory.py
+mkhistory.sh
 ------------
 
-This script takes the ``git log --oneline`` history from the current working
-directory and formats it as LaTeX text with one commit per line. This is
-written to a given output file or standard output if ``-`` is used as the file
-name.
+This script takes the ``git log`` history from the current working
+directory and formats it as LaTeX “tabbing” environment with one commit per line.
+This is written to standard output.
+
+It uses the ``--pretty=format:`` option of ``git log`` to do most of the work,
+while ``echo`` is used to create the “tabbing” environment around the log
+output.
 
 
 mkindexpic.sh
