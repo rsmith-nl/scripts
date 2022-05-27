@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2022-01-28T14:59:54+0100
+# Last modified: 2022-05-27T15:05:42+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm).
 
 This is a multithreaded version of unlock-excel.pyw.  All the work that was
@@ -36,7 +36,7 @@ from tkinter import ttk
 from tkinter.font import nametofont
 import tkinter as tk
 
-__version__ = "2022.01.28"
+__version__ = "2022.05.27"
 widgets = SimpleNamespace()
 state = SimpleNamespace()
 
@@ -157,7 +157,7 @@ def process_zipfile_thread():
         os.remove(remove)
     else:
         statusmsg('Removing temporary file')
-    statusmsg(f'Unlocked {state.worksheets_unlocked} worksheets.')
+    statusmsg(f'Unlocked {worksheets_unlocked} worksheets.')
     statusmsg('Finished!')
     widgets.gobtn['state'] = 'disabled'
     widgets.fn['text'] = ''
@@ -180,7 +180,6 @@ def do_file():
     if not fn:
         return
     state.directory = os.path.dirname(fn)
-    state.worksheets_unlocked = 0
     state.workbook_unlocked = False
     widgets.fn['text'] = fn
     widgets.gobtn['state'] = 'enabled'
