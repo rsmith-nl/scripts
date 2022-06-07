@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2021-02-28T20:45:20+0100
+# Last modified: 2022-06-07T07:42:43+0200
 
 set -e
 
@@ -17,7 +17,7 @@ if [ -z $1 ]; then
    exit 0
 fi
 
-EXCLUDED="/\..*|tmp"
+EXCLUDED="/\..*|tmp|github"
 
 cd $HOME
 find . -mtime -$1 -type f |grep -Ev $EXCLUDED|cut -c 3-
