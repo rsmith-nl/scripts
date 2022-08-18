@@ -5,7 +5,7 @@
 # Copyright © 2017-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2017-04-11T16:17:26+02:00
-# Last modified: 2020-12-18T17:00:36+0100
+# Last modified: 2022-08-18T14:36:43+0200
 """
 Fix PDF file titles.
 
@@ -23,7 +23,7 @@ import subprocess as sp
 import sys
 import tempfile
 
-__version__ = "2020.12.18"
+__version__ = "2022.08.18"
 
 
 def main():
@@ -100,7 +100,8 @@ def pdfinfo(path):
     if cp.returncode != 0:
         return defaultdict(lambda: "")
     pairs = [
-        (k, v.strip()) for k, v in [ln.split(":", 1) for ln in cp.stdout.splitlines()]
+        (k, v.strip())
+        for k, v in [ln.split(":", 1) for ln in cp.stdout.splitlines() if ln]
     ]
     return defaultdict(lambda: "", pairs)
 
