@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-05-26T18:08:14+0200
+.. Last modified: 2022-09-27T23:03:35+0200
 
 Introduction
 ============
@@ -475,6 +475,13 @@ git-origdate.py
 
 For all command-line arguments, print out when they were first checked into
 ``git``.
+
+
+git-repo-info.py
+----------------
+
+Print information about the repository when called from the root of
+a directory tree under git control.
 
 
 git-status-all.py
