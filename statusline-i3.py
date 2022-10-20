@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2020-11-19T12:33:40+0100
+# Last modified: 2022-10-20T15:24:00+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -27,12 +27,15 @@ import traceback
 # Global data
 __version__ = "2020.04.01"
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+PAGESIZE = 0
 
 
 def main():
     """
     Entry point for statusline-i3.py
     """
+    global PAGESIZE
+    PAGESIZE = sysctlbyname("hw.pagesize", convert=to_int)
     args = setup()
     mailboxes = {name: {} for name in args.mailbox.split(":")}
     cpudata = {}
@@ -316,10 +319,26 @@ def memory():
         suffix: sysctlbyname(f"vm.stats.vm.v_{suffix}", convert=to_int)
         for suffix in suffixes
     }
+    try:
+        # For systems with ZFS, count the size of the ARC as inactive.
+        arcsize = (
+            sysctlbyname(
+                "kstat.zfs.misc.arcstats.size",
+                buflen=8,
+                convert=to_int
+            ) // PAGESIZE
+        )
+    except ValueError:
+        arcsize = 0
     memmax = stats["page_count"]
-    mem = memmax - stats["free_count"] - stats["inactive_count"] - stats["cache_count"]
-    free = int(100 * mem / memmax)
-    return f"RAM: {free}%"
+    mem = (
+        memmax
+        - stats["free_count"]
+        - (stats["inactive_count"] + arcsize)
+        - stats["cache_count"]
+    )
+    usedmem = int(100 * mem / memmax)
+    return f"RAM: {usedmem}%"
 
 
 def cpu(storage):
