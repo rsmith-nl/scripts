@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2022-10-20T15:24:00+0200
+# Last modified: 2022-10-20T15:25:57+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -322,11 +322,8 @@ def memory():
     try:
         # For systems with ZFS, count the size of the ARC as inactive.
         arcsize = (
-            sysctlbyname(
-                "kstat.zfs.misc.arcstats.size",
-                buflen=8,
-                convert=to_int
-            ) // PAGESIZE
+            sysctlbyname("kstat.zfs.misc.arcstats.size", buflen=8, convert=to_int)
+            // PAGESIZE
         )
     except ValueError:
         arcsize = 0
