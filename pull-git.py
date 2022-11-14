@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2011-12-28T14:54:23+01:00
-# Last modified: 2020-10-30T05:08:36+0100
+# Last modified: 2022-11-14T19:12:35+0100
 #
 """Pull the current git-managed directory from another server and rebase around that."""
 
@@ -96,7 +96,7 @@ def getremote(override):
 
 def getpulldir():
     """Get the name of the directory we're pulling."""
-    hdir = os.environ["HOME"] + os.sep
+    hdir = os.path.realpath(os.environ["HOME"])
     curdir = os.getcwd()
     if not curdir.startswith(hdir):
         logging.error("current directory not in user's home directory; exiting.")
