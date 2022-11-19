@@ -5,16 +5,17 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-10-09T11:59:41+02:00
-# Last modified: 2020-04-01T18:27:54+0200
+# Last modified: 2022-11-21T07:26:40+0100
 """
 Lock down files or directories.
 
 This makes files read-only for the owner and inaccessible for the group and
-others. Then it sets the user immutable and user undeletable flag on the files.
-For directories, it recursively treats the files as mentioned above. It then
-sets the sets the directories to read/execute only for the owner and
-inaccessible for the group and others. Then it sets the user immutable and
-undeletable flag on the directories as well.
+others. Then it sets the user immutable and user undeletable flag on the files
+if the filesystem supports that.  For directories, it recursively treats the
+files as mentioned above. It then sets the sets the directories to
+read/execute only for the owner and inaccessible for the group and others.
+Then it sets the user immutable and undeletable flag on the directories as
+well, again if the filesystem supports that.
 
 Using the -u flag unlocks the files or directories, making them writable for
 the owner only.
@@ -26,7 +27,7 @@ import os
 import sys
 import stat
 
-__version__ = "2020.04.01"
+__version__ = "2022.11.19"
 
 
 def main():
@@ -97,10 +98,16 @@ def lock_path(root, name, mode):
     pst = os.stat(p)
     if pst.st_flags & stat.UF_IMMUTABLE:
         # Temporarily remove user immutable flag, so we can chmod.
-        os.chflags(p, pst.st_flags ^ stat.UF_IMMUTABLE)
+        try:
+            os.chflags(p, pst.st_flags ^ stat.UF_IMMUTABLE)
+        except OSError as e:
+            logging.info(e)
     logging.info(f"locking path “{p}”")
     os.chmod(p, mode)
-    os.chflags(p, pst.st_flags | addflags)
+    try:
+        os.chflags(p, pst.st_flags | addflags)
+    except OSError as e:
+        logging.info(e)
 
 
 def unlock_path(root, name, mode):
@@ -108,7 +115,10 @@ def unlock_path(root, name, mode):
     p = os.path.join(root, name)
     pst = os.stat(p)
     logging.info(f"unlocking path “{p}”")
-    os.chflags(p, pst.st_flags & ~rmflags)
+    try:
+        os.chflags(p, pst.st_flags & ~rmflags)
+    except OSError as e:
+        logging.info(e)
     os.chmod(p, mode)
 
 
