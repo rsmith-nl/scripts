@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-09-26T21:49:53+0200
-# Last modified: 2022-09-27T23:06:25+0200
+# Last modified: 2022-12-05T23:17:31+0100
 """
 Gather and print information about a git repository.
 
@@ -80,12 +80,12 @@ print(f"- {len(files)} files under git control")
 hashes = output(["git", "log", "--pretty=format:%H"], split=True)
 print(f"- {len(hashes)} commits")
 
-objsize = int(output(["du", "-s", ".git/objects/"]).split()[0])
-infosize = int(output(["du", "-s", ".git/objects/info"]).split()[0])
+objsize = int(output(["du", "-sk", ".git/objects/"]).split()[0]) * 1.024
+infosize = int(output(["du", "-sk", ".git/objects/info"]).split()[0]) * 1.024
 objsize -= infosize
-packsize = int(output(["du", "-s", ".git/objects/pack"]).split()[0])
+packsize = int(output(["du", "-sk", ".git/objects/pack"]).split()[0]) * 1.024
 packed = packsize/objsize*100
-print(f"- object storage size: {objsize} KiB ({packed:.0f}% packed)")
+print(f"- object storage size: {objsize:,.0f} kB ({packed:.0f}% packed)")
 
 first_commit_date = output(["git", "log", "--pretty=format:%ai", hashes[-1]])
 print("- first commit:", first_commit_date)
