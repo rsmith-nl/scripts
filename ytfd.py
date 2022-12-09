@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2022-07-17T12:06:28+0200
+# Last modified: 2022-12-09T09:36:48+0100
 """View or download the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -23,6 +23,7 @@ now = datetime.datetime.now(tz=datetime.timezone.utc)
 # The file format is JSON, as shown below:
 # {
 #     "limit": 7,
+#     "count": 3,
 #     "viewer": "mpv",
 #     "viewer-args": "",
 #     "downloader": "yt-dlp",
@@ -34,6 +35,7 @@ now = datetime.datetime.now(tz=datetime.timezone.utc)
 #     }
 # }
 # The “limit” is optional. If not present, it will be set to 7 days.
+# Also optional is “count”. If not present, it will be set to 3 videos
 # "viewer", “viewer-args”, “downloader” and “downloader-args” are also optional.
 # If not present, it will be set with the default values.
 # Note that the channelId's above are not real, they're randomly generated!
@@ -58,6 +60,7 @@ with open(rcpath) as rc:
     # Unpack data for use. Other keys are ignored.
     channels = settings["channels"]
     limit = _check(settings, "limit", int, 7)
+    count = _check(settings, "count", int, 3)
     viewer = _check(settings, "viewer", str, "mpv")
     viewer_args = _check(settings, "viewer-args", str, "")
     if viewer_args:
@@ -97,6 +100,8 @@ for channel_title, channel_id in channels.items():
     if not items:
         # print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
         continue
+    if len(items) > count:
+        items = items[:count-1]
     print(f"Channel “{channel_title}”")
     for title, link, date in items:
         print(f"∙ title: “{title}”")
