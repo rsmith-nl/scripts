@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2022-12-09T09:36:48+0100
+# Last modified: 2022-12-10T17:18:29+0100
 """View or download the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -101,7 +101,7 @@ for channel_title, channel_id in channels.items():
         # print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
         continue
     if len(items) > count:
-        items = items[:count-1]
+        items = items[:count]
     print(f"Channel “{channel_title}”")
     for title, link, date in items:
         print(f"∙ title: “{title}”")
