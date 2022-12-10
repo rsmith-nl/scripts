@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2022-01-11T20:43:05+0100
+# Last modified: 2022-12-10T16:52:42+0100
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -20,7 +20,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = "2019.07.27"
+__version__ = "2022.12.10"
 
 
 def main(argv):
@@ -62,11 +62,6 @@ def main(argv):
         startstr = str(starttime)[:-7]
         tc = get_tc(fn)
         logging.info(f"started at {startstr}.")
-        t1 = str(starttime + t1)[:-10]
-        t2 = str(starttime + t2)[:-10]
-        t3 = str(starttime + t3)[:-10]
-        logging.info(f"encoding is expected to take until {t2} on average")
-        logging.info(f"but it could be anywhere between {t1} and {t3}")
         a1 = mkargs(
             fn,
             1,
@@ -100,16 +95,16 @@ def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
     args = ["ffmpeg", "-version"]
-    proc = sp.run(args, text=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
+    proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
     verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
-    major, minor, patch, *rest = re.findall(verre, proc.stderr)[0]
+    major, minor, patch, *rest = re.findall(verre, proc.stdout)[0]
     if int(major) < 3 and int(minor) < 3:
         logging.error(f"ffmpeg 3.3 is required; found {major}.{minor}.{patch}")
         return False
-    if not re.search(r"enable-libvpx", proc.stderr):
+    if not re.search(r"enable-libvpx", proc.stdout):
         logging.error("ffmpeg is not built with VP9 video support.")
         return False
-    if not re.search(r"enable-libvorbis", proc.stderr):
+    if not re.search(r"enable-libvorbis", proc.stdout):
         logging.error("ffmpeg is not built with Vorbis audio support.")
         return False
     return True
@@ -133,9 +128,10 @@ def get_tc(name):
     proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
     lines = proc.stdout.splitlines()
     d = {}
-    for ln in lines[1:-1]:
-        key, value = ln.strip().split("=")
-        d[key] = value
+    for ln in lines:
+        if '=' in ln:
+            key, value = ln.strip().split("=")
+            d[key] = value
     width = d["width"]
     return math.floor(math.log2(math.ceil(float(width) / 64.0)))
 
