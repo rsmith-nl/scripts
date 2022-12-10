@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2021-02-28T16:56:32+0100
+# Last modified: 2022-12-10T23:18:28+0100
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -146,17 +146,17 @@ def tile_cols(width):
 def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
-    args = ["ffmpeg"]
-    proc = sp.run(args, text=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
+    args = ["ffmpeg", "-version"]
+    proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
     verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
-    major, minor, patch, *rest = re.findall(verre, proc.stderr)[0]
+    major, minor, patch, *rest = re.findall(verre, proc.stdout)[0]
     if int(major) < 3 and int(minor) < 3:
         logging.error(f"ffmpeg 3.3 is required; found {major}.{minor}.{patch}")
         return False
-    if not re.search(r"enable-libvpx", proc.stderr):
+    if not re.search(r"enable-libvpx", proc.stdout):
         logging.error("ffmpeg is not built with VP9 video support.")
         return False
-    if not re.search(r"enable-libvorbis", proc.stderr):
+    if not re.search(r"enable-libvorbis", proc.stdout):
         logging.error("ffmpeg is not built with Vorbis audio support.")
         return False
     return True
