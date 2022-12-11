@@ -5,13 +5,13 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2022-12-10T16:52:42+0100
+# Last modified: 2022-12-11T23:09:58+0100
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 import argparse
 import logging
 import math
@@ -20,7 +20,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = "2022.12.10"
+__version__ = "2022.12.11"
 
 
 def main(argv):
@@ -57,7 +57,6 @@ def main(argv):
         return 1
     for fn in args.files:
         logging.info(f"processing '{fn}'.")
-        t1, t2, t3 = expectedtime(fn)
         starttime = datetime.now()
         startstr = str(starttime)[:-7]
         tc = get_tc(fn)
@@ -95,9 +94,14 @@ def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
     args = ["ffmpeg", "-version"]
-    proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    try:
+        proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    except FileNotFoundError:
+        logging.error("ffmpeg not found")
+        return False
     verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
     major, minor, patch, *rest = re.findall(verre, proc.stdout)[0]
+    logging.info(f"found ffmpeg {major}.{minor}.{patch}")
     if int(major) < 3 and int(minor) < 3:
         logging.error(f"ffmpeg 3.3 is required; found {major}.{minor}.{patch}")
         return False
@@ -249,30 +253,6 @@ def encode(args1, args2):
     ifn, ofn = args2[oidx], args2[-1]
     logging.info(f"the size of '{ofn}' is {percentage}% of the size of '{ifn}'.")
     return origsize, newsize  # both in bytes.
-
-
-def expectedtime(fn):
-    """Calculate the expected time for conversion.
-
-    Based on my machine, the average conversion speed is 75 kiB/s. The range is between
-    60 kiB/s and 90 kiB/s.
-
-    Arguments:
-        fn: file path.
-
-    Returns:
-        A 3-tuple of datetime.timedelta objects representing the minimal, average
-        and maximal expected conversion time.
-    """
-    minspeed, maxspeed = 60, 90  # KiB/s These speeds based on the author's machine!
-    size = os.stat(fn).st_size / 1024
-    minsecs, maxsecs = size / maxspeed, size / minspeed
-    avgsecs = (minsecs + maxsecs) / 2
-    return (
-        timedelta(seconds=minsecs),
-        timedelta(seconds=avgsecs),
-        timedelta(seconds=maxsecs),
-    )
 
 
 if __name__ == "__main__":
