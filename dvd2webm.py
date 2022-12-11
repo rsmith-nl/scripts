@@ -5,13 +5,17 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2022-12-10T23:18:28+0100
+# Last modified: 2022-12-11T12:00:37+0100
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
 
 It uses the first video stream and the first audio stream, unless otherwise
 indicated.
+
+Optionally it can include a subtitle in the form of an SRT file in the output.
+If the subtitle is a dvdsub track number, it gets overlayed on the video track
+because the webm format only allows webVTT subtitle tracks.
 """
 
 from collections import Counter
@@ -24,7 +28,7 @@ import re
 import subprocess as sp
 import sys
 
-__version__ = "2020.03.31"
+__version__ = "2022.12.11"
 
 
 def main():
@@ -147,9 +151,14 @@ def check_ffmpeg():
     """Check the minumum version requirement of ffmpeg, and that it is built with
     the needed drivers enabled."""
     args = ["ffmpeg", "-version"]
-    proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    try:
+        proc = sp.run(args, text=True, stdout=sp.PIPE, stderr=sp.DEVNULL)
+    except FileNotFoundError:
+        logging.error("ffmpeg not found")
+        return False
     verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
     major, minor, patch, *rest = re.findall(verre, proc.stdout)[0]
+    logging.info(f"found ffmpeg {major}.{minor}.{patch}")
     if int(major) < 3 and int(minor) < 3:
         logging.error(f"ffmpeg 3.3 is required; found {major}.{minor}.{patch}")
         return False
@@ -297,6 +306,8 @@ def mkargs(
         fc = f"[0:v][0:s:{subt}]overlay"
         if crop:
             fc += f",crop={crop}[v]"
+        else:
+            fc += "[v]"
         args += ["-filter_complex", fc, "-map", "[v]", "-map", f"0:a:{atrack}"]
     if npass == 1:
         outname = "/dev/null"
