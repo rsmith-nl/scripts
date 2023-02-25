@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2018-12-16T22:45:15+0100
-# Last modified: 2022-12-11T23:09:58+0100
+# Last modified: 2023-02-25T17:05:53+0100
 """
 Convert videos to webm files, using 2-pass constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -99,7 +99,7 @@ def check_ffmpeg():
     except FileNotFoundError:
         logging.error("ffmpeg not found")
         return False
-    verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
+    verre = r"ffmpeg version (\d+)\.(\d+)(?:\.(\d+))? Copyright"
     major, minor, patch, *rest = re.findall(verre, proc.stdout)[0]
     logging.info(f"found ffmpeg {major}.{minor}.{patch}")
     if int(major) < 3 and int(minor) < 3:
