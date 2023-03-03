@@ -5,7 +5,7 @@
 # Copyright © 2016-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2016-02-11T19:02:34+01:00
-# Last modified: 2022-12-11T12:00:37+0100
+# Last modified: 2023-03-03T20:34:56+0100
 """
 Convert an mpeg stream from a DVD to a webm file, using constrained rate VP9
 encoding for video and libvorbis for audio.
@@ -156,7 +156,7 @@ def check_ffmpeg():
     except FileNotFoundError:
         logging.error("ffmpeg not found")
         return False
-    verre = r"ffmpeg version (\d+)\.(\d+)(\.(\d+))? Copyright"
+    verre = r"ffmpeg version (\d+)\.(\d+)(?:\.(\d+))? Copyright"
     major, minor, patch, *rest = re.findall(verre, proc.stdout)[0]
     logging.info(f"found ffmpeg {major}.{minor}.{patch}")
     if int(major) < 3 and int(minor) < 3:
