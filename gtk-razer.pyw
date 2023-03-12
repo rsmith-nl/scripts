@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2021-12-19T10:46:25+0100
+# Last modified: 2023-03-12T12:39:00+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
@@ -27,7 +27,7 @@ import gi
 gi.require_version('Gtk', '3.0')  # noqa
 from gi.repository import Gtk, Gdk
 
-__version__ = "2020.05.15"
+__version__ = "2023.03.12"
 
 
 def create_widgets():
@@ -51,7 +51,7 @@ def create_widgets():
     root = builder.get_object("root")
     # Type label
     tp = builder.get_object("type")
-    tp.props.label = state.model
+    tp.props.label = f"{state.model} (0x1532:0x{state.id:04x})"
     # Red
     sRed = builder.get_object("sRed")
     w.red = sRed
@@ -152,11 +152,13 @@ def create_state():
     state.dev = None
     state.rcpath = '.' + os.path.splitext(os.path.basename(sys.argv[0]))[0] + 'rc'
     state.model = "No Razer keyboard found!"
+    state.id = 0
     # Find devices
     devs = list(usb.core.find(find_all=True, idVendor=0x1532))
     if devs:
         state.dev = devs[0]
         state.model = devs[0].product
+        state.id = devs[0].idProduct
     return state
 
 

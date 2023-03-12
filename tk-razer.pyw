@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2021-12-19T10:46:17+0100
+# Last modified: 2023-03-12T12:41:44+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the tkinter toolkit that comes with Python.
@@ -24,7 +24,7 @@ import sys
 import tkinter as tk
 import usb.core
 
-__version__ = "2020.04.20"
+__version__ = "2023.03.12"
 
 
 def create_widgets(root, model):
@@ -190,6 +190,7 @@ if __name__ == '__main__':
     if devs:
         state.dev = devs[0]
         state.model = devs[0].product
+        state.id = devs[0].idProduct
     # Create the GUI window.
     root = tk.Tk(None)
     # Use a dialog window so that it floats even when using a tiling window
@@ -197,7 +198,7 @@ if __name__ == '__main__':
     root.attributes('-type', 'dialog')
     if state.dev is not None:
         # w is a namespace of widgets that needs to be accessed by the callbacks.
-        w = create_widgets(root, model=state.model)
+        w = create_widgets(root, model=f"{state.model} (0x1532:0x{state.id:04x})")
     else:
         messagebox.showerror('Device detection', 'No Ornata Chroma found')
         root.destroy()
