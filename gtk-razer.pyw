@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-26T20:44:32+0100
-# Last modified: 2023-03-12T12:39:00+0100
+# Last modified: 2023-03-12T16:03:47+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the GTK+ GUI toolkit.
@@ -24,7 +24,8 @@ import zlib
 import usb.core
 
 import gi
-gi.require_version('Gtk', '3.0')  # noqa
+
+gi.require_version("Gtk", "3.0")  # noqa
 from gi.repository import Gtk, Gdk
 
 __version__ = "2023.03.12"
@@ -44,7 +45,7 @@ def create_widgets():
         "on_slider_change": on_slider_change,
         "on_draw": on_draw,
         "set_color": set_color,
-        "on_quit": on_quit
+        "on_quit": on_quit,
     }
     builder.connect_signals(handlers)
     # Root window
@@ -79,7 +80,7 @@ def set_preview(w, red=0, green=0, blue=0):
 def on_key(w, event):
     """Callback for keypresses."""
     key = Gdk.keyval_name(event.keyval)
-    if key in ['q', 'Q']:
+    if key in ["q", "Q"]:
         Gtk.main_quit()
 
 
@@ -88,9 +89,9 @@ def on_draw(da, ctx):
     w, h = da.get_allocated_width(), da.get_allocated_height()
     ctx.rectangle(0, 0, w, h)
     ctx.set_source_rgb(
-        widgets.red.get_value()/255,
-        widgets.green.get_value()/255,
-        widgets.blue.get_value()/255,
+        widgets.red.get_value() / 255,
+        widgets.green.get_value() / 255,
+        widgets.blue.get_value() / 255,
     )
     ctx.fill()
     return True
@@ -119,10 +120,10 @@ def static_color_msg(red, green, blue):
     # Meaning of the bytes, in sequence: 0x00 = status, 0x3f = transaction id,
     # 0x00,0x00 = number of remaining packets, 0x00 = protocol type,
     # 0x09 = length of used arguments, 0x0f = command class, 0x02 = command id.
-    hdr = b'\x00\x3f\x00\x00\x00\x09\x0f\x02'
+    hdr = b"\x00\x3f\x00\x00\x00\x09\x0f\x02"
     # Meaning of the nonzero bytes, in sequence: 0x01 = VARSTORE,
     # 0x05 = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
-    arguments = b'\x01\x05\x01\x00\x00\x01'
+    arguments = b"\x01\x05\x01\x00\x00\x01"
     msg = hdr + arguments + bytes([red, green, blue])
     chksum = 0
     for j in msg[2:]:  # Calculate the checksum
@@ -137,7 +138,7 @@ def set_color(w):
     msg = static_color_msg(
         int(widgets.red.get_value()),
         int(widgets.green.get_value()),
-        int(widgets.blue.get_value())
+        int(widgets.blue.get_value()),
     )
     # 0x21: request_type USB_TYPE_CLASS | USB_RECIP_INTERFACE | USB_DIR_OUT
     # 0x09: request HID_REQ_SET_REPORT
@@ -150,7 +151,13 @@ def create_state():
     """Create the global state."""
     state = SimpleNamespace()
     state.dev = None
-    state.rcpath = '.' + os.path.splitext(os.path.basename(sys.argv[0]))[0] + 'rc'
+    state.rcpath = (
+        os.environ["HOME"]
+        + os.sep
+        + '.'
+        + os.path.splitext(os.path.basename(sys.argv[0]))[0]
+        + "rc"
+    )
     state.model = "No Razer keyboard found!"
     state.id = 0
     # Find devices
@@ -174,47 +181,49 @@ def read_rc(rcpath):
     if not os.path.exists(rcpath):
         return None
     with open(rcpath) as rc:
-        colors = [int(ln) for ln in rc.readlines() if ln.strip()[0] in '1234567890']
+        colors = [int(ln) for ln in rc.readlines() if ln.strip()[0] in "1234567890"]
     if len(colors) != 3:
         return None
     return colors
 
 
 def write_rc(rcpath, R, G, B):
-    with open(rcpath, 'w') as rc:
-        rc.write(f'{R}\n')
-        rc.write(f'{G}\n')
-        rc.write(f'{B}\n')
+    with open(rcpath, "w") as rc:
+        rc.write(f"{R}\n")
+        rc.write(f"{G}\n")
+        rc.write(f"{B}\n")
 
 
 # The definition of the user interface was made with Glade.
 # It was encapsulated by the py-include script as follows:
 #    python3 py-include.py -c -t gtk-razer.glade
-ui = zlib.decompress(base64.b85decode(
-    'c-rlnO>f&c5Qgvl6<l5mf2IL;0oz5|BDw6L=m+*FP~uo(O_N%Zvg3c>k>u1?Oj(v4rw*E1V$Dl'
-    '&W*&}*lZ@Wq&m~!au|lgc9d!GYfQmF1Djw7C-)=j9)Ay4%qrW;Gat8_wbHK?`xP-)#aUfUS;jl'
-    'X(oemla<-kl?1d}&}j12sr2?Lf$5sqo>W^d`{MJVgjUSX%h9}qbbNoMVs-nrQg|B+cY2jwUcd`'
-    '#H~nE}mh(K<Cc1>;sku{n%smf~-8GQ7SX^&TGiEv<tz5GpcItUMVs2~rkAMbNJ*M!j<92Rd<Q0'
-    'Mv{3;tTMX=EHwNalI_}Z?twb`;V9kraH<jo!l~MVP{iT#EQwa^$b=W0}_~p4lIiJBusG$W=ypT'
-    '@G&KJ$uK7PR;5eSagityl9xZ{Tab8I5-mBH2ZP?0#Utw-&+d$P$cE3Og|H%&cyhj(Y{#8rLg3R'
-    'Fy$o#1BCHp5a&^#Kw9MveBf9pADz5w8|ByMSRhigu17_WOB@01P;tW$(GRH79W4Z!#7PY=T92L'
-    '`sxVDiQh(IjB1{|g=ldhfGX)T>d0|)oc>-9$jHU{DnAgO_cfF;4yXhWPP26(sjMU{gPNfFI3_7'
-    '(h1{(%So^#WVRb+daG%@Bu%6vEU6%sCb%bkaXO66r6|z%Rm2AHTnH5|2W1yW+QpvQWQbS-~>SV'
-    '{!_Z#R3<K=I|NO-0G;>lbMTO!K{E8Vn|NmGS^=ymRHY*CEgd@(Nunv+WwJP=6<iK)UjdnQ#dR#'
-    'aG4ywJ1>V{BZfQ_7~1Auaw)h=g8YUH)_E^Imp~rd+}<XvMUy)fQU(&QHL{g!MrVo#T*SiJ7D;X'
-    'vRJkq6aA(1alDQ49l>#qPL1}P)iU$|ie{NHJNc;H$Id0V#zmj}5l84Vn@&VoI3k11M8~w`h**H'
-    'FPe|w7^SrfdcB3L`DtL>nJdnPf3`%=8)o8P~ie4Uc$N47`$d5W*Kgrtn~V%Rts?$vso_B;N`uq'
-    '7^eV}Py8RHB#Er){iOgX{jjUHMi>K*WhVX^Dfg;ho`wvcloD=75Zxno*yA&P*&+VDc!S_k$z#S'
-    'O{vr$r{C>#;fa`PX1}sSIQ+vaH?gp{G_%z?yHhDm1&>AYh02~+$#Nb$!<RT|9b5%<=od!3O<+9'
-    'oBG8Lj@uJ`Zw;UDCQ(-^o^_C8;rKbuS8#ve6bHR7W;iogg_;>oLQIOx6Sp2RGE4F=7)6BI9zh;'
-    'G?7<WT#meVz%Z3*??kP)G0c&3KE~!ClWaSe$bO!hamfVGIs|L`!aPg!r?!T`??>{LDyMJ@P5M?'
-    '#QTMsu6M!l_nvH1yWMXp`'
-)).decode("utf-8")
+ui = zlib.decompress(
+    base64.b85decode(
+        "c-rlnO>f&c5Qgvl6<l5mf2IL;0oz5|BDw6L=m+*FP~uo(O_N%Zvg3c>k>u1?Oj(v4rw*E1V$Dl"
+        "&W*&}*lZ@Wq&m~!au|lgc9d!GYfQmF1Djw7C-)=j9)Ay4%qrW;Gat8_wbHK?`xP-)#aUfUS;jl"
+        "X(oemla<-kl?1d}&}j12sr2?Lf$5sqo>W^d`{MJVgjUSX%h9}qbbNoMVs-nrQg|B+cY2jwUcd`"
+        "#H~nE}mh(K<Cc1>;sku{n%smf~-8GQ7SX^&TGiEv<tz5GpcItUMVs2~rkAMbNJ*M!j<92Rd<Q0"
+        "Mv{3;tTMX=EHwNalI_}Z?twb`;V9kraH<jo!l~MVP{iT#EQwa^$b=W0}_~p4lIiJBusG$W=ypT"
+        "@G&KJ$uK7PR;5eSagityl9xZ{Tab8I5-mBH2ZP?0#Utw-&+d$P$cE3Og|H%&cyhj(Y{#8rLg3R"
+        "Fy$o#1BCHp5a&^#Kw9MveBf9pADz5w8|ByMSRhigu17_WOB@01P;tW$(GRH79W4Z!#7PY=T92L"
+        "`sxVDiQh(IjB1{|g=ldhfGX)T>d0|)oc>-9$jHU{DnAgO_cfF;4yXhWPP26(sjMU{gPNfFI3_7"
+        "(h1{(%So^#WVRb+daG%@Bu%6vEU6%sCb%bkaXO66r6|z%Rm2AHTnH5|2W1yW+QpvQWQbS-~>SV"
+        "{!_Z#R3<K=I|NO-0G;>lbMTO!K{E8Vn|NmGS^=ymRHY*CEgd@(Nunv+WwJP=6<iK)UjdnQ#dR#"
+        "aG4ywJ1>V{BZfQ_7~1Auaw)h=g8YUH)_E^Imp~rd+}<XvMUy)fQU(&QHL{g!MrVo#T*SiJ7D;X"
+        "vRJkq6aA(1alDQ49l>#qPL1}P)iU$|ie{NHJNc;H$Id0V#zmj}5l84Vn@&VoI3k11M8~w`h**H"
+        "FPe|w7^SrfdcB3L`DtL>nJdnPf3`%=8)o8P~ie4Uc$N47`$d5W*Kgrtn~V%Rts?$vso_B;N`uq"
+        "7^eV}Py8RHB#Er){iOgX{jjUHMi>K*WhVX^Dfg;ho`wvcloD=75Zxno*yA&P*&+VDc!S_k$z#S"
+        "O{vr$r{C>#;fa`PX1}sSIQ+vaH?gp{G_%z?yHhDm1&>AYh02~+$#Nb$!<RT|9b5%<=od!3O<+9"
+        "oBG8Lj@uJ`Zw;UDCQ(-^o^_C8;rKbuS8#ve6bHR7W;iogg_;>oLQIOx6Sp2RGE4F=7)6BI9zh;"
+        "G?7<WT#meVz%Z3*??kP)G0c&3KE~!ClWaSe$bO!hamfVGIs|L`!aPg!r?!T`??>{LDyMJ@P5M?"
+        "#QTMsu6M!l_nvH1yWMXp`"
+    )
+).decode("utf-8")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Detach from the command line on UNIX systems.
-    if os.name == 'posix':
+    if os.name == "posix":
         if os.fork():
             sys.exit()
     # Create the GUI and run it.
@@ -229,9 +238,11 @@ if __name__ == '__main__':
     root.set_modal(True)  # Makes a floating window.
     if state.dev is None:
         msg = Gtk.MessageDialog(
-            parent=root, message_type=Gtk.MessageType.ERROR,
-            title="Warning", text="No Razer keyboard detected!",
-            buttons=Gtk.ButtonsType.CLOSE
+            parent=root,
+            message_type=Gtk.MessageType.ERROR,
+            title="Warning",
+            text="No Razer keyboard detected!",
+            buttons=Gtk.ButtonsType.CLOSE,
         )
         msg.run()
     else:
