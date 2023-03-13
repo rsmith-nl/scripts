@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-14T22:44:16+0100
-# Last modified: 2023-03-12T12:41:44+0100
+# Last modified: 2023-03-13T23:30:36+0100
 """Set the LEDs on a Razer keyboard to a static RGB color.
 
 Uses the tkinter toolkit that comes with Python.
@@ -19,12 +19,13 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter.font import nametofont
 from types import SimpleNamespace
+import array
 import os
 import sys
 import tkinter as tk
 import usb.core
 
-__version__ = "2023.03.12"
+__version__ = "2023.03.13"
 
 
 def create_widgets(root, model):
@@ -156,23 +157,30 @@ def do_set():
 def static_color_msg(red, green, blue):
     """
     Create a message to set the Razer Ornata Chroma lights to a static color.
-    All arguments should be an integer in the range 0-255.
+    All arguments should be an number in the range 0-255.
 
-    Returns an bytes object containing the message ready to feed into a ctrl_transfer.
+    Returns an array object containing the message ready to feed into a ctrl_transfer.
     """
-    # Meaning of the bytes, in sequence: 0x00 = status, 0x3f = transaction id,
-    # 0x00,0x00 = number of remaining packets, 0x00 = protocol type,
-    # 0x09 = length of used arguments, 0x0f = command class, 0x02 = command id.
-    hdr = b'\x00\x3f\x00\x00\x00\x09\x0f\x02'
-    # Meaning of the nonzero bytes, in sequence: 0x01 = VARSTORE,
-    # 0x05 = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
-    arguments = b'\x01\x05\x01\x00\x00\x01'
-    msg = hdr + arguments + bytes([red, green, blue])  # Add color.
+    msg = array.array("B", b'\x00'*90)
+    # msg[0] = status = 0
+    msg[1] = 0x3F  # transaction id
+    # msg[2:4] = remaining packets = 0, 0
+    # msg[4] =  protocol type = 0
+    msg[5] = 0x09  # data_size
+    msg[6] = 0x0F  # command class
+    msg[7] = 0x02  # command id
+    msg[8] = 0x01  # VARSTORE
+    msg[9] = 0x05  # BACKLIGHT_LED
+    msg[10] = 0x01  # effect id
+    # msg[11:13] are 0
+    msg[13] = 0x01  # unknown
+    msg[14] = int(red)  # color: red
+    msg[15] = int(green)  # color: green
+    msg[16] = int(blue)  # color: blue
     chksum = 0
-    for j in msg[2:]:  # Calculate the checksum
+    for j in msg[2:-2]:
         chksum ^= j
-    msg += bytes(88 - len(msg))  # Add filler; the total message buffer is 90 bytes.
-    msg += bytes([chksum, 0])  # Add checksum and zero byte, completing the msg.
+    msg[88] = chksum
     return msg
 
 
