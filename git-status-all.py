@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2022-01-30T20:51:24+0100
+# Last modified: 2023-11-19T22:00:58+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -89,7 +89,9 @@ def runstatus(d, verbose=False):
         verbose: Boolean to enable verbose messages.
     """
     os.chdir(d)
-    d = d.replace(os.environ["HOME"], "~")
+    home = os.environ["HOME"]
+    idx = d.index(home) + len(home)
+    d = '~' + d[idx:]
     outp = gitcmd("status", True)
     notclean = ""
     if b"working tree clean" not in outp:
