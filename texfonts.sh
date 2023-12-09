@@ -7,7 +7,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-10-18T22:12:31+0200
-# Last modified: 2018-04-16T22:38:07+0200
+# Last modified: 2023-12-09T20:45:18+0100
 
 set -eu
 umask 022
@@ -37,7 +37,7 @@ echo -n "Filling install directory: "
 for fp in $FNTS; do
     fn=`basename $fp`
     echo -n .
-    ln -s $fp $fn
+    ln -sf $fp $fn
 done
 echo " done."
 echo -n "Doing some housekeeping... "
