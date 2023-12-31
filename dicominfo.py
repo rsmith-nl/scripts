@@ -4,9 +4,11 @@
 # Copyright © 2023 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2023-12-31T16:54:04+0100
-# Last modified: 2023-12-31T18:55:36+0100
+# Last modified: 2023-12-31T22:18:52+0100
 """
 Show information about DICOM files.
+
+Use “https://dicom.innolitics.com/ciods” to find out what the attributes mean.
 """
 
 import pydicom
