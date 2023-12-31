@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2022-09-27T23:03:35+0200
+.. Last modified: 2023-12-31T19:25:54+0100
 
 Introduction
 ============
@@ -181,6 +181,14 @@ dicom2png-wand.py
 Variant which used the wand_ binding to ImageMagick, instead of calling
 ``convert`` in a subprocess.
 It is advised to use ImageMagick 7 with “wand”.
+
+
+dicominfo.py
+------------
+
+This program uses pydicom_ to extract and print information about DICOM files.
+
+.. _pydicom: https://pydicom.github.io/
 
 
 dvd2webm.py
