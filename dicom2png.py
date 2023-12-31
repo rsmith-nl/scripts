@@ -5,25 +5,25 @@
 # Copyright © 2012-2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2022-01-29T22:11:25+0100
+# Last modified: 2023-12-31T23:06:35+0100
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
-During the conversion process, blank areas are removed. The blank area removal
-is based on the image size of a Philips flat detector. The image goes from
-2048x2048 pixels to 1574x2048 pixels.
 """
 
 from datetime import datetime
-from functools import partial
 import argparse
 import concurrent.futures as cf
 import logging
 import os
-import subprocess as sp
+#import subprocess as sp
 import sys
+import pydicom
+from PIL import Image
+import numpy as np
 
-__version__ = "2021.09.19"
+
+__version__ = "2023.12.31"
 
 
 def main():
@@ -34,15 +34,10 @@ def main():
     if not args.fn:
         logging.error("no files to process")
         sys.exit(1)
-    if args.quality != 80:
-        logging.info(f"quality set to {args.quality}")
-    if args.level:
-        logging.info("applying level correction.")
-    convert_partial = partial(convert, quality=args.quality, level=args.level)
     starttime = str(datetime.now())[:-7]
     logging.info(f"started at {starttime}.")
-    with cf.ThreadPoolExecutor(max_workers=os.cpu_count()) as tp:
-        for infn, outfn, rv in tp.map(convert_partial, args.fn):
+    with cf.ProcessPoolExecutor(max_workers=os.cpu_count()) as tp:
+        for infn, outfn, rv in tp.map(convert, args.fn):
             logging.info(f"finished conversion of {infn} to {outfn} (returned {rv})")
     endtime = str(datetime.now())[:-7]
     logging.info(f"completed at {endtime}.")
@@ -59,16 +54,6 @@ def setup():
     )
     parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(
-        "-l",
-        "--level",
-        action="store_true",
-        default=False,
-        help="Correct color levels (default: no)",
-    )
-    parser.add_argument(
-        "-q", "--quality", type=int, default=80, help="PNG quailty level (default: 80)"
-    )
-    parser.add_argument(
         "fn", nargs="*", metavar="filename", help="DICOM files to process"
     )
     args = parser.parse_args(sys.argv[1:])
@@ -78,17 +63,10 @@ def setup():
     )
     logging.debug(f"command line arguments = {sys.argv}")
     logging.debug(f"parsed arguments = {args}")
-    # Check for requisites
-    try:
-        sp.run(["convert"], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        logging.info("found “convert”")
-    except FileNotFoundError:
-        logging.error("the program “convert” cannot be found")
-        sys.exit(1)
     return args
 
 
-def convert(filename, quality, level):
+def convert(filename):
     """
     Convert a DICOM file to a PNG file.
 
@@ -96,35 +74,30 @@ def convert(filename, quality, level):
 
     Arguments:
         filename: name of the file to convert.
-        quality: PNG quality to apply
-        level: Boolean to indicate whether level adustment should be done.
     Returns:
-        Tuple of (input filename, output filename, convert return value)
+        Tuple of (input filename, output filename, error string)
     """
-    outname = filename.strip() + ".png"
-    size = "1574x2048"
-    args = [
-        "convert",
-        filename,
-        "-units",
-        "PixelsPerInch",
-        "-density",
-        "300",
-        "-depth",
-        "8",
-        "-crop",
-        size + "+232+0",
-        "-page",
-        size + "+0+0",
-        "-auto-gamma",
-        "-quality",
-        str(quality),
-    ]
-    if level:
-        args += ["-level", "-35%,70%,0.5"]
-    args.append(outname)
-    cp = sp.run(args, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-    return (filename, outname, cp.returncode)
+    try:
+        dataset = pydicom.dcmread(filename)
+        if 'PixelData' not in dataset:
+            return filename, "", "no pixel data"
+    except pydicom.errors.InvalidDicomError:
+        return filename, "", "not a valid dicom file"
+    if 'WindowWidth' in dataset and 'WindowCenter' in dataset:
+        ww, wc = int(dataset.WindowWidth), int(dataset.WindowCenter)
+        data = dataset.pixel_array
+        # From github.com/pydicom/contrib-pydicom/blob/master/viewers/pydicom_PIL.py
+        image = np.piecewise(
+            data,
+            [data <= (wc - 0.5 - (ww - 1) / 2), data > (wc - 0.5 + (ww - 1) / 2)],
+            [0, 255, lambda data: ((data - (wc - 0.5)) / (ww - 1) + 0.5) * (255 - 0)]
+        )
+        img = Image.fromarray(image).convert('L')
+        outname = filename.strip() + ".png"
+        img.save(outname)
+        del img, dataset
+        return (filename, outname, "OK")
+    return (filename, "", "data without LUT")
 
 
 if __name__ == "__main__":

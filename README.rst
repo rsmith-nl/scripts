@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2023-12-31T19:25:54+0100
+.. Last modified: 2023-12-31T23:10:15+0100
 
 Introduction
 ============
@@ -140,8 +140,9 @@ instead of just ``deny``.
 dicom2jpg.py
 ------------
 
-A modification of the ``dicom2png`` program mentioned below to produce JPEG
-output. This is meant for situaties where lossy compression is acceptable.
+A modification of the (pre 2023.12.31) ``dicom2png`` program mentioned below
+to produce JPEG output.
+This is meant for situaties where lossy compression is acceptable.
 For ms-windows users, this version is recommended.
 Just make sure that the location where the ImageMagick programs are installed
 is part of your PATH environment variable.
@@ -155,20 +156,19 @@ It is advised to use ImageMagick 7 with “wand”.
 This is what I use myself.
 For programmers, wand_ is a very Pythonic interface to ImageMagick.
 
-
 dicom2png.py
 ------------
 
-Convert DICOM_ files from an x-ray machine to PNG format, remove blank areas.
-The blank area removal is based on the image size of a Philips flat detector.
-The image goes from 2048x2048 pixels to 1574x2048 pixels.
+Convert DICOM_ files from an x-ray machine to PNG format.
 
 .. _DICOM: http://en.wikipedia.org/wiki/DICOM
 
-This program requires the `convert`` program from ImageMagick_.
-For ms-windows users, this version is recommended.
+As of version 2023.12.31, this script uses pydicom_.
+Older versions used the `convert`` program from ImageMagick_.
 
-Multiple images are processed in parallel using a ``ThreadPoolExecutor`` from
+.. _pydicom: https://pydicom.github.io/
+
+Multiple images are processed in parallel using a ``ProcessPoolExecutor`` from
 the ``concurrent.futures`` module to start subprocesses using as many worker
 processes as your CPU has cores. This number is determined by the
 ``os.cpu_count`` function, so this program requires at least Python 3.4.
