@@ -5,7 +5,7 @@
 # Copyright © 2011-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2011-11-07T21:40:58+01:00
-# Last modified: 2020-04-01T00:04:01+0200
+# Last modified: 2024-01-05T23:25:38+0100
 """Shrink fotos to a size suitable for use in my logbook."""
 
 from datetime import datetime
@@ -22,7 +22,7 @@ import sys
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-__version__ = "2020.04.01"
+__version__ = "2024.01.05"
 outdir = "foto4lb"
 extensions = (".jpg", ".jpeg", ".raw")
 
@@ -78,9 +78,9 @@ def setup():
     parser.add_argument(
         "-w",
         "--width",
-        default=886,
+        default=1920,
         type=int,
-        help="width of the images in pixels (default 886)",
+        help="width of the images in pixels (default 1920)",
     )
     parser.add_argument(
         "--log",
