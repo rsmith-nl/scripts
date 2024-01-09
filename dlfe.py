@@ -37,9 +37,7 @@ def create_widgets(root, w):
     # Row
     ttk.Label(root, text="URL:").grid(row=0, column=0, sticky="w")
     state.url = tk.StringVar()
-    ttk.Entry(root, textvariable=state.url, width=40).grid(
-        row=0, column=1, sticky="ew"
-    )
+    ttk.Entry(root, textvariable=state.url, width=40).grid(row=0, column=1, sticky="ew")
     # Row
     ttk.Label(root, text="Output name:").grid(row=1, column=0, sticky="w")
     state.outname = tk.StringVar()
@@ -92,6 +90,7 @@ def do_subs_changed():
 
 
 def do_run():
+    """Start the download process."""
     w.text.delete("1.0", "end")
     res = state.resolution.get()
     args = ["yt-dlp", "--newline", "-S", f"res:{res}"]
@@ -99,19 +98,33 @@ def do_run():
         args.append = ["--embed-chapters"]
     if state.subs.get() is True:
         sublang = state.sublang.get()
-        args.append = ["--sub-langs", f"{sublang}"  "--write-subs", "--embed-subs"]
+        args.append = ["--sub-langs", f"{sublang}", "--write-subs", "--embed-subs"]
     url = state.url.get()
     if not url:
         w.text.insert("1.0", "No URL supplied.")
         return
+    outdir = state.outdir.get()
+    if outdir.startswith("~"):
+        outdir = os.environ["HOME"] + outdir[1:]
+    outname = state.outname.get()
+    tt = {ord(j): "_" for j in ",.;:'|"}
+    if outname:
+        outname = outname.replace(" - ", "-")
+        outname = outname.translate(tt)
+        outname = outname.replace("___", "_")
+        outname = outname.replace("__", "_")
+        args += ["-o", outname]
     args.append(url)
+    w.text.insert("1.0", "Starting download...\n")
     try:
-        state.process = sp.Popen(args, stdout=sp.PIPE, stderr=sp.DEVNULL)
+        state.process = sp.Popen(args, stdout=sp.PIPE, stderr=sp.DEVNULL, cwd=outdir)
+        w.text.insert("end", "Download started...\n")
         w.run["state"] = "disabled"
         w.cancel["state"] = "enabled"
         # Submit callback to monitor the progress of the download.
         root.after(20, monitor)
-    except OSError:
+    except OSError as e:
+        w.text.insert("1.0", f"Error when starting download: “{e}”.")
         state.process = None
 
 
@@ -133,8 +146,7 @@ def monitor():
         w.text.insert("end", "Download finished normally")
     else:
         w.text.insert(
-            "end",
-            f"Download process returned error code {state.process.returncode}."
+            "end", f"Download process returned error code {state.process.returncode}."
         )
     w.run["state"] = "enabled"
     w.cancel["state"] = "disabled"
