@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2023-12-31T23:10:15+0100
+.. Last modified: 2024-01-20T12:45:15+0100
 
 Introduction
 ============
@@ -672,6 +672,12 @@ mkpdf.sh
 Use ``convert`` from the ImageMagick_ suite to convert scanned images to PDF files.
 
 It assumes that images are scanned at 150 PPI, and the target page is A4.
+
+
+nospaces.py
+-----------
+
+Renames files so that their names do not contain whitespace.
 
 
 ntpclient.py
