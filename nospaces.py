@@ -5,12 +5,10 @@
 # Copyright © 2024 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2024-01-20T10:59:10+0100
-# Last modified: 2024-01-26T21:09:50+0100
+# Last modified: 2024-01-27T00:05:00+0100
 """Replaces spaces in filenames with underscores.
 
 It processes the file names given on the command line.
-If the given name is a directory, it processes all the names in that
-directory, but not in subdirectories.
 """
 
 import argparse
@@ -29,27 +27,15 @@ def main():
     options = setup()
     for path in options.files:
         if os.path.isfile(path):
+            if path.startswith("."):
+                logging.info(f"skipping hidden file “{path}”")
+                continue
             if not options.dryrun:
                 rename(path, options.replace)
             else:
                 newpath = new_path(path, options.replace)
                 if newpath:
                     print(f"“{path}” would be renamed to “{newpath}”")
-        elif os.path.isdir(path):
-            logging.info(f"“{path}” is a directory")
-            for de in os.scandir(path):
-                if not de.is_file():
-                    logging.info(f"skipping “{de.name}”, it is not a file")
-                    continue
-                if de.name.startswith("."):
-                    logging.info(f"skipping hidden file “{de.name}”")
-                    continue
-                if not options.dryrun:
-                    rename(de.path, options.replace)
-                else:
-                    newpath = new_path(de.path, options.replace)
-                    if newpath:
-                        print(f"“{de.path}” would be renamed to “{newpath}”")
 
 
 def setup():
