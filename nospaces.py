@@ -5,7 +5,7 @@
 # Copyright © 2024 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2024-01-20T10:59:10+0100
-# Last modified: 2024-01-20T12:43:33+0100
+# Last modified: 2024-01-26T18:11:15+0100
 """Replaces spaces in filenames with underscores.
 
 It processes the file names given on the command line.
@@ -87,7 +87,7 @@ def setup():
 def new_path(path, rep="_"):
     """Return new name for path."""
     head, tail = os.path.split(path)
-    newpath = os.path.join(head, re.sub("\s+", rep, tail))
+    newpath = os.path.join(head, re.sub("[-_]?\s+[-_]?", rep, tail))
     if newpath == path:
         return None
     return newpath
