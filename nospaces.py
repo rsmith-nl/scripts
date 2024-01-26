@@ -5,7 +5,7 @@
 # Copyright © 2024 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2024-01-20T10:59:10+0100
-# Last modified: 2024-01-26T18:11:15+0100
+# Last modified: 2024-01-26T21:09:50+0100
 """Replaces spaces in filenames with underscores.
 
 It processes the file names given on the command line.
@@ -19,7 +19,7 @@ import os
 import re
 import sys
 
-__version__ = "2024.01.20"
+__version__ = "2024.01.26"
 
 
 def main():
@@ -29,7 +29,12 @@ def main():
     options = setup()
     for path in options.files:
         if os.path.isfile(path):
-            rename(path, options.replace)
+            if not options.dryrun:
+                rename(path, options.replace)
+            else:
+                newpath = new_path(path, options.replace)
+                if newpath:
+                    print(f"“{path}” would be renamed to “{newpath}”")
         elif os.path.isdir(path):
             logging.info(f"“{path}” is a directory")
             for de in os.scandir(path):
@@ -39,12 +44,12 @@ def main():
                 if de.name.startswith("."):
                     logging.info(f"skipping hidden file “{de.name}”")
                     continue
-                if options.dryrun:
+                if not options.dryrun:
+                    rename(de.path, options.replace)
+                else:
                     newpath = new_path(de.path, options.replace)
                     if newpath:
                         print(f"“{de.path}” would be renamed to “{newpath}”")
-                else:
-                    rename(de.path, options.replace)
 
 
 def setup():
@@ -78,6 +83,7 @@ def setup():
     )
     logging.debug(f"replacement: ‘{args.replace}’")
     args.replace = chr(args.replace)
+    logging.debug(f"args = {args}")
     if args.replace.isspace():
         logging.warning("replacing whitespace with whitespace doesn't make sense; exiting")
         sys.exit(0)
@@ -87,7 +93,7 @@ def setup():
 def new_path(path, rep="_"):
     """Return new name for path."""
     head, tail = os.path.split(path)
-    newpath = os.path.join(head, re.sub("[-_]?\s+[-_]?", rep, tail))
+    newpath = os.path.join(head, re.sub("[-_]?\s+[-_]?|[-_]+", rep, tail))
     if newpath == path:
         return None
     return newpath
