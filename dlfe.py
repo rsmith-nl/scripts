@@ -95,10 +95,10 @@ def do_run():
     res = state.resolution.get()
     args = ["yt-dlp", "--newline", "-S", f"res:{res}"]
     if state.chapters.get() is True:
-        args.append = ["--embed-chapters"]
+        args += ["--embed-chapters"]
     if state.subs.get() is True:
         sublang = state.sublang.get()
-        args.append = ["--sub-langs", f"{sublang}", "--write-subs", "--embed-subs"]
+        args += ["--sub-langs", f"{sublang}", "--write-subs", "--embed-subs"]
     url = state.url.get()
     if not url:
         w.text.insert("1.0", "No URL supplied.")
