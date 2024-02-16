@@ -5,7 +5,7 @@
 # Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-05-08T22:12:45+02:00
-# Last modified: 2021-02-28T20:47:39+0100
+# Last modified: 2024-02-16T20:01:14+0100
 
 set -e
 
@@ -42,4 +42,5 @@ else
 fi
 
 gs -DNOPAUSE -sDEVICE=pdfwrite -dFirstPage=${N} -dLastPage=${M} \
+    -dCompatibilityLevel=1.5 \
     -sOutputFile=$OUTNAME "$3" -c quit 2>/dev/null | tail -n 4
