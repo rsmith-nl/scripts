@@ -4,7 +4,7 @@ Miscellaneous short utilities
 :tags: python, shell
 :author: Roland Smith
 
-.. Last modified: 2024-01-20T12:45:15+0100
+.. Last modified: 2024-02-24T15:45:09+0100
 
 Introduction
 ============
@@ -147,14 +147,6 @@ For ms-windows users, this version is recommended.
 Just make sure that the location where the ImageMagick programs are installed
 is part of your PATH environment variable.
 
-dicom2jpg-wand.py
-+++++++++++++++++
-
-Variant which used the wand_ binding to ImageMagick, instead of calling
-``convert`` in a subprocess.
-It is advised to use ImageMagick 7 with “wand”.
-This is what I use myself.
-For programmers, wand_ is a very Pythonic interface to ImageMagick.
 
 dicom2png.py
 ------------
@@ -174,13 +166,6 @@ processes as your CPU has cores. This number is determined by the
 ``os.cpu_count`` function, so this program requires at least Python 3.4.
 
 This version is recommended for ms-windows users.
-
-dicom2png-wand.py
-+++++++++++++++++
-
-Variant which used the wand_ binding to ImageMagick, instead of calling
-``convert`` in a subprocess.
-It is advised to use ImageMagick 7 with “wand”.
 
 
 dicominfo.py
