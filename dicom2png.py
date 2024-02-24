@@ -5,7 +5,7 @@
 # Copyright © 2012-2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-04-11T19:21:19+02:00
-# Last modified: 2023-12-31T23:06:35+0100
+# Last modified: 2024-02-24T15:42:02+0100
 """
 Convert DICOM files from an X-ray machine to PNG format.
 
@@ -16,7 +16,6 @@ import argparse
 import concurrent.futures as cf
 import logging
 import os
-#import subprocess as sp
 import sys
 import pydicom
 from PIL import Image
@@ -69,8 +68,6 @@ def setup():
 def convert(filename):
     """
     Convert a DICOM file to a PNG file.
-
-    Removing the blank areas from the Philips detector.
 
     Arguments:
         filename: name of the file to convert.
