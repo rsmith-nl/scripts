@@ -4,7 +4,7 @@
 #
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2021-09-05T14:00:45+0200
-# Last modified: 2024-02-25T18:31:24+0100
+# Last modified: 2024-02-25T23:39:16+0100
 """For each given directory, recursively find the COUNT most recent modified files."""
 
 
@@ -74,9 +74,9 @@ def processdir(path):
         if len(dirpath) > 1 and "." in dirpath[1:]:
             logging.debug(f"“{dirpath}” is hidden; skipping it.")
             continue
+        intermediate = [os.path.join(dirpath, name) for name in filenames]
         targetfiles += [
-            (fullpath := os.path.join(dirpath, name), os.stat(fullpath).st_mtime)
-            for name in filenames
+            (fp, os.stat(fp).st_mtime) for fp in intermediate if not os.path.islink(fp)
         ]
     return targetfiles
 
