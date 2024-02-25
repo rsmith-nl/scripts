@@ -4,7 +4,7 @@
 #
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2021-09-05T14:00:45+0200
-# Last modified: 2021-09-10T13:00:52+0200
+# Last modified: 2024-02-25T18:31:24+0100
 """For each given directory, recursively find the COUNT most recent modified files."""
 
 
@@ -14,7 +14,7 @@ import os
 import sys
 from datetime import datetime
 
-__version__ = "2021.09.10"
+__version__ = "2024.02.25"
 
 
 def main():
@@ -23,11 +23,17 @@ def main():
     """
     args = setup()
     # Real work starts here.
+    recentf = []
     for d in args.dirs:
         if not os.path.isdir(d):
             logging.info(f"“{d}” is not a directory; skipping it.")
             continue
-        processdir(d, args.count)
+        recentf += processdir(d)
+    recentf.sort(key=lambda x: -x[1])
+    for r in recentf[: args.count]:
+        dt = datetime.fromtimestamp(r[1])
+        dt = dt.replace(microsecond=0)
+        print(dt.isoformat(), r[0])
 
 
 def setup():
@@ -41,14 +47,14 @@ def setup():
         choices=["debug", "info", "warning", "error"],
         help="logging level (defaults to 'warning')",
     )
+    defcount = 25
     parser.add_argument(
         "-c",
         "--count",
         type=int,
-        default=5,
-        help="number of most resent files (default = 5)",
+        default=defcount,
+        help=f"number of most resent files (default = {defcount})",
     )
-
     parser.add_argument(
         "dirs", metavar="dirs", nargs="*", help="one or more directories to process"
     )
@@ -61,24 +67,18 @@ def setup():
     return args
 
 
-def processdir(path, count):
+def processdir(path):
     targetfiles = []
     logging.debug(f"gathering file info for “{path}”.")
-    for (dirpath, dirnames, filenames) in os.walk(path):
+    for dirpath, dirnames, filenames in os.walk(path):
         if len(dirpath) > 1 and "." in dirpath[1:]:
             logging.debug(f"“{dirpath}” is hidden; skipping it.")
             continue
-        intermediate = [
+        targetfiles += [
             (fullpath := os.path.join(dirpath, name), os.stat(fullpath).st_mtime)
             for name in filenames
         ]
-        intermediate.sort(key=lambda x: -x[1])
-        targetfiles += intermediate[:count]
-    targetfiles.sort(key=lambda x: -x[1])
-    for recent in targetfiles:
-        dt = datetime.fromtimestamp(recent[1])
-        dt = dt.replace(microsecond=0)
-        print(dt.isoformat(), recent[0])
+    return targetfiles
 
 
 if __name__ == "__main__":
