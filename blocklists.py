@@ -5,29 +5,50 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-08-15T20:24:57+0200
-# Last modified: 2021-12-19T23:07:24+0100
+# Last modified: 2024-03-03T11:22:13+0100
 """Generate blocklistst for dnsmasq and unbound"""
 
 # Data
-facebook = [
+
+# Block social media. Based on:
+# https://raw.githubusercontent.com/jmdugan/blocklists/master/corporations/facebook/all
+# https://gitlab.com/J4YC33/metablock/-/blob/main/Meta.txt
+# https://www.netify.ai/resources/applications/tiktok
+social_media = [
     "cdninstagram.com",
     "edgesuite.net",
+    "facebook.be",
+    "facebook.co",
+    "facebook.co.id",
     "facebook.com",
+    "facebook.com.mx",
     "facebook.de",
     "facebook.fr",
     "facebook.net",
+    "facebook.nl",
+    "facebook.org",
     "fb.com",
+    "fb.me",
     "fbcdn.com",
     "fbcdn.net",
     "fbsbx.com",
     "freebasics.com",
     "instagram.com",
     "internet.org",
+    "messenger.com",
     "online-metrix.net",
     "tfbnw.net",
     "thefacebook.com",
     "whatsapp.com",
     "whatsapp.net",
+    "truthsocial.com",
+    "tiktok.com",
+    "tiktokcdn.com",
+    "tiktokcdn-eu.com",
+    "tiktokcdn-eu.net",
+    "tiktokv.com",
+    "tiktokv.eu",
+    "tiktokv.us",
 ]
 
 # Data based on the 80-domain list from:
@@ -122,30 +143,52 @@ ads += [
     "adtech.fr",
     "adtech.us",
     "am15.net",
+    "bravenet.com",
     "checkm8.com",
+    "cjt1.net",
     "cnzz.com",
+    "comfortykive.xyz",
     "fastclick.net",
+    "focalink.com",
+    "gemius.pl",
     "oewabox.at",
     "p2l.info",
     "petrovka.info",
+    "plus.com",
     "runative-syndicate.com",
+    "schengen.ru",
+    "sextracker.be",
+    "sextracker.com",
+    "shengen.ru",
     "sitemeter.com",
 ]
 
+misc = [
+    "tunnels.api.visualstudio.com",
+    "devtunnels.ms",
+]
 
 # Remove doubles, sort the list.
 ads = sorted(set(ads))
 
 print("#### DNSMASQ ####")
-for kind, name in ((facebook, "facebook"), (ads, "ads")):
-    print(f"# Block {name}")
+for kind, name in (
+    (social_media, "“social” media"),
+    (ads, "advertisement"),
+    (misc, "miscellaneous"),
+):
+    print(f"# Block {name} domains")
     for domain in kind:
         print(f"address=/{domain}/")
     print()
 
 print("#### UNBOUND ####")
 print("server:")
-for kind, name in ((facebook, "facebook"), (ads, "ads")):
+for kind, name in (
+    (social_media, "“social” media"),
+    (ads, "advertisement"),
+    (misc, "miscellaneous"),
+):
     print(f"    # Block {name}")
     for domain in kind:
         print(f'    local-zone: "{domain}" always_nxdomain')
