@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2022-12-10T17:18:29+0100
+# Last modified: 2024-03-17T14:54:58+0100
 """View or download the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -106,6 +106,6 @@ for channel_title, channel_id in channels.items():
     for title, link, date in items:
         print(f"∙ title: “{title}”")
         print(f"   date: {date}")
-        print(f"   view: {viewer} 'https://www.youtube.com/watch?v={link}' &")
+        # print(f"   view: {viewer} 'https://www.youtube.com/watch?v={link}' &")
         print(f"   download: {downloader} {link}")
     print()
