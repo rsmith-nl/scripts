@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2023-11-19T22:00:58+0100
+# Last modified: 2024-03-17T15:33:00+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -34,6 +34,9 @@ def main():
     for d in args.directories:
         for (dirpath, dirnames, filenames) in os.walk(d):
             if any(w in dirpath for w in args.ignore):
+                continue
+            # Do not check archived or external repos.
+            if "attic" in dirpath or "github" in dirpath or "gitlab" in dirpath:
                 continue
             if ".git" in dirnames:
                 runstatus(dirpath, args.verbose)
