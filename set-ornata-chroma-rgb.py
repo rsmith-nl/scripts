@@ -5,16 +5,17 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-16T19:09:06+0200
-# Last modified: 2020-04-01T20:46:24+0200
+# Last modified: 2024-03-22T16:20:03+0100
 """Set the LEDs on a Razer Ornata Chroma keyboard to a static RGB color
 and / or change the brightness."""
 
 import argparse
+import array
 import logging
 import sys
 import usb.core
 
-__version__ = "2020.04.01"
+__version__ = "2024.03.22"
 
 
 def main():
@@ -112,22 +113,30 @@ def static_color_msg(red, green, blue):
     Create a message to set the Razer Ornata Chroma lights to a static color.
     All arguments should convert to an integer in the range 0-255.
 
-    Returns an bytes object containing the message ready to feed into a ctrl_transfer.
+    Returns a bytes object containing the message ready to feed into a ctrl_transfer.
     """
     red, green, blue = _chk("red", red), _chk("green", green), _chk("blue", blue)
-    # Meaning of the nonzero bytes, in sequence: 0x3f = transaction id, 0x09
-    # = length of used arguments, 0x0f = command class, 0x02 = command id
-    hdr = b"\x00\x3f\x00\x00\x00\x09\x0f\x02"
-    # Meaning of the nonzero bytes, in sequence: 0x01 = VARSTORE, 0x05
-    # = BACKLIGHT_LED, 0x01 = effect id, 0x01 = unknown
-    arguments = b"\x01\x05\x01\x00\x00\x01"
-    msg = hdr + arguments + bytes([red, green, blue])  # Add color.
+    msg = array.array("B", b"\x00" * 90)
+    # msg[0] = status = 0
+    msg[1] = 0x3F  # transaction id
+    # msg[2:4] = remaining packets = 0, 0
+    # msg[4] =  protocol type = 0
+    msg[5] = 0x09  # data_size
+    msg[6] = 0x0F  # command class
+    msg[7] = 0x02  # command id
+    msg[8] = 0x01  # VARSTORE
+    msg[9] = 0x05  # BACKLIGHT_LED
+    msg[10] = 0x01  # effect id
+    # msg[11:13] are 0
+    msg[13] = 0x01  # unknown
+    msg[14] = int(red)  # color: red
+    msg[15] = int(green)  # color: green
+    msg[16] = int(blue)  # color: blue
     chksum = 0
-    for j in msg[2:]:  # Calculate the checksum
+    for j in msg[2:-2]:
         chksum ^= j
-    msg += bytes(80 - 9)  # Add filler; the variable message buffer is 80 bytes.
-    msg += bytes([chksum, 0])  # Add checksum in penultimate byte
-    return msg
+    msg[88] = chksum
+    return bytes(msg)
 
 
 def brightness_message(brightness):
@@ -137,19 +146,23 @@ def brightness_message(brightness):
     Returns an bytes object containing the message ready to feed into a ctrl_transfer.
     """
     brightness = _chk("brightness", brightness)
-    # Meaning of the nonzero bytes, in sequence: 0x3f = transaction id, 0x03
-    # = length of used arguments, 0x0f = command class, 0x04 = command id
-    hdr = b"\x00\x3f\x00\x00\x00\x03\x0f\x04"
-    # Meaning of the nonzero bytes in sequence:
-    # 0x01 = VARSTORE, 0x05 = BACKLIGHT_LED
-    arguments = b"\x01\x05"
-    msg = hdr + arguments + bytes([brightness])  # Add color.
+
+    msg = array.array("B", b"\x00" * 90)
+    # msg[0] = status = 0
+    msg[1] = 0x3F  # transaction id
+    # msg[2:4] = remaining packets = 0, 0
+    # msg[4] =  protocol type = 0
+    msg[5] = 0x03  # data_size
+    msg[6] = 0x0F  # command class
+    msg[7] = 0x04  # command id
+    msg[8] = 0x01  # VARSTORE
+    msg[9] = 0x05  # BACKLIGHT_LED
+    msg[10] = brightness
     chksum = 0
-    for j in msg[2:]:  # Calculate the checksum
+    for j in msg[2:-2]:  # Calculate checksum
         chksum ^= j
-    msg += bytes(80 - 3)  # Add filler; the variable message buffer is 80 bytes.
-    msg += bytes([chksum, 0])  # Add checksum in penultimate byte
-    return msg
+    msg[88] = chksum  # Add checksum in penultimate byte
+    return bytes(msg)
 
 
 if __name__ == "__main__":
