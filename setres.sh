@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: setres.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 #
 # Copyright © 2006-2017 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT

@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: genbackup.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Generate a full backup of the current directory.
 #
 # Copyright © 2013 R.F. Smith <rsmith@xs4all.nl>.

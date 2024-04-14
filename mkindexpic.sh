@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: mkindexpic.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Make an index jpg of all pictures given as arguments.
 #
 # Copyright © 2015 R.F. Smith <rsmith@xs4all.nl>.

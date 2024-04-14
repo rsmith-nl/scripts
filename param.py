@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # file: param.py
-# vim:fileencoding=utf-8:fdm=marker:ft=python
+# vim:fileencoding=utf-8:ft=python
 #
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2019-12-07T13:30:37+0100

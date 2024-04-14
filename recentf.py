@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # file: recentf.py
-# vim:fileencoding=utf-8:fdm=marker:ft=python
+# vim:fileencoding=utf-8:ft=python
 #
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # Created: 2021-09-05T14:00:45+0200

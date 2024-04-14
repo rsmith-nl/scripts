@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: clean.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Cleans up a directory, removing unnecessary files.
 #
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.

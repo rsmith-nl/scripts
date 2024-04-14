@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: getbb.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Determine the bounding box for postscript files.
 #
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.

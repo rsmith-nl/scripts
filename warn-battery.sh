@@ -3,7 +3,7 @@
 # Script to sound a warning when the battery becomes low. To be run from cron.
 # Requires the audio/mpg123 package.
 #
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 #
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT

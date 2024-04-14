@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: mkpdf.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Creates a PDF file from scanned images @ 150 DPI.
 #
 # Copyright © 2015-2016 R.F. Smith <rsmith@xs4all.nl>.

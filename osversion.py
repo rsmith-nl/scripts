@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # file: osversion.py
-# vim:fileencoding=utf-8:fdm=marker:ft=python
+# vim:fileencoding=utf-8:ft=python
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2018-04-06 22:34:00 +0200

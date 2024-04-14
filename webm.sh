@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: webm.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Two-pass webm encoding
 #
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.

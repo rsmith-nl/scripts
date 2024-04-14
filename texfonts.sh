@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: texfonts.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # The purpose of this script is to find OpenType fonts from a TeXLive installation
 # and make them useable for other applications via fontconfig.
 #

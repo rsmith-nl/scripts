@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: standalone.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Compile a LaTeX standalone document
 #
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.

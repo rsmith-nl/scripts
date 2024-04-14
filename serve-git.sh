@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: serve-git.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Starts the git daemon for all git repositories under the current working
 # directory.
 #

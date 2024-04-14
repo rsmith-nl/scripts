@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: stepviewer.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Script to display STEP files using OpenCascade's DRAWEXE
 #
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>

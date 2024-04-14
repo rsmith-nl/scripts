@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: povmake.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Front-end for the POV-ray raytracer.
 #
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.

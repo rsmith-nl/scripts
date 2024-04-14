@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # file: foto4lb-wand.py
-# vim:fileencoding=utf-8:fdm=marker:ft=python
+# vim:fileencoding=utf-8:ft=python
 #
 # Copyright © 2011-2021 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT

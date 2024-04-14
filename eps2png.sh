@@ -1,6 +1,6 @@
 #!/bin/sh
 # file: eps2png.sh
-# vim:fileencoding=utf-8:fdm=marker:ft=sh
+# vim:fileencoding=utf-8:ft=sh
 # Script to convert EPS images to PNG format using ghostscript.
 #
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
