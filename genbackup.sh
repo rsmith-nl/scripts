@@ -6,7 +6,7 @@
 # Copyright © 2013 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2013-08-13T22:13:23+0200
-# Last modified: 2022-02-25T21:15:42+0100
+# Last modified: 2024-05-05T21:27:21+0200
 
 set -e
 
@@ -28,9 +28,9 @@ while [ "$1" != "" ]; do
                                 ;;
     esac
 done
-# The base of the name is the last part of the current directory, unless
-# another name was given in the options.
-NAME=$(echo $CURDIR|sed -e 's/^\./dot/' -e 's/\.//g' -e 's/ /-/g')
+# The name of the directory after $USER is the last part of the current
+# directory, unless another name was given in the options.
+NAME=$(pwd|sed -e "s/.*$USER\/\{0,1\}//" -e 's/^\./dot/' -e 's/\//%/g' -e 's/ \{1,\}/-/g')
 OUTNAME=${OUTNAME:-$NAME}
 # Use the date in the filename of the archive.
 NUM=-$(date -u '+%Y%m%dT%H%M%SZ')
