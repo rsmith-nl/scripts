@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-01-03T16:31:09+01:00
-# Last modified: 2022-04-10T12:56:09+0200
+# Last modified: 2024-05-12T12:24:12+0200
 """Report when files named on the command line were checked into git."""
 
 import argparse
@@ -14,7 +14,7 @@ import os
 import subprocess as sp
 import sys
 
-__version__ = "2022.04.10"
+__version__ = "2024.05.12"
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
             "--no-pager",
             "log",
             "--diff-filter=A",
-            "--format=%ai",
+            "--format=%aI",
             "--",
             filename,
         ]
