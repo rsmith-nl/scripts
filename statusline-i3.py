@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-06-30T22:23:11+0200
-# Last modified: 2022-10-20T15:25:57+0200
+# Last modified: 2024-06-08T16:17:35+0200
 """
 Generate a status line for i3 on FreeBSD.
 """
@@ -25,7 +25,7 @@ import time
 import traceback
 
 # Global data
-__version__ = "2020.04.01"
+__version__ = "2024.06.08"
 libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
 PAGESIZE = 0
 
@@ -273,7 +273,7 @@ def network(storage):
     """
     cnt = sysctlbyname("net.link.generic.system.ifcount", convert=to_int)
     items = []
-    for n in range(1, cnt):
+    for n in range(1, cnt + 1):
         tm = time.monotonic()
         data = sysctl([4, 18, 0, 2, n, 1], buflen=208)
         name = data[:16].strip(b"\x00").decode("ascii")
