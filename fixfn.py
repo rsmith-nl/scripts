@@ -5,7 +5,7 @@
 # Copyright © 2021 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2021-12-26T09:19:01+0100
-# Last modified: 2024-07-30T22:03:34+0200
+# Last modified: 2024-07-30T22:05:24+0200
 """Fix filenames by removing whitespace and ID numbers from filenames and
 making them lower case."""
 
@@ -16,7 +16,7 @@ import re
 import shutil
 import sys
 
-__version__ = "2021.12.26"
+__version__ = "2024.07.30"
 
 
 def main():
@@ -44,6 +44,8 @@ def main():
         # Remove “waves” (_-_).
         newfn, p = re.subn("_-_", args.replacement, newfn)
         logging.info(f"replaced {p} instances of waves in “{fn}”")
+        newfn, p = re.subn("\.+", ".", newfn)
+        logging.info(f"replaced {p} instances of multiple dots in “{fn}”")
         if not args.nolower:
             newfn = newfn.lower()
         else:
