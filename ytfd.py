@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2024-03-17T14:54:58+0100
+# Last modified: 2024-09-15T20:35:13+0200
 """View or download the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -15,6 +15,12 @@ import os
 import re
 import urllib.request
 import sys
+
+# Colors
+WHITE = "\033[0;37m"
+BOLD_WHITE = "\033[1;37m"
+YELLOW = "\033[0;33m"
+RESET = "\033[0m"
 
 base = "https://www.youtube.com/feeds/videos.xml?channel_id="
 now = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -98,14 +104,17 @@ for channel_title, channel_id in channels.items():
         if "watch" in link and (now - date).days < limit
     )
     if not items:
-        # print(f"No video's less than {limit} days old found for “{channel_title}”.\n")
         continue
     if len(items) > count:
         items = items[:count]
-    print(f"Channel “{channel_title}”")
+    print(f"Channel {YELLOW}“{channel_title}”{RESET}")
     for title, link, date in items:
-        print(f"∙ title: “{title}”")
+        if (now - date).days < 2:
+            print(f"∙ title: “{BOLD_WHITE}{title}{RESET}”")
+        elif (now - date).days < 4:
+            print(f"∙ title: “{WHITE}{title}{RESET}”")
+        else:
+            print(f"∙ title: “{title}”")
         print(f"   date: {date}")
-        # print(f"   view: {viewer} 'https://www.youtube.com/watch?v={link}' &")
         print(f"   download: {downloader} {link}")
     print()
