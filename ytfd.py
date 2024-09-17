@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2024-09-15T20:35:13+0200
+# Last modified: 2024-09-17T06:25:40+0200
 """View or download the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -109,9 +109,9 @@ for channel_title, channel_id in channels.items():
         items = items[:count]
     print(f"Channel {YELLOW}“{channel_title}”{RESET}")
     for title, link, date in items:
-        if (now - date).days < 2:
+        if (now - date).days < 1:
             print(f"∙ title: “{BOLD_WHITE}{title}{RESET}”")
-        elif (now - date).days < 4:
+        elif (now - date).days < 2:
             print(f"∙ title: “{WHITE}{title}{RESET}”")
         else:
             print(f"∙ title: “{title}”")
