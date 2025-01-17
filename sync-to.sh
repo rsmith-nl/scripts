@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2024-12-12T21:29:03+0100
+# Last modified: 2022-01-22T21:25:37+0100
 
 set -eu
 
@@ -59,6 +59,10 @@ while true; do
             REVERSE='yes'
             shift
             ;;
+        -c)
+            CHECKSUM='yes'
+            shift
+            ;;
         --)
             shift; break
             ;;
@@ -80,7 +84,7 @@ if [ ! -d ${DIR} ]; then
 fi
 DIR=${DIR##/home/${USER}/}
 
-OPTS='-avcCn'
+OPTS='-avCn'
 if [ $FORCE ]; then
     OPTS='-av'
 elif [ $ALL ]; then
