@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MIT
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2015-04-25 17:55:24 +0200
-# Last modified: 2024-12-14T12:43:29+0100
+# Last modified: 2024-12-12T21:29:03+0100
 
 set -eu
 
@@ -82,9 +82,12 @@ DIR=${DIR##/home/${USER}/}
 
 OPTS='-avcCn'
 if [ $FORCE ]; then
-    OPTS='-avc'
+    OPTS='-av'
 elif [ $ALL ]; then
-    OPTS='-avcn'
+    OPTS='-avn'
+fi
+if [ $CHECKSUM ]; then
+    OPTS=${OPTS}'c'
 fi
 if [ $REVERSE ]; then
     echo "Syncing from ${HOST} to ${US}."
