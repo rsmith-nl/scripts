@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2024-03-17T15:33:00+0100
+# Last modified: 2025-01-18T20:15:01+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -18,6 +18,7 @@ import os
 import subprocess as sp
 import sys
 import logging
+import concurrent.futures as cf
 
 
 def main():
@@ -31,6 +32,8 @@ def main():
     args.directories = [
         d if d.startswith(os.sep) else cwd + d for d in args.directories
     ]
+    exec = cf.ThreadPoolExecutor()
+    flist = []
     for d in args.directories:
         for (dirpath, dirnames, filenames) in os.walk(d):
             if any(w in dirpath for w in args.ignore):
@@ -39,7 +42,11 @@ def main():
             if "attic" in dirpath or "github" in dirpath or "gitlab" in dirpath:
                 continue
             if ".git" in dirnames:
-                runstatus(dirpath, args.verbose)
+                flist.append(exec.submit(runstatus, dirpath, args.verbose))
+    for fut in cf.as_completed(flist):
+        rv = fut.result()
+        if rv:
+            print(rv)
 
 
 def setup():
@@ -90,6 +97,9 @@ def runstatus(d, verbose=False):
     Arguments:
         d: Directory to run the checks in.
         verbose: Boolean to enable verbose messages.
+
+    Returns:
+        String containing the status of the directory.
     """
     os.chdir(d)
     home = os.environ["HOME"]
@@ -105,9 +115,11 @@ def runstatus(d, verbose=False):
         else:
             notclean = "\033[35mahead of remote branch\033[0m"
     if notclean:
-        print(f"'{d}' is {notclean}.")
+        return f"'{d}' is {notclean}."
     elif verbose:
-        print(f"'{d}' is \033[32mOK\033[0m.")
+        return f"'{d}' is \033[32mOK\033[0m."
+    else:
+        return ""
 
 
 def gitcmd(cmds, output=False):
