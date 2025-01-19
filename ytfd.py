@@ -5,7 +5,7 @@
 # Copyright © 2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2019-07-28T13:42:58+0200
-# Last modified: 2024-09-17T06:25:40+0200
+# Last modified: 2025-01-19T11:48:44+0100
 """View or download the latest video's from your favorite youtube channels."""
 
 import datetime
@@ -15,6 +15,11 @@ import os
 import re
 import urllib.request
 import sys
+from signal import signal, SIGPIPE, SIG_DFL
+
+
+# Ignore BrokenPipeError
+signal(SIGPIPE, SIG_DFL)
 
 # Colors
 WHITE = "\033[0;37m"
