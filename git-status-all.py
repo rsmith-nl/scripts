@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2022-01-22T17:36:02+0100
-# Last modified: 2025-01-18T20:15:01+0100
+# Last modified: 2025-01-19T12:28:00+0100
 """
 Run ``git status`` on all the user's git repositories under the current
 working directory.
@@ -19,6 +19,10 @@ import subprocess as sp
 import sys
 import logging
 import concurrent.futures as cf
+from signal import signal, SIGPIPE, SIG_DFL
+
+# Ignore BrokenPipeError
+signal(SIGPIPE, SIG_DFL)
 
 
 def main():
