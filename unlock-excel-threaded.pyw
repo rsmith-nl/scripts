@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2025-04-11T22:48:55+0200
+# Last modified: 2025-04-12T01:53:36+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm).
 
 This is a multithreaded version of unlock-excel.pyw.  All the work that was
@@ -55,7 +55,7 @@ def create_widgets(root, w):
     # General commands and bindings
     root.bind_all('q', do_exit)
     root.wm_title('Unlock excel files v' + __version__)
-    root.columnconfigure(3, weight=1)
+    root.columnconfigure(4, weight=1)
     root.rowconfigure(5, weight=1)
     # First row
     ttk.Label(root, text='(1)').grid(row=0, column=0, sticky='ew')
@@ -76,6 +76,10 @@ def create_widgets(root, w):
     se = ttk.Entry(root, justify='left', textvariable=w.suffix, state=tk.DISABLED)
     se.grid(row=1, column=3, columnspan=1, sticky='w')
     w.suffixentry = se
+    w.dryrun = tk.IntVar()
+    w.dryrun.set(0)
+    ttk.Checkbutton(root, text='dry run', variable=w.dryrun,
+                    command=on_backup).grid(row=1, column=4, sticky='ew')
     # Third row
     ttk.Label(root, text='(3)').grid(row=2, column=0, sticky='ew')
     w.gobtn = ttk.Button(root, text="Go!", command=do_start, state=tk.DISABLED)
@@ -86,7 +90,7 @@ def create_widgets(root, w):
     # Fifth row
     sb = tk.Scrollbar(root, orient="vertical")
     w.status = tk.Listbox(root, width=60, yscrollcommand=sb.set)
-    w.status.grid(row=4, rowspan=5, column=1, columnspan=3, sticky="nsew")
+    w.status.grid(row=4, rowspan=5, column=1, columnspan=4, sticky="nsew")
     sb.grid(row=4, rowspan=5, column=5, sticky="ns")
     sb.config(command=w.status.yview)
     # Ninth row
@@ -168,6 +172,55 @@ def process_zipfile_thread():
     widgets.fn['text'] = ''
 
 
+def process_zipfile_dryrun_thread():
+    """Function to dryrun processing a zip-file. This is to be run in a thread."""
+    path = widgets.fn['text']
+    statusmsg(f'Opening “{path}” for DRY RUN...')
+    first, last = path.rsplit('.', maxsplit=1)
+    with zipfile.ZipFile(path, mode="r") as inzf:
+        statusmsg(f'Reading “{path}”...')
+        infos = [name for name in inzf.infolist()]
+        statusmsg(f'“{path}” contains {len(infos)} internal files.')
+        worksheets_unlocked = 0
+        for idx, current in enumerate(infos, start=1):
+            if not current.filename.endswith(".xml"):
+                statusmsg(f'“{current.filename}” is not an xml file; '
+                          f'skipping ({idx}/{len(infos)})')
+                continue
+            smsg = f'Looking at “{current.filename}” ({idx}/{len(infos)})...'
+            statusmsg(smsg)
+            # Doing the actual work
+            regex = None
+            data = inzf.read(current)
+            if b'sheetProtect' in data:
+                regex = r'<sheetProtect.*?/>'
+                statusmsg(f'Worksheet "{current.filename}" is protected.')
+            elif b'workbookProtect' in data:
+                regex = r'<workbookProtect.*?/>'
+                statusmsg('The workbook is protected')
+            if regex:
+                text = data.decode('utf-8')
+                newtext = re.sub(regex, '', text)
+                if len(newtext) != len(text):
+                    if 'sheet' in regex:
+                        state.worksheets_unlocked += 1
+                        statusmsg(
+                            f'Would have removed password from "{current.filename}".'
+                        )
+                    elif 'workbook' in regex:
+                        state.workbook_unlocked = True
+    statusmsg('All internal files processed.')
+    statusmsg(f'Would have written “{path}”...')
+    statusmsg(f'Would have unlocked {worksheets_unlocked} worksheets.')
+    if state.workbook_unlocked:
+        statusmsg(f'Would have removed password from workbook {state.path}.')
+    else:
+        statusmsg("Workbook is not protected.")
+    statusmsg('Finished!')
+    widgets.gobtn['state'] = 'disabled'
+    widgets.fn['text'] = ''
+
+
 # Widget callbacks
 def do_file():
     """Callback to open a file"""
@@ -201,7 +254,10 @@ def on_backup():
 
 
 def do_start():
-    worker = threading.Thread(target=process_zipfile_thread)
+    if widgets.dryrun.get() == 1:
+        worker = threading.Thread(target=process_zipfile_dryrun_thread)
+    else:
+        worker = threading.Thread(target=process_zipfile_thread)
     worker.start()
 
 
