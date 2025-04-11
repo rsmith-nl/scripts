@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2022-01-28T15:05:56+0100
+# Last modified: 2025-04-11T22:49:06+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm)."""
 
 from types import SimpleNamespace
@@ -21,7 +21,7 @@ from tkinter import ttk
 from tkinter.font import nametofont
 import tkinter as tk
 
-__version__ = "2022.01.28"
+__version__ = "2025.04.11"
 widgets = SimpleNamespace()
 state = SimpleNamespace()
 
@@ -149,8 +149,11 @@ def step_filter_internal_file():
         newtext = re.sub(regex, '', text)
         if len(newtext) != len(text):
             state.outzf.writestr(current, newtext)
-            state.worksheets_unlocked += 1
-            statusmsg(f'Removed password from "{current.filename}".')
+            if 'sheet' in regex:
+                state.worksheets_unlocked += 1
+                statusmsg(f'Removed password from "{current.filename}".')
+            elif 'workbook' in regex:
+                state.workbook_unlocked = True
     # Next iteration or next step.
     state.currinfo += 1
     if state.currinfo >= len(state.infos):
@@ -177,6 +180,8 @@ def step_finished():
     else:
         statusmsg('Removing temporary file')
     statusmsg(f'Unlocked {state.worksheets_unlocked} worksheets.')
+    if state.workbook_unlocked:
+        statusmsg(f'Removed password from workbook {state.path}.')
     statusmsg('Finished!')
     widgets.gobtn['state'] = 'disabled'
     widgets.fn['text'] = ''
