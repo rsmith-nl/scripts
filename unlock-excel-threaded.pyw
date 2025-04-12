@@ -5,7 +5,7 @@
 # Copyright © 2020 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2020-03-10T23:06:38+0100
-# Last modified: 2025-04-12T01:53:36+0200
+# Last modified: 2025-04-12T14:13:44+0200
 """Remove passwords from modern excel 2007+ files (xlsx, xlsm).
 
 This is a multithreaded version of unlock-excel.pyw.  All the work that was
@@ -36,7 +36,7 @@ from tkinter import ttk
 from tkinter.font import nametofont
 import tkinter as tk
 
-__version__ = "2025.04.11"
+__version__ = "2025.04.12"
 widgets = SimpleNamespace()
 state = SimpleNamespace()
 
@@ -105,6 +105,8 @@ def initialize_state(s):
         s: SimpleNamespace to store application state.
     """
     s.directory = None
+    s.worksheets_unlocked = 0
+    s.workbook_unlocked = False
 
 
 def statusmsg(text):
@@ -132,7 +134,7 @@ def process_zipfile_thread():
         statusmsg(f'Reading “{path}”...')
         infos = [name for name in inzf.infolist()]
         statusmsg(f'“{path}” contains {len(infos)} internal files.')
-        worksheets_unlocked = 0
+        state.worksheets_unlocked = 0
         for idx, current in enumerate(infos, start=1):
             smsg = f'Processing “{current.filename}” ({idx}/{len(infos)})...'
             statusmsg(smsg)
@@ -164,9 +166,11 @@ def process_zipfile_thread():
         os.remove(remove)
     else:
         statusmsg('Removing temporary file')
-    statusmsg(f'Unlocked {worksheets_unlocked} worksheets.')
+    statusmsg(f'Unlocked {state.worksheets_unlocked} worksheets.')
     if state.workbook_unlocked:
-        statusmsg(f'Removed password from workbook {state.path}.')
+        statusmsg(f'Would have removed password from workbook {state.path}.')
+    else:
+        statusmsg("Workbook is not protected.")
     statusmsg('Finished!')
     widgets.gobtn['state'] = 'disabled'
     widgets.fn['text'] = ''
@@ -181,7 +185,7 @@ def process_zipfile_dryrun_thread():
         statusmsg(f'Reading “{path}”...')
         infos = [name for name in inzf.infolist()]
         statusmsg(f'“{path}” contains {len(infos)} internal files.')
-        worksheets_unlocked = 0
+        state.worksheets_unlocked = 0
         for idx, current in enumerate(infos, start=1):
             if not current.filename.endswith(".xml"):
                 statusmsg(f'“{current.filename}” is not an xml file; '
@@ -211,7 +215,7 @@ def process_zipfile_dryrun_thread():
                         state.workbook_unlocked = True
     statusmsg('All internal files processed.')
     statusmsg(f'Would have written “{path}”...')
-    statusmsg(f'Would have unlocked {worksheets_unlocked} worksheets.')
+    statusmsg(f'Would have unlocked {state.worksheets_unlocked} worksheets.')
     if state.workbook_unlocked:
         statusmsg(f'Would have removed password from workbook {state.path}.')
     else:
@@ -239,6 +243,7 @@ def do_file():
         return
     state.directory = os.path.dirname(fn)
     state.workbook_unlocked = False
+    state.worksheets_unlocked = 0
     widgets.fn['text'] = fn
     widgets.gobtn['state'] = 'enabled'
     widgets.status.delete(0, tk.END)
