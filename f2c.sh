@@ -6,7 +6,7 @@
 # Copyright © 2025 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2025-08-19T10:17:13+0200
-# Last modified: 2025-08-19T10:44:36+0200
+# Last modified: 2025-08-19T11:46:40+0200
 
 set -e
 
@@ -14,7 +14,12 @@ set -e
 ID=$(basename $0)
 if [ $# -lt 2 ]; then
     echo "Usage: $ID infile outfile.c"
-    exit 1
+    echo ""
+    echo "Convert “infile” to an array of unsigned characters in “outfile.c”"
+    echo "that can be included in to a program written in C."
+    echo "The name of the array is derived from the name of the input file."
+    echo ""
+    exit 0
 fi
 INF=$1
 OUTF=$2
