@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # file: ccx-dat-quantiles.py
 # vim:fileencoding=utf-8:ft=python
 #
@@ -13,7 +14,7 @@
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: Unlicense
 # Created: 2026-05-25T13:03:12+0200
-# Last modified: 2026-05-25T13:18:24+0200
+# Last modified: 2026-05-25T14:14:44+0200
 
 import statistics as stat
 
