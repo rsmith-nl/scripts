@@ -5,7 +5,7 @@
 # Copyright © 2014-2019 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2014-12-26T13:36:19+01:00
-# Last modified: 2020-03-31T23:57:45+0200
+# Last modified: 2026-07-20T19:05:30+0200
 """
 Open file(s) given on the command line in the appropriate program.
 The appropriate program is read from a configuration file called “.openrc” in
@@ -20,7 +20,7 @@ import logging
 import os
 import sys
 import subprocess as sp
-from magic import from_file
+from magic import detect_from_filename
 
 __version__ = "2020.03.31"
 
@@ -140,7 +140,7 @@ def matchfile(fdict, odict, fname):
     for k, v in fdict.items():
         if search(k, fname, IGNORECASE) is not None:
             return v + [fname]
-    if "text" in from_file(fname):
+    if "text" in detect_from_filename(fname).name:
         return odict["txt"] + [fname]
     return None
 
