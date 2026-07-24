@@ -5,7 +5,7 @@
 # Copyright © 2015-2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2015-09-06T11:45:52+0200
-# Last modified: 2021-12-31T14:56:39+0100
+# Last modified: 2026-07-24T08:39:47+0200
 """
 Utility to rename files.
 
@@ -101,7 +101,7 @@ def report(pairs):
 
 def sorted_by_number(paths):
     """Sort paths by the last number occurring in the filename."""
-    combined = [(re.findall("\d+", p), p) for p in paths]
+    combined = [(re.findall(r"\d+", p), p) for p in paths]
     cleaned = sorted([(int(nl[-1]), p) for nl, p in combined if nl], key=lambda x: x[0])
     return [p for n, p in cleaned]
 
